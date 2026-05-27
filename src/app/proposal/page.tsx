@@ -4,7 +4,10 @@ import WhatsBuilt from "@/components/sections/proposal/WhatsBuilt";
 import OperatingCosts from "@/components/sections/proposal/OperatingCosts";
 import DomainOptions from "@/components/sections/proposal/DomainOptions";
 import MarketValue from "@/components/sections/proposal/MarketValue";
+import Alternatives from "@/components/sections/proposal/Alternatives";
 import AddOns from "@/components/sections/proposal/AddOns";
+import Risks from "@/components/sections/proposal/Risks";
+import Maintenance from "@/components/sections/proposal/Maintenance";
 import NextSteps from "@/components/sections/proposal/NextSteps";
 
 export const metadata: Metadata = {
@@ -22,7 +25,10 @@ export default function ProposalPage() {
       <OperatingCosts />
       <DomainOptions />
       <MarketValue />
+      <Alternatives />
       <AddOns />
+      <Risks />
+      <Maintenance />
       <NextSteps />
     </main>
   );
