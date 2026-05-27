@@ -123,40 +123,6 @@ export default function Maintenance() {
           </div>
         </motion.div>
 
-        {/* Response time commitment */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-10 rounded-2xl border border-blue-100 bg-blue-50/50 p-6 sm:p-8"
-        >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
-              <CalendarClock size={22} />
-            </div>
-            <div>
-              <p className="font-bold text-slate-900">Response time commitment</p>
-              <ul className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <li className="flex items-start gap-2 text-sm text-slate-600">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
-                  <span><span className="font-semibold text-slate-900">Site down or broken:</span> within 2 hours during business hours</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-slate-600">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
-                  <span><span className="font-semibold text-slate-900">Content update request:</span> same business day</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-slate-600">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
-                  <span><span className="font-semibold text-slate-900">New feature request:</span> scoped within 3 business days</span>
-                </li>
-                <li className="flex items-start gap-2 text-sm text-slate-600">
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
-                  <span><span className="font-semibold text-slate-900">General question:</span> next business day</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );
