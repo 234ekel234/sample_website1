@@ -1,9 +1,10 @@
 # Client Email Draft — Membership dues, invoicing & payment
 
-Focused follow-up to PMAFI to finalize the **membership payment flow**. The
-membership page is live and the status check works; this fills the last gaps so
-we can document dues and finish the apply → invoice → pay → active loop.
-Reply-inline format so the client can answer under each item.
+Focused follow-up to PMAFI to finalize the **membership payment flow**. Opens
+with a progress recap (page live, online apply, auto "Pending Payment", private
+status check), then asks the last open questions so we can document dues and
+finish the apply → invoice → pay → active loop. Reply-inline format so the
+client can answer under each item.
 
 ---
 
@@ -11,14 +12,21 @@ Reply-inline format so the client can answer under each item.
 
 Dear [Contact Name / Sir],
 
-Good news — the **Membership page** on the PMAFI website is now live. Visitors
-can apply online, and they can privately check their own membership status by
-email. When someone submits the application form, they're automatically recorded
-as **"Pending Payment"** so they get immediate confirmation that we received it.
+Good news — the **Membership page** on the PMAFI website is now live and working.
+Here's what's already in place:
 
-To finish the process, I just need to confirm how dues and payment work so the
-website and the follow-up to each applicant are accurate. Please reply under
-each item.
+- **Apply online** — applicants fill out the PMAFI membership form directly from
+  the website.
+- **Instant confirmation** — the moment someone applies, they're automatically
+  recorded as **"Pending Payment,"** so they know we received their application.
+- **Private status check** — a member can enter their email on the site and
+  privately see only their own status: *Active*, *Pending Payment*, or *Lapsed*.
+  No one can see the full member list — each person only ever sees their own.
+- **Membership categories, benefits, and how-to-join** steps are all published.
+
+The only thing left to finish the loop is the **payment side** — once an
+applicant is "Pending Payment," we need to know how they're invoiced and how
+they pay. Could you confirm the details below? Please reply under each item.
 
 **1. Dues per category**
 - What are the membership dues for each category?
