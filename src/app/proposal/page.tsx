@@ -4,6 +4,7 @@ import WhatsBuilt from "@/components/sections/proposal/WhatsBuilt";
 import OperatingCosts from "@/components/sections/proposal/OperatingCosts";
 import DomainOptions from "@/components/sections/proposal/DomainOptions";
 import MarketValue from "@/components/sections/proposal/MarketValue";
+import Investment from "@/components/sections/proposal/Investment";
 import Alternatives from "@/components/sections/proposal/Alternatives";
 import AddOns from "@/components/sections/proposal/AddOns";
 import Risks from "@/components/sections/proposal/Risks";
@@ -25,6 +26,7 @@ export default function ProposalPage() {
       <OperatingCosts />
       <DomainOptions />
       <MarketValue />
+      <Investment />
       <Alternatives />
       <AddOns />
       <Risks />

@@ -13,6 +13,8 @@ const links = [
   { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
+  // TEMPORARY: internal proposal link — remove before public launch.
+  { label: "Proposal", href: "/proposal" },
 ];
 
 export default function Navbar() {
