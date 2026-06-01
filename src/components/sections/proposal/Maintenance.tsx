@@ -9,7 +9,7 @@ const cadences = [
     icon: MessageCircle,
     cadence: "As needed",
     title: "Content updates",
-    description: "New products, updated pricing, fixing typos, swapping photos. Same-day turnaround for small changes.",
+    description: "Board changes, new programs, event news, fixing typos, swapping photos. Same-day turnaround for small changes.",
   },
   {
     icon: ShieldAlert,
@@ -33,19 +33,19 @@ const cadences = [
     icon: Database,
     cadence: "Quarterly",
     title: "Backup verification",
-    description: "Confirm the site code is in GitHub, the orders Google Sheet has a backup copy, and we can restore quickly if needed.",
+    description: "Confirm the site code is in GitHub, the members Google Sheet has a backup copy, and we can restore quickly if needed.",
   },
   {
     icon: CalendarClock,
     cadence: "Annually",
     title: "Domain renewal",
-    description: "Verify the domain auto-renewed (or do it manually if multi-year wasn't purchased). Review whether the website still meets business needs.",
+    description: "If a custom domain is used, verify it auto-renewed. Review whether the website still meets the Foundation's needs.",
   },
 ];
 
 const responsibilities = [
-  { who: "Developer (in-house)", does: "Code, deployments, security updates, technical issues, new features" },
-  { who: "Business / content owner", does: "Product info, pricing decisions, order responses, customer messages" },
+  { who: "Developer", does: "Code, deployments, security updates, technical issues, new features" },
+  { who: "PMAFI / content owner", does: "Membership approvals, marking members Active, content, member responses" },
   { who: "Vercel (hosting)", does: "Infrastructure uptime, SSL certificates, CDN, automatic scaling" },
   { who: "Domain registrar", does: "Domain registration, DNS management, renewal reminders" },
 ];

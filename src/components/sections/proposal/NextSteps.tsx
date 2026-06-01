@@ -8,12 +8,12 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const steps = [
-  { icon: ImageIcon, title: "Provide brand assets", note: "Real company name, logo, colors, and sample photos." },
-  { icon: FileEdit, title: "Swap placeholder content", note: "Update story, stats, services, and product info with real copy." },
-  { icon: Globe, title: "Buy and connect a domain", note: "About 30 minutes of setup. Around ₱600 for a .com." },
-  { icon: Rocket, title: "Go live", note: "Site can be deployed for free immediately after content is in." },
-  { icon: BarChart2, title: "Set up Google Analytics", note: "Start tracking visitors and which pages convert best." },
-  { icon: Plus, title: "Layer in add-ons", note: "Add 1–2 high-impact features from the Quick Wins list." },
+  { icon: ImageIcon, title: "Send official assets", note: "Official PMAFI logo/seal and high-resolution trustee photos." },
+  { icon: FileEdit, title: "Confirm membership dues & payment", note: "Dues per category, who invoices, and payment channels — completes the apply → pay → active flow." },
+  { icon: Rocket, title: "Finish the auto-add setup", note: "Install the form's “Pending Payment” trigger (one-time, ~3 minutes)." },
+  { icon: Globe, title: "Connect a custom domain (optional)", note: "Point pmafi.org (or similar) at the site. ~30 min, ~₱600/year." },
+  { icon: BarChart2, title: "Add Google Analytics", note: "Start tracking visitors and which pages get the most attention." },
+  { icon: Plus, title: "Tidy up", note: "Remove the unused Services/Products/Order pages and fix the old page titles." },
 ];
 
 export default function NextSteps() {
@@ -30,7 +30,7 @@ export default function NextSteps() {
           className="mb-14 text-center"
         >
           <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
-            If We Greenlight This
+            To Finish &amp; Polish
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
             Recommended First Steps
@@ -81,9 +81,10 @@ export default function NextSteps() {
             Why this approach is worth it
           </h3>
           <p className="mx-auto mt-4 max-w-xl text-slate-600">
-            Low operating cost, fully owned by the company (no vendor lock-in),
-            and built to scale as the business grows. Already working
-            end-to-end — orders flow into a Google Sheet automatically.
+            Essentially no operating cost, fully owned by PMAFI (no vendor
+            lock-in), and built to grow with the Foundation. Already working
+            end-to-end — members apply online and flow into the roster as
+            “Pending Payment” automatically.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link

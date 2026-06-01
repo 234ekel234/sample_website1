@@ -2,34 +2,35 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Server, Globe, FileText, Mail } from "lucide-react";
+import { Server, Globe, FileText, Database } from "lucide-react";
 
 const costs = [
   {
     icon: Server,
     name: "Hosting (Vercel)",
     price: "Free",
-    note: "Free tier handles typical small business traffic. Upgrade only if needed.",
+    note: "Free tier easily handles a foundation's traffic. Already live at pmafi.vercel.app.",
+    highlight: true,
+  },
+  {
+    icon: FileText,
+    name: "Membership form (Google Forms)",
+    price: "Free",
+    note: "Unlimited applications, archived to a Google Sheet automatically.",
+    highlight: true,
+  },
+  {
+    icon: Database,
+    name: "Member roster (Google Sheets)",
+    price: "Free",
+    note: "Private roster read securely server-side via a free Google service account.",
     highlight: true,
   },
   {
     icon: Globe,
-    name: "Domain Name",
+    name: "Custom domain (optional)",
     price: "~₱550 – ₱900 / year",
-    note: "Two options compared in the next section. .ph domain (~₱2,500/yr) available separately if needed.",
-  },
-  {
-    icon: FileText,
-    name: "Google Forms",
-    price: "Free",
-    note: "Unlimited responses, syncs to a Google Sheet for order tracking.",
-    highlight: true,
-  },
-  {
-    icon: Mail,
-    name: "Custom Email",
-    price: "Free / ₱180 mo",
-    note: "Free via Zoho Mail. ~₱180/user/month if Google Workspace is preferred.",
+    note: "Only if PMAFI wants its own address (e.g. pmafi.org) instead of the free pmafi.vercel.app. Options compared next.",
   },
 ];
 
@@ -53,8 +54,8 @@ export default function OperatingCosts() {
             Operating Costs
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            Real ongoing costs to keep the site live. The minimum to launch is
-            just a domain name.
+            Real ongoing costs to keep the site live. Everything essential runs
+            on free tiers — the only optional cost is a custom domain.
           </p>
         </motion.div>
 
@@ -90,12 +91,13 @@ export default function OperatingCosts() {
           className="mt-10 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-8 py-10 text-center text-white"
         >
           <p className="text-sm font-semibold uppercase tracking-widest text-blue-200">
-            Minimum to Launch
+            Cost to Run Today
           </p>
-          <p className="mt-2 text-5xl font-extrabold">~₱600 / year</p>
+          <p className="mt-2 text-5xl font-extrabold">≈ ₱0 / year</p>
           <p className="mx-auto mt-3 max-w-xl text-blue-100">
-            For comparison, website builders like Wix or Squarespace typically
-            charge <span className="font-semibold text-white">₱2,000+/month</span> — over <span className="font-semibold text-white">₱24,000/year</span>.
+            The site is already live at no cost. A custom domain (optional,
+            ~₱600/year) is the only spend. For comparison, builders like Wix or
+            Squarespace charge <span className="font-semibold text-white">₱2,000+/month</span> — over <span className="font-semibold text-white">₱24,000/year</span>.
           </p>
         </motion.div>
       </div>

@@ -30,7 +30,7 @@ export default function ProposalHero() {
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.div variants={item}>
             <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-blue-300">
-              <Sparkles size={12} /> Internal Proposal
+              <Sparkles size={12} /> Project Proposal
             </span>
           </motion.div>
 
@@ -38,9 +38,9 @@ export default function ProposalHero() {
             variants={item}
             className="mt-6 text-5xl font-bold leading-tight tracking-tight text-white md:text-6xl"
           >
-            From Concept to{" "}
+            A Complete Website for{" "}
             <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-              Live in Under a Week
+              PMAFI
             </span>
           </motion.h1>
 
@@ -48,8 +48,9 @@ export default function ProposalHero() {
             variants={item}
             className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300"
           >
-            Everything that&apos;s already been built, what it costs to operate,
-            and what we could add next — all in one place.
+            Six pages plus a full membership system — already live. Here&apos;s
+            what&apos;s built, what it costs to run, and what we could add next,
+            all in one place.
           </motion.p>
         </motion.div>
       </div>

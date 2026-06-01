@@ -118,7 +118,8 @@ export default function Alternatives() {
             Compared to the Alternatives
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            Honest side-by-side with the popular ways businesses get a website.
+            Honest side-by-side with the popular ways organizations get a
+            website.
           </p>
         </motion.div>
 
@@ -215,11 +216,12 @@ export default function Alternatives() {
               <p className="mt-3 leading-relaxed">
                 Website builders (Wix, Squarespace, Shopify) win on convenience
                 — but you pay monthly forever, never truly own the site, and
-                hit a wall when you want something custom. Agencies do
-                excellent work but cost ₱150k+ upfront and lock you in for
-                future changes. Our approach gives you the same quality as an
-                agency build, owned outright, at a fraction of the cost — the
-                only trade-off is needing someone in-house to maintain it.
+                hit a wall when you want something custom (like a private
+                membership lookup). Agencies do excellent work but cost ₱150k+
+                upfront and charge per change. This build gives PMAFI the same
+                quality as an agency build, owned outright, at essentially no
+                ongoing cost — the only trade-off is needing someone to maintain
+                it.
               </p>
             </div>
           </div>

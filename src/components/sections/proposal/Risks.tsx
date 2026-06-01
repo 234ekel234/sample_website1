@@ -14,46 +14,40 @@ const severityStyles: Record<Severity, { bg: string; text: string; label: string
 
 const risks: { title: string; severity: Severity; risk: string; mitigation: string }[] = [
   {
-    title: "Domain expiry — site goes dark",
+    title: "Member roster privacy",
     severity: "high",
-    risk: "If we forget to renew the domain, the website disappears overnight and customers can't find us.",
-    mitigation: "Register for 5+ years upfront (as recommended) and enable auto-renewal with a billing email that's actively monitored.",
+    risk: "The roster holds members' names and emails. If the private Google Sheet were shared too widely, that data could be exposed.",
+    mitigation: "By design the full roster never reaches the browser — the server matches one email and returns only that record. The sheet is shared only with a service account, and credentials live in environment variables, never in the code.",
   },
   {
-    title: "Google Forms changes pricing or shuts down",
+    title: "Domain expiry — site goes dark",
+    severity: "medium",
+    risk: "If PMAFI registers a custom domain and forgets to renew it, the website disappears overnight.",
+    mitigation: "Register for 5+ years upfront and enable auto-renewal on a monitored billing email. (Not a risk today — the free pmafi.vercel.app address doesn't expire.)",
+  },
+  {
+    title: "Google Forms / Sheets dependency",
     severity: "low",
-    risk: "Our order intake depends on Google Forms. If Google ever paywalls it or shuts it down, our intake breaks.",
-    mitigation: "Form has a clear replacement path — Formspree or a native form (1-2 weeks of work). All historical orders stay in our Google Sheet regardless.",
+    risk: "Applications and the roster rely on Google Forms & Sheets. If Google ever paywalls or changes them, intake could break.",
+    mitigation: "Both have clear replacement paths (a native form / database, 1–2 weeks of work), and all historical data stays exportable from Google at any time.",
   },
   {
     title: "Single-developer knowledge",
     severity: "medium",
-    risk: "Right now one person knows how to update the site. If they leave or are unavailable, changes stall.",
-    mitigation: "Code is well-organized and uses standard tools (Next.js, Tailwind) that thousands of developers know. Any junior dev can pick it up. Documentation can be added when needed.",
+    risk: "Right now one person knows how to update the site. If they're unavailable, changes stall.",
+    mitigation: "Code is well-organized, uses standard tools (Next.js, Tailwind) thousands of developers know, and the whole setup is documented in the project's reference files. Any web developer can pick it up.",
+  },
+  {
+    title: "Manual invoicing & activation",
+    severity: "medium",
+    risk: "After someone applies, a person manually invoices them and later marks them Active. If staff get busy, applicants could wait.",
+    mitigation: "Applicants get instant \"Pending Payment\" confirmation so nothing feels dropped. The \"automated invoice\" and \"online payments\" add-ons can remove the manual steps as volume grows.",
   },
   {
     title: "Free hosting tier limits",
     severity: "low",
-    risk: "Vercel's free tier has bandwidth limits. If we suddenly go viral, the site could hit the cap.",
-    mitigation: "Vercel's free tier covers ~100k monthly visitors — far beyond what we need for a normal business. Hitting the limit is a good problem; upgrade to Pro (~₱1,150/month) takes minutes.",
-  },
-  {
-    title: "Manual order confirmation workflow",
-    severity: "medium",
-    risk: "We manually send totals and confirm receipts. If we get busy, orders could sit for days.",
-    mitigation: "Confirmed 24-hour response SLA in our marketing. As volume grows, the \"Online payments\" add-on automates this step entirely.",
-  },
-  {
-    title: "Email deliverability",
-    severity: "low",
-    risk: "Customer order confirmations rely on Gmail. If their email provider marks our messages as spam, they may miss them.",
-    mitigation: "Confirm orders via the customer's preferred contact method (already collected on the form — phone or email). For high-value orders, follow up via phone if no email response.",
-  },
-  {
-    title: "Browser / device compatibility",
-    severity: "low",
-    risk: "Customers on very old browsers (IE11, ancient Android) may see a degraded experience.",
-    mitigation: "Site uses modern web standards (~98% of PH internet users supported). Critical pages remain functional even with JavaScript disabled. Older browsers degrade gracefully, not catastrophically.",
+    risk: "Vercel's free tier has bandwidth limits. A sudden traffic spike could hit the cap.",
+    mitigation: "The free tier covers ~100k monthly visitors — far beyond a foundation's needs. Hitting it is a good problem; upgrading takes minutes.",
   },
 ];
 

@@ -171,7 +171,7 @@ export default function DomainOptions() {
               </h3>
               <p className="mt-2 leading-relaxed text-slate-600">
                 Both registrars let us register the domain for up to 10 years
-                at a time. For a company that wants to look established,
+                at a time. For an organization that wants to look established,
                 paying ahead is a smart move — it locks in pricing, removes
                 the risk of forgetting to renew, and signals long-term
                 commitment.
@@ -182,7 +182,7 @@ export default function DomainOptions() {
                 {[
                   { icon: Wallet, text: "Locks in today's price — no renewal surprises" },
                   { icon: BellRing, text: "No risk of forgetting to renew (= site going down)" },
-                  { icon: Award, text: "Longer registration looks more legitimate to customers and search engines" },
+                  { icon: Award, text: "Longer registration looks more legitimate to visitors and search engines" },
                   { icon: ShieldCheck, text: "Predictable budgeting — pay once, set and forget" },
                 ].map(({ icon: Icon, text }) => (
                   <li key={text} className="flex items-start gap-3">
@@ -253,8 +253,8 @@ export default function DomainOptions() {
               </p>
               <h3 className="mt-2 text-2xl font-bold">Go with Cloudflare</h3>
               <p className="mt-3 text-blue-100">
-                For a company that wants to look legit, Cloudflare is the right
-                choice. It&apos;s the same infrastructure used by enterprise
+                For an organization that wants to look professional, Cloudflare
+                is the right choice. It&apos;s the same infrastructure used by enterprise
                 brands — at-cost pricing means our domain bill never goes up,
                 and the free CDN makes the site faster for everyone visiting
                 from anywhere in the world. The ~15-minute extra setup is a

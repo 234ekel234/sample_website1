@@ -35,10 +35,10 @@ const tiers = [
 
 const built = [
   "Custom hand-coded — not Wix or Squarespace",
-  "7 unique pages, each with proper animations",
+  "Six pages plus a full membership system",
+  "Privacy-preserving member lookup (custom backend logic)",
   "Modern tech stack (Next.js, Tailwind v4, Framer Motion)",
-  "Mobile-responsive and fast-loading",
-  "Component-based — easy to update or extend later",
+  "Mobile-responsive, fast-loading, easy to extend",
 ];
 
 export default function MarketValue() {
@@ -135,11 +135,12 @@ export default function MarketValue() {
             The Bottom Line
           </p>
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-relaxed">
-            Quoted externally, a website at this quality would run between{" "}
+            Quoted externally, a website at this quality — with a custom
+            membership system — would run between{" "}
             <span className="font-bold text-white">₱80,000 and ₱150,000</span>.
-            Built in-house, we get it for the cost of my time plus{" "}
-            <span className="font-bold text-white">~₱600/year</span> in
-            operating costs.
+            PMAFI has it live for{" "}
+            <span className="font-bold text-white">≈ ₱0/year</span> in operating
+            costs (just an optional domain).
           </p>
         </motion.div>
       </div>
