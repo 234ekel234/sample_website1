@@ -16,9 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tusi Solutions — Your Trusted Business Partner",
+  title: "PMAFI — Philippine Military Academy Foundation, Inc.",
   description:
-    "Quality products and honest service from real people who care about getting your order right.",
+    "Supporting the Philippine Military Academy in developing officers of integrity, competence, and character — building the next generation of leaders for our nation.",
 };
 
 export default function RootLayout({

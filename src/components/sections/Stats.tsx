@@ -1,24 +1,47 @@
-import { ShieldCheck, Sparkles, Clock, Heart } from "lucide-react";
+import { Shield, Users, BookOpen, Award } from "lucide-react";
 
-const stats = [
-  { icon: ShieldCheck, label: "Locally Owned", note: "Run by people you can actually talk to" },
-  { icon: Sparkles, label: "Quality First", note: "Every order checked before it leaves us" },
-  { icon: Clock, label: "Fast Turnaround", note: "Quick replies, faster delivery" },
-  { icon: Heart, label: "Customer Focused", note: "Honest pricing, no surprises" },
+const pillars = [
+  {
+    icon: Shield,
+    label: "PMA Heritage",
+    note: "Supporting the Philippine Military Academy's century-long mission of excellence",
+  },
+  {
+    icon: Users,
+    label: "Alumni Network",
+    note: "A nationwide community of PMA graduates and dedicated supporters",
+  },
+  {
+    icon: BookOpen,
+    label: "Academic Excellence",
+    note: "Advancing cadet education, research, and institutional development",
+  },
+  {
+    icon: Award,
+    label: "Leadership Formation",
+    note: "Building officers of integrity, courage, and principled national service",
+  },
 ];
 
 export default function Stats() {
   return (
-    <section className="border-b border-slate-100 bg-white py-16">
+    <section className="relative border-b border-slate-100 bg-white py-20">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-          {stats.map(({ icon: Icon, label, note }) => (
-            <div key={label} className="flex flex-col items-center text-center">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
-                <Icon size={22} />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {pillars.map(({ icon: Icon, label, note }) => (
+            <div
+              key={label}
+              className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#C8A951]/40 hover:shadow-[0_18px_40px_-18px_rgba(27,42,74,0.35)]"
+            >
+              {/* Top accent line revealed on hover */}
+              <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-[#1B2A4A]/[0.07] text-[#1B2A4A] transition-colors duration-300 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
+                <Icon size={24} />
               </div>
               <p className="text-sm font-bold text-slate-900">{label}</p>
-              <p className="mt-1 text-xs text-slate-500">{note}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-slate-500">
+                {note}
+              </p>
             </div>
           ))}
         </div>

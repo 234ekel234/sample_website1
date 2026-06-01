@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { MessageCircle, X, Phone } from "lucide-react";
 
 const MESSENGER_URL = "https://m.me/";
-const PHONE_URL = "tel:+639357330435";
+const PHONE_URL = "tel:+63740000000";
 
 function MessengerIcon({ size = 16 }: { size?: number }) {
   return (
@@ -41,7 +41,7 @@ export default function FloatingChat() {
           className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
         >
           <span className="text-sm font-medium text-slate-700">Message us</span>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600 text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B2A4A] text-white">
             <MessengerIcon size={16} />
           </span>
         </a>
@@ -50,7 +50,7 @@ export default function FloatingChat() {
           className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
         >
           <span className="text-sm font-medium text-slate-700">Call us</span>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white">
+          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#C8A951] text-[#1B2A4A]">
             <Phone size={15} />
           </span>
         </a>
@@ -61,18 +61,13 @@ export default function FloatingChat() {
         type="button"
         aria-label={open ? "Close chat menu" : "Open chat menu"}
         onClick={() => setOpen(!open)}
-        className={`flex h-14 w-14 items-center justify-center rounded-full shadow-xl transition-all hover:scale-110 ${
+        className={`flex h-14 w-14 items-center justify-center rounded-full shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all duration-300 hover:scale-105 ${
           open
-            ? "bg-slate-800 text-white"
-            : "bg-blue-600 text-white"
+            ? "bg-[#1B2A4A] text-[#C8A951]"
+            : "bg-[#C8A951] text-[#1B2A4A]"
         }`}
       >
         {open ? <X size={22} /> : <MessageCircle size={22} />}
-
-        {/* Pulse */}
-        {!open && (
-          <span className="pointer-events-none absolute inset-0 animate-ping rounded-full bg-blue-600 opacity-40" />
-        )}
       </button>
     </div>
   );

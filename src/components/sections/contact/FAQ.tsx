@@ -6,32 +6,32 @@ import { Plus, Minus } from "lucide-react";
 
 const faqs = [
   {
-    q: "How do I place an order?",
-    a: "Head to our Order page and fill out the order form. We'll review your order and get back to you within 24 hours with a confirmed total via your preferred contact method.",
+    q: "How can I support PMAFI?",
+    a: "There are several ways to get involved: make a one-time or recurring donation, become a member of the Foundation, sponsor a specific program, or take part in our fundraising drives and events. Reach out and we'll help you find the option that fits you best.",
   },
   {
-    q: "What payment methods do you accept?",
-    a: "We accept GCash, PayMaya, Bank Transfer, and Cash on Delivery for orders within our service area. Once you place an order, we'll share the payment details for your chosen method.",
+    q: "Where does my donation go?",
+    a: "Contributions are channeled into our four core program areas — facilities and modernization, academic excellence and scholarships, leadership and character formation, and alumni and community partnerships. Every peso goes toward strengthening PMA and the cadets it produces.",
   },
   {
-    q: "How long until I receive my order?",
-    a: "Turnaround time depends on the product and quantity. We'll give you a clear estimated date together with your order confirmation — no vague \"soon\" promises.",
+    q: "How do I make a donation?",
+    a: "Message us by email or phone and we'll share the Foundation's official bank transfer and e-wallet details. Once your gift is received, we issue an acknowledgment and an official receipt for your records.",
   },
   {
-    q: "Do you ship outside Metro Manila?",
-    a: "Yes! We ship nationwide via partner couriers. Shipping fees vary by location and are calculated when we send your order total.",
+    q: "Are donations to PMAFI tax-deductible?",
+    a: "PMAFI is a registered non-stock, non-profit foundation and provides official receipts for every contribution. For questions on deductibility, we recommend consulting your accountant or tax advisor regarding your specific situation.",
   },
   {
-    q: "Can I customize my order?",
-    a: "In most cases, yes. Mention what you need in the \"Questions and comments\" field on the order form, and we'll let you know what's possible.",
+    q: "Do I need to be a PMA graduate to get involved?",
+    a: "Not at all. While many of our members and trustees are PMA alumni, support is open to families, civic organizations, corporate partners, and any Filipino who believes in developing principled military leaders for the nation.",
   },
   {
-    q: "What if I'm not happy with my order?",
-    a: "Message us right away. We stand behind every order — if something isn't right, we'll work with you to make it right.",
+    q: "Can my company or organization partner with PMAFI?",
+    a: "Yes. We welcome corporate and civic partnerships — from program sponsorships and endowments to cadet mentorship and internship opportunities. Get in touch and we'll explore how a partnership can align with your advocacy.",
   },
   {
-    q: "What are your business hours?",
-    a: "We respond to messages and calls during regular business hours. For calls or texts outside those hours, please send a message and we'll get back to you the next business day.",
+    q: "How will I know my contribution made a difference?",
+    a: "We keep our supporters informed on how funds are put to work and the impact they create across PMA. Tell us you'd like updates and we'll make sure you hear about the programs and milestones your support helps make possible.",
   },
 ];
 
@@ -41,12 +41,12 @@ function FAQItem({ q, a, open, onToggle }: { q: string; a: string; open: boolean
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-blue-700"
+        className="flex w-full items-center justify-between gap-4 py-5 text-left transition-colors hover:text-[#C8A951]"
       >
         <span className="font-medium text-slate-900">{q}</span>
         <span
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full transition-colors ${
-            open ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600"
+            open ? "bg-[#1B2A4A] text-[#C8A951]" : "bg-slate-100 text-slate-600"
           }`}
         >
           {open ? <Minus size={14} /> : <Plus size={14} />}
@@ -79,10 +79,12 @@ export default function FAQ() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <span className="h-px w-8 bg-[#C8A951]/50" />
             Common Questions
+            <span className="h-px w-8 bg-[#C8A951]/50" />
           </p>
-          <h2 className="mt-2 text-4xl font-bold text-slate-900">
+          <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
             Frequently Asked
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
