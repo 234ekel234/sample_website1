@@ -33,6 +33,8 @@ confirming a few details. Feel free to reply directly under each item.
 - How should donations be received? (e.g., **bank transfer** details, **GCash/e-wallet**, etc.) — we'll display whatever you'd like supporters to use.
 - Is the **membership/application Google Form** in the brochure still active and the one we should link to?
 - Can we state that **donations are tax-deductible** / that PMAFI is a BIR-registered donee institution? (We want to confirm before publishing that claim.)
+- Please **confirm the member benefits** we should list on the Membership page. We've drafted some (e.g., being part of the mission, community/network, a voice in electing the Board, program updates, event invitations, and recognition through professorial chairs/endowments) — let us know what's accurate, what to add, and what to remove.
+- What are the **membership dues** per category (Regular / Associate / Affiliate)?
 
 **5. Online presence**
 - Official **Facebook** and/or other **social media** links (the footer currently has placeholders).
