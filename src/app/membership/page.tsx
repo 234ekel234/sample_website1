@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     "Join the Philippine Military Academy Foundation, Inc. Check your membership status or apply to become a regular, associate, or affiliate member.",
 };
 
-// TODO: confirm with PMAFI that this Google Form (from the brochure) is current.
-const APPLICATION_FORM_URL = "https://forms.gle/1znWk8ZTbXhW2Skv6";
+const APPLICATION_FORM_URL =
+  "https://docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform";
 
 const categories = [
   {

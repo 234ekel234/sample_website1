@@ -15,27 +15,33 @@ The `/membership` page is built and working, but it runs on **mock data** and a
 
 ## TODO before launch
 
-### 1. Replace the mock member list with the real Google Sheet
-- File to edit: **`src/lib/members.ts`** → the `loadMembers()` function (currently
-  returns `MOCK_MEMBERS`).
-- The sheet needs at least these columns: **Email, Name, Category
-  (Regular/Associate/Affiliate), Status (Active/Lapsed)**.
+### 1. Replace the mock member list with the real Google Sheet — DONE & VERIFIED LOCALLY
+- `src/lib/members.ts` now reads the private members sheet server-side via the
+  **Google Sheets API + service account** (zero extra npm deps; JWT signed with
+  Node `crypto`). Columns read in order: **Name, Email, Category, Status**.
+- Sheet generator: `references/members-sheet.gs`.
 - Members are matched by **email**, so everyone must be registered under the
   email they'll type in.
-- Two ways to connect (pick one):
-  - **Service account (most private):** share the sheet only with a Google
-    service account; read it via the Sheets API on the server. Store credentials
-    in env vars (e.g. `MEMBERS_SHEET_ID`, service-account key). Nothing public.
-  - **Published CSV (simpler):** File → Share → Publish to web → CSV; fetch that
-    URL server-side. Easier, but the URL exposes the list if leaked.
-- PRIVACY RULE: never send the whole roster to the browser. Keep the lookup in
-  the server action; return only the one matching record.
+- PRIVACY: the whole roster never reaches the browser — the server matches one
+  email and returns only that record. The action shows a friendly error on read
+  failure instead of falsely reporting "not a member."
+- DONE: service account created, Sheets API enabled, members sheet shared with
+  the service account, and env vars set in `.env.local`. Verified working on
+  localhost — a real Active member renders correctly.
+- REMAINING: set the same three env vars in **Vercel → Settings → Environment
+  Variables** for production, then redeploy. Vars (steps in
+  **`references/membership-env-setup.md`**): `MEMBERS_SHEET_ID`,
+  `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
+  (+ optional `MEMBERS_SHEET_RANGE`).
 
-### 2. Confirm the membership application form
-- The "Apply for Membership" button currently points to the brochure link:
-  `https://forms.gle/1znWk8ZTbXhW2Skv6`
-- Confirm with PMAFI this Google Form is still active / correct, then update
+### 2. Membership application form — DONE
+- A dedicated PMAFI application form was generated (Apps Script in
+  `references/membership-application-form.gs`) and wired into
   `APPLICATION_FORM_URL` in **`src/app/membership/page.tsx`**.
+- Public link:
+  `https://docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform`
+- Remaining: connect the form's **Responses → Google Sheet**, and build the
+  separate members sheet (Email/Name/Category/Status) used by the lookup.
 
 ### 3. Confirm dues & invoicing details
 - Flow is apply-first → PMAFI sends an invoice → member pays & sends proof.

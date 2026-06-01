@@ -26,7 +26,19 @@ export async function checkMembershipAction(
     return { status: "error", message: "Please enter a valid email address." };
   }
 
-  const member = await checkMembership(email);
+  let member;
+  try {
+    member = await checkMembership(email);
+  } catch (err) {
+    // Sheet read / config failure — don't falsely report "not a member".
+    console.error("Membership lookup failed:", err);
+    return {
+      status: "error",
+      message:
+        "We couldn't check your status right now. Please try again shortly, or contact us if it persists.",
+    };
+  }
+
   if (!member) {
     return { status: "notfound", email };
   }
