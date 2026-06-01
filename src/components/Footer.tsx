@@ -29,6 +29,7 @@ const quickLinks = [
   { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
   { label: "Board of Trustees", href: "/board" },
+  { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -47,8 +48,9 @@ export default function Footer() {
             </div>
           </div>
           <p className="text-sm leading-relaxed">
-            Supporting the Philippine Military Academy in developing officers
-            of integrity, competence, and character for the nation.
+            An independent non-stock, non-profit foundation supporting the
+            Philippine Military Academy in developing officers of integrity,
+            competence, and character for the nation.
           </p>
 
           <div className="mt-6 flex gap-3">
@@ -112,9 +114,12 @@ export default function Footer() {
 
       <Separator className="bg-white/5" />
 
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-xs text-slate-600">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-4 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
         <span>© {new Date().getFullYear()} Philippine Military Academy Foundation, Inc. All rights reserved.</span>
-        <span>Built with Next.js</span>
+        <span className="sm:text-right">
+          PMAFI is an independent foundation supporting the PMA — not an
+          official website of the Philippine Military Academy or the AFP.
+        </span>
       </div>
     </footer>
   );
