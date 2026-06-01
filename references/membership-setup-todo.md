@@ -15,7 +15,7 @@ The `/membership` page is built and working, but it runs on **mock data** and a
 
 ## TODO before launch
 
-### 1. Replace the mock member list with the real Google Sheet — DONE & VERIFIED LOCALLY
+### 1. Replace the mock member list with the real Google Sheet — DONE & LIVE
 - `src/lib/members.ts` now reads the private members sheet server-side via the
   **Google Sheets API + service account** (zero extra npm deps; JWT signed with
   Node `crypto`). Columns read in order: **Name, Email, Category, Status**.
@@ -26,13 +26,12 @@ The `/membership` page is built and working, but it runs on **mock data** and a
   email and returns only that record. The action shows a friendly error on read
   failure instead of falsely reporting "not a member."
 - DONE: service account created, Sheets API enabled, members sheet shared with
-  the service account, and env vars set in `.env.local`. Verified working on
-  localhost — a real Active member renders correctly.
-- REMAINING: set the same three env vars in **Vercel → Settings → Environment
-  Variables** for production, then redeploy. Vars (steps in
-  **`references/membership-env-setup.md`**): `MEMBERS_SHEET_ID`,
-  `GOOGLE_SERVICE_ACCOUNT_EMAIL`, `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY`
-  (+ optional `MEMBERS_SHEET_RANGE`).
+  the service account, env vars set in `.env.local` AND in Vercel Production,
+  and a production deploy made. Verified end-to-end on
+  https://pmafi.vercel.app/membership — a real Active member renders correctly.
+- Env vars (the three, steps in **`references/membership-env-setup.md`**):
+  `MEMBERS_SHEET_ID`, `GOOGLE_SERVICE_ACCOUNT_EMAIL`,
+  `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` (+ optional `MEMBERS_SHEET_RANGE`).
 
 ### 2. Membership application form — DONE
 - A dedicated PMAFI application form was generated (Apps Script in
