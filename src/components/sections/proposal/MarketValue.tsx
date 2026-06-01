@@ -137,10 +137,10 @@ export default function MarketValue() {
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-relaxed">
             Quoted externally, a website at this quality — with a custom
             membership system — would run between{" "}
-            <span className="font-bold text-white">₱80,000 and ₱150,000</span>.
-            PMAFI has it live for{" "}
-            <span className="font-bold text-white">≈ ₱0/year</span> in operating
-            costs (just an optional domain).
+            <span className="font-bold text-white">₱80,000 and ₱150,000</span>,
+            and costs <span className="font-bold text-white">≈ ₱0/year</span> to
+            operate. These are shared as reference only — we&apos;ll leave it to
+            PMAFI to decide what it&apos;s worth to the Foundation.
           </p>
         </motion.div>
       </div>
