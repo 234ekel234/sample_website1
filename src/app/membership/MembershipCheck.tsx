@@ -9,6 +9,7 @@ import {
   Search,
   CheckCircle2,
   AlertTriangle,
+  Clock,
   UserPlus,
   ArrowRight,
 } from "lucide-react";
@@ -71,6 +72,23 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
               We found your <strong>{state.category}</strong> membership, but it
               appears to have lapsed. Please get in touch so we can help you
               renew.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {state.status === "found" && state.standing === "Pending" && (
+        <div className="mt-5 flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50 p-5">
+          <Clock className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" />
+          <div>
+            <p className="font-semibold text-sky-900">
+              We&apos;ve received your application, {state.name.split(" ")[0]}.
+            </p>
+            <p className="mt-1 text-sm text-sky-800">
+              Your membership is <strong>pending payment</strong>. Our team will
+              confirm your category and email you an invoice with payment
+              instructions. Your membership activates once your payment is
+              received.
             </p>
           </div>
         </div>

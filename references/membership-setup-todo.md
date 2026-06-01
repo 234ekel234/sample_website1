@@ -39,8 +39,23 @@ The `/membership` page is built and working, but it runs on **mock data** and a
   `APPLICATION_FORM_URL` in **`src/app/membership/page.tsx`**.
 - Public link:
   `https://docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform`
-- Remaining: connect the form's **Responses → Google Sheet**, and build the
-  separate members sheet (Email/Name/Category/Status) used by the lookup.
+- Remaining: (optional but recommended) link the form's **Responses → Google
+  Sheet** as a full archive of every submission.
+
+### 2b. Auto-add applicants as "Pending Payment" — CODE DONE, needs trigger install
+- On each form submit, an Apps Script copies Name/Email/Category into the
+  members roster with Status = **Pending Payment**, so the applicant can check
+  their status on the site immediately. Re-submits are safe (existing emails are
+  left untouched — no duplicates, no downgrades).
+- Script + install steps: **`references/membership-autoadd.gs`** (paste into the
+  form's Apps Script editor, set `MEMBERS_SHEET_ID`, add an installable
+  "On form submit" trigger, authorize).
+- Site changes (done): `members.ts`, `actions.ts`, and `MembershipCheck.tsx` now
+  render a third status, **Pending** ("application received — pending payment").
+- Roster: run `addPendingPaymentToStatusDropdown()` in
+  `references/members-sheet.gs` once so column D accepts "Pending Payment".
+- Lifecycle: applicant submits → auto-added as Pending Payment → staff confirm
+  category + receive payment → staff set Status to **Active**.
 
 ### 3. Confirm dues & invoicing details
 - Flow is apply-first → PMAFI sends an invoice → member pays & sends proof.
@@ -48,10 +63,12 @@ The `/membership` page is built and working, but it runs on **mock data** and a
   payment channel(s) (bank transfer, GCash, etc.).
 
 ## Files involved
-- `src/lib/members.ts` — member lookup + mock data (swap point)
+- `src/lib/members.ts` — member lookup (Google Sheets read; Active/Lapsed/Pending)
 - `src/app/membership/actions.ts` — server action (`"use server"`)
-- `src/app/membership/MembershipCheck.tsx` — the client check form
+- `src/app/membership/MembershipCheck.tsx` — the client check form (3 result states)
 - `src/app/membership/page.tsx` — the page + `APPLICATION_FORM_URL`
+- `references/membership-autoadd.gs` — form-submit script: auto-add as Pending
+- `references/members-sheet.gs` — roster generator + Status-dropdown updater
 
 ## Open questions for the client (also in client-questions-email.md)
 - Is the brochure Google Form still the right one to use?

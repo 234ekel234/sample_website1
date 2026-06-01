@@ -19,7 +19,7 @@
  * Columns (must stay in this order — the website maps to them):
  *   Name | Email | Category | Status
  *     - Category: Regular / Associate / Affiliate  (dropdown)
- *     - Status:   Active / Lapsed                  (dropdown)
+ *     - Status:   Active / Lapsed / Pending Payment (dropdown)
  *   ("Status" here is the `standing` field in src/lib/members.ts.)
  */
 
@@ -46,11 +46,13 @@ function createPmafiMembersSheet() {
     .build();
   sheet.getRange('C2:C1000').setDataValidation(categoryRule);
 
-  // Status (column D): Active / Lapsed
+  // Status (column D): Active / Lapsed / Pending Payment
+  // "Pending Payment" is what the auto-add script writes for new applicants
+  // (see references/membership-autoadd.gs).
   var statusRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Active', 'Lapsed'], true)
+    .requireValueInList(['Active', 'Lapsed', 'Pending Payment'], true)
     .setAllowInvalid(false)
-    .setHelpText('Pick one: Active or Lapsed.')
+    .setHelpText('Pick one: Active, Lapsed, or Pending Payment.')
     .build();
   sheet.getRange('D2:D1000').setDataValidation(statusRule);
 
@@ -78,4 +80,26 @@ function createPmafiMembersSheet() {
 
   Logger.log('Members sheet created here: ' + ss.getUrl());
   Logger.log('Sheet ID (for env var MEMBERS_SHEET_ID): ' + ss.getId());
+}
+
+/**
+ * RUN THIS ONCE if your members sheet already exists (created before
+ * "Pending Payment" was a status). It widens the column-D dropdown to allow
+ * Active / Lapsed / Pending Payment, so auto-added rows don't show the red
+ * "invalid data" flag.
+ *
+ *   1. Paste your members sheet ID below.
+ *   2. Select this function in the toolbar and click Run.
+ */
+function addPendingPaymentToStatusDropdown() {
+  var MEMBERS_SHEET_ID = 'PASTE_YOUR_MEMBERS_SHEET_ID_HERE';
+  var ss = SpreadsheetApp.openById(MEMBERS_SHEET_ID);
+  var sheet = ss.getSheetByName('Members') || ss.getSheets()[0];
+  var statusRule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(['Active', 'Lapsed', 'Pending Payment'], true)
+    .setAllowInvalid(false)
+    .setHelpText('Pick one: Active, Lapsed, or Pending Payment.')
+    .build();
+  sheet.getRange('D2:D1000').setDataValidation(statusRule);
+  Logger.log('Status dropdown updated on: ' + ss.getUrl());
 }

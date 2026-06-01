@@ -11,7 +11,7 @@ export type MembershipCheckState =
       email: string;
       name: string;
       category: string;
-      standing: "Active" | "Lapsed";
+      standing: "Active" | "Lapsed" | "Pending";
     };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

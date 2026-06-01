@@ -22,7 +22,7 @@ export interface MemberRecord {
   name: string;
   email: string;
   category: "Regular" | "Associate" | "Affiliate";
-  standing: "Active" | "Lapsed";
+  standing: "Active" | "Lapsed" | "Pending";
 }
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -123,8 +123,12 @@ function normalizeCategory(value: string): MemberRecord["category"] | null {
 }
 
 function normalizeStanding(value: string): MemberRecord["standing"] {
-  // Anything that isn't explicitly "active" is treated as lapsed (fail safe).
-  return value.trim().toLowerCase() === "active" ? "Active" : "Lapsed";
+  const v = value.trim().toLowerCase();
+  if (v === "active") return "Active";
+  // Auto-added applicants who haven't paid yet (see references/membership-autoadd.gs).
+  if (v === "pending payment" || v === "pending") return "Pending";
+  // Anything else (incl. blank / unrecognized) is treated as lapsed (fail safe).
+  return "Lapsed";
 }
 
 async function loadMembers(): Promise<MemberRecord[]> {
