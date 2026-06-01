@@ -1,8 +1,6 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
-
-const quickLinks = ["About", "Services", "Products", "Order", "Contact"];
-const paymentMethods = ["GCash", "PayMaya", "Bank Transfer", "Cash on Delivery"];
+import LogoMark from "@/components/LogoMark";
 
 function FacebookIcon({ size = 16 }: { size?: number }) {
   return (
@@ -22,31 +20,35 @@ function InstagramIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-function TikTokIcon({ size = 16 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5.8 20.1a6.34 6.34 0 0 0 10.86-4.43V8.86a8.16 8.16 0 0 0 4.77 1.52V6.97a4.85 4.85 0 0 1-1.84-.28z" />
-    </svg>
-  );
-}
-
 const socials = [
   { icon: FacebookIcon, label: "Facebook", href: "https://facebook.com" },
   { icon: InstagramIcon, label: "Instagram", href: "https://instagram.com" },
-  { icon: TikTokIcon, label: "TikTok", href: "https://tiktok.com" },
+];
+
+const quickLinks = [
+  { label: "About", href: "/about" },
+  { label: "Programs", href: "/programs" },
+  { label: "Board of Trustees", href: "/board" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-900 text-slate-400">
+    <footer className="bg-[#0D1628] text-slate-400">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-3">
         <div>
-          <p className="mb-3 text-xl font-bold text-white">
-            Tusi<span className="text-blue-400">Solutions</span>
-          </p>
+          <div className="mb-4 flex items-center gap-3">
+            <LogoMark className="h-12 w-12 shrink-0" />
+            <div>
+              <p className="text-xl font-bold text-white">PMAFI</p>
+              <p className="text-[10px] font-medium uppercase tracking-widest text-[#C8A951]">
+                Philippine Military Academy Foundation, Inc.
+              </p>
+            </div>
+          </div>
           <p className="text-sm leading-relaxed">
-            Honest service, quality products, and people you can actually talk
-            to. We&apos;d love to hear from you.
+            Supporting the Philippine Military Academy in developing officers
+            of integrity, competence, and character for the nation.
           </p>
 
           <div className="mt-6 flex gap-3">
@@ -57,7 +59,7 @@ export default function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={label}
-                className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 text-slate-300 transition-colors hover:bg-blue-600 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 text-slate-300 transition-colors hover:bg-[#C8A951] hover:text-[#0D1628]"
               >
                 <Icon size={15} />
               </a>
@@ -75,10 +77,10 @@ export default function Footer() {
                 Home
               </Link>
             </li>
-            {quickLinks.map((label) => (
-              <li key={label}>
+            {quickLinks.map(({ label, href }) => (
+              <li key={href}>
                 <Link
-                  href={`/${label.toLowerCase()}`}
+                  href={href}
                   className="transition-colors hover:text-white"
                 >
                   {label}
@@ -95,43 +97,24 @@ export default function Footer() {
           <address className="space-y-2 text-sm not-italic">
             <p>
               <a
-                href="mailto:tusi.ekel@gmail.com"
+                href="mailto:pmafi@pma.edu.ph"
                 className="transition-colors hover:text-white"
               >
-                tusi.ekel@gmail.com
+                pmafi@pma.edu.ph
               </a>
             </p>
-            <p>
-              <a
-                href="tel:+639357330435"
-                className="transition-colors hover:text-white"
-              >
-                0935 733 0435
-              </a>
+            <p className="text-slate-500">
+              Fort del Pilar, Baguio City, Philippines
             </p>
           </address>
-
-          <p className="mb-3 mt-6 text-xs font-semibold uppercase tracking-widest text-white">
-            We Accept
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {paymentMethods.map((method) => (
-              <span
-                key={method}
-                className="rounded border border-slate-700 bg-slate-800 px-2 py-1 text-xs"
-              >
-                {method}
-              </span>
-            ))}
-          </div>
         </div>
       </div>
 
-      <Separator className="bg-slate-800" />
+      <Separator className="bg-white/5" />
 
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4 text-xs text-slate-600">
-        <span>© {new Date().getFullYear()} Tusi Solutions. All rights reserved.</span>
-        <span>Built with Next.js &amp; Vercel</span>
+        <span>© {new Date().getFullYear()} Philippine Military Academy Foundation, Inc. All rights reserved.</span>
+        <span>Built with Next.js</span>
       </div>
     </footer>
   );

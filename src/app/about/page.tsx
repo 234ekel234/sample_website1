@@ -4,9 +4,9 @@ import OurStory from "@/components/sections/about/OurStory";
 import MissionValues from "@/components/sections/about/MissionValues";
 
 export const metadata: Metadata = {
-  title: "About — Tusi Solutions",
+  title: "About | PMAFI",
   description:
-    "Learn about Tusi Solutions — our story, mission, and the values that guide every engagement.",
+    "Learn about the Philippine Military Academy Foundation, Inc. — our story, mission, vision, and the values that guide our work in support of PMA.",
 };
 
 export default function AboutPage() {

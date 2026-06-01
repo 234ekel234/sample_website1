@@ -2,65 +2,78 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { BarChart3, Code2, Package } from "lucide-react";
+import { Building2, GraduationCap, Star, Handshake } from "lucide-react";
 import Link from "next/link";
 
-const services = [
+const programs = [
   {
-    icon: BarChart3,
-    title: "Consulting & Strategy",
-    badge: "Advisory",
+    icon: Building2,
+    title: "Facilities & Modernization",
+    badge: "Infrastructure",
     description:
-      "Expert business advisory to help you navigate challenges, identify opportunities, and build strategies that last.",
+      "Upgrading PMA's classrooms, training facilities, and equipment to meet the demands of modern military education.",
   },
   {
-    icon: Code2,
-    title: "Digital Solutions",
-    badge: "Technology",
+    icon: GraduationCap,
+    title: "Academic Excellence & Endowment",
+    badge: "Education",
     description:
-      "Web, software, and digital tools tailored to modernize your operations and sharpen your competitive edge.",
+      "Strengthening the quality of PMA education through scholarships, faculty development, and curriculum support.",
   },
   {
-    icon: Package,
-    title: "Product Supply",
-    badge: "Supply Chain",
+    icon: Star,
+    title: "Leadership Formation",
+    badge: "Character",
     description:
-      "Quality-assured products sourced and delivered reliably — from procurement to your doorstep.",
+      "Programs focused on discipline, ethics, and character development — building officers dedicated to God, country, and people.",
+  },
+  {
+    icon: Handshake,
+    title: "Partnerships & Alumni Engagement",
+    badge: "Community",
+    description:
+      "Sustaining a strong alumni network and building partnerships that support cadets and the PMA mission nationwide.",
   },
 ];
 
-export default function Services() {
+export default function Programs() {
   return (
     <section className="bg-slate-50 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-14 text-center">
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <span className="h-px w-8 bg-[#C8A951]/50" />
             What We Do
+            <span className="h-px w-8 bg-[#C8A951]/50" />
           </p>
-          <h2 className="mt-2 text-4xl font-bold text-slate-900">
-            Our Core Services
+          <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
+            Our Key Programs
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            From strategy to execution, we provide end-to-end solutions that
-            move your business forward.
+            PMAFI channels support into four strategic areas that strengthen
+            the Philippine Military Academy and the cadets it produces.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {services.map(({ icon: Icon, title, badge, description }) => (
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {programs.map(({ icon: Icon, title, badge, description }) => (
             <Card
               key={title}
-              className="group border-slate-200 transition-shadow hover:shadow-lg"
+              className="group relative overflow-hidden border-slate-200/80 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#C8A951]/40 hover:shadow-[0_24px_50px_-20px_rgba(27,42,74,0.4)]"
             >
+              <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
               <CardHeader className="pb-4">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 text-blue-700 transition-colors group-hover:bg-blue-700 group-hover:text-white">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
                   <Icon size={24} />
                 </div>
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-lg text-slate-900">
+                <div className="flex flex-col gap-1">
+                  <CardTitle className="text-base text-slate-900">
                     {title}
                   </CardTitle>
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge
+                    variant="secondary"
+                    className="w-fit text-xs bg-[#C8A951]/15 text-[#7A5C1A] border-0"
+                  >
                     {badge}
                   </Badge>
                 </div>
@@ -76,13 +89,13 @@ export default function Services() {
 
         <div className="mt-12 text-center">
           <Link
-            href="/services"
+            href="/programs"
             className={cn(
               buttonVariants({ variant: "outline" }),
-              "border-slate-300 text-slate-700 hover:border-blue-600 hover:text-blue-600"
+              "border-[#1B2A4A]/30 text-[#1B2A4A] hover:border-[#1B2A4A] hover:bg-[#1B2A4A] hover:text-white"
             )}
           >
-            View All Services
+            View All Programs
           </Link>
         </div>
       </div>

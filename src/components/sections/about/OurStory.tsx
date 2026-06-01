@@ -1,14 +1,29 @@
 "use client";
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { Heart, Target, Users, Sparkles } from "lucide-react";
+import { Shield, Users, BookOpen, Globe } from "lucide-react";
 
 const highlights = [
-  { icon: Heart, title: "Built on relationships", text: "Most of our orders come from word-of-mouth — and we work hard to keep it that way." },
-  { icon: Target, title: "Honest pricing", text: "We tell you exactly what something costs. No hidden fees, no surprise add-ons." },
-  { icon: Users, title: "Real people, real replies", text: "When you message us, a real person answers — not an automated bot or a queue ticket." },
-  { icon: Sparkles, title: "Quality you can see", text: "Every order goes through our own quality check before it leaves us." },
+  {
+    icon: Shield,
+    title: "Mission-Driven",
+    text: "Every program and initiative is anchored on a single purpose: strengthening PMA and the officers it produces.",
+  },
+  {
+    icon: Users,
+    title: "Alumni-Led",
+    text: "PMAFI is governed and supported by PMA graduates who carry a lifelong commitment to the Academy and the nation.",
+  },
+  {
+    icon: BookOpen,
+    title: "Education-Focused",
+    text: "We invest in academics, facilities, and cadet development — ensuring PMA remains a world-class institution.",
+  },
+  {
+    icon: Globe,
+    title: "Nationally Recognized",
+    text: "Through partnerships and community engagement, PMAFI extends its reach far beyond the walls of Fort del Pilar.",
+  },
 ];
 
 export default function OurStory() {
@@ -24,23 +39,27 @@ export default function OurStory() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+              <span className="h-px w-8 bg-[#C8A951]/50" />
               Who We Are
             </p>
-            <h2 className="mt-2 text-4xl font-bold text-slate-900">
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
               Our Story
             </h2>
             <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              Tusi Solutions was started with a simple idea: customers deserve
-              a business that listens, communicates clearly, and delivers what
-              it promises. No corporate runaround. No vague pricing. No empty
-              marketing.
+              The Philippine Military Academy Foundation, Inc. (PMAFI) was
+              established to bridge the gap between the Academy&apos;s mission
+              and the resources it needs to fulfill it. As a non-stock,
+              non-profit foundation, PMAFI mobilizes private sector support,
+              alumni networks, and community partnerships to advance PMA&apos;s
+              institutional goals.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
-              We&apos;re a small team that takes pride in every order. Whether
-              you&apos;re ordering one item or one hundred, you get the same
-              attention to detail and the same honest service. That&apos;s the
-              standard — and we don&apos;t cut corners on it.
+              From modernizing training facilities to funding scholarships and
+              supporting cadet development programs, PMAFI ensures that the men
+              and women of the Long Gray Line are equipped — not just with
+              weapons and tactics, but with the education, values, and character
+              demanded of officers who lead in service of the Filipino people.
             </p>
           </motion.div>
 
@@ -56,9 +75,10 @@ export default function OurStory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
-                className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+                className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#C8A951]/40 hover:bg-white hover:shadow-[0_18px_40px_-18px_rgba(27,42,74,0.35)]"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
                   <Icon size={18} />
                 </div>
                 <p className="mt-3 font-semibold text-slate-900">{title}</p>
