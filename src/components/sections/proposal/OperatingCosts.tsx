@@ -29,7 +29,7 @@ const costs = [
   {
     icon: Globe,
     name: "Custom domain (optional)",
-    price: "~₱550 – ₱900 / year",
+    price: "~$10 / year",
     note: "Only if PMAFI wants its own address (e.g. pmafi.org) instead of the free pmafi.vercel.app. Options compared next.",
   },
 ];
@@ -96,7 +96,7 @@ export default function OperatingCosts() {
           <p className="mt-2 text-5xl font-extrabold">≈ ₱0 / year</p>
           <p className="mx-auto mt-3 max-w-xl text-blue-100">
             The site is already live at no cost. A custom domain (optional,
-            ~₱600/year) is the only spend. For comparison, builders like Wix or
+            ~$10/year at-cost) is the only spend. For comparison, builders like Wix or
             Squarespace charge <span className="font-semibold text-white">₱2,000+/month</span> — over <span className="font-semibold text-white">₱24,000/year</span>.
           </p>
         </motion.div>

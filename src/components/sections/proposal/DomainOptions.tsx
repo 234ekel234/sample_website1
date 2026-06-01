@@ -20,8 +20,8 @@ const options: Option[] = [
     icon: Cloud,
     name: "Cloudflare Registrar",
     tagline: "At-cost pricing, enterprise-grade infrastructure",
-    price: "~₱550 / year",
-    priceNote: "Renews at the same price — never increases",
+    price: "$10.46 / year",
+    priceNote: "At-cost (≈ ₱615/yr) — renews at the same price, never increases",
     pros: [
       "At-cost pricing forever (no renewal price hikes)",
       "Free WHOIS privacy and SSL included",
@@ -41,7 +41,7 @@ const options: Option[] = [
     icon: ShoppingBag,
     name: "Namecheap",
     tagline: "Beginner-friendly with broader domain selection",
-    price: "~₱600 – ₱900 / year",
+    price: "~$10 – 15 / year",
     priceNote: "First year often promotional, renewals can increase",
     pros: [
       "Well-known and trusted brand",
@@ -196,14 +196,14 @@ export default function DomainOptions() {
               <div className="mt-7 overflow-hidden rounded-xl border border-slate-200">
                 <div className="grid grid-cols-3 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
                   <span>Term</span>
-                  <span>Cloudflare (at-cost)</span>
-                  <span>Namecheap (est.)</span>
+                  <span>Cloudflare (at-cost, USD)</span>
+                  <span>Namecheap (est., USD)</span>
                 </div>
                 {[
-                  { term: "1 year", cf: "₱550", nc: "₱600 – ₱900" },
-                  { term: "3 years", cf: "₱1,650", nc: "₱2,400 – ₱2,700" },
-                  { term: "5 years", cf: "₱2,750", nc: "₱4,200 – ₱4,500", suggested: true },
-                  { term: "10 years", cf: "₱5,500", nc: "₱8,700 – ₱9,000" },
+                  { term: "1 year", cf: "$10.46", nc: "$10 – 15" },
+                  { term: "3 years", cf: "$31.38", nc: "$41 – 46" },
+                  { term: "5 years", cf: "$52.30", nc: "$71 – 76", suggested: true },
+                  { term: "10 years", cf: "$104.60", nc: "$148 – 153" },
                 ].map(({ term, cf, nc, suggested }, idx, arr) => (
                   <div
                     key={term}
@@ -227,7 +227,7 @@ export default function DomainOptions() {
 
               <p className="mt-5 text-sm leading-relaxed text-slate-500">
                 <span className="font-semibold text-slate-700">Suggested term: 5 years.</span>{" "}
-                With Cloudflare, that&apos;s ~₱2,750 paid once — long enough to
+                With Cloudflare, that&apos;s ~$52 (≈ ₱3,100) paid once — long enough to
                 project stability, short enough to stay flexible if business
                 priorities shift. 10 years works if we&apos;re confident the
                 brand is here to stay.

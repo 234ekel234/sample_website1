@@ -11,7 +11,7 @@ const steps = [
   { icon: ImageIcon, title: "Send official assets", note: "Official PMAFI logo/seal and high-resolution trustee photos." },
   { icon: FileEdit, title: "Confirm membership dues & payment", note: "Dues per category, who invoices, and payment channels — completes the apply → pay → active flow." },
   { icon: Rocket, title: "Finish the auto-add setup", note: "Install the form's “Pending Payment” trigger (one-time, ~3 minutes)." },
-  { icon: Globe, title: "Connect a custom domain (optional)", note: "Point pmafi.org (or similar) at the site. ~30 min, ~₱600/year." },
+  { icon: Globe, title: "Connect a custom domain (optional)", note: "Point pmafi.org (or similar) at the site. ~30 min, ~$10/year at-cost (Cloudflare)." },
   { icon: BarChart2, title: "Add Google Analytics", note: "Start tracking visitors and which pages get the most attention." },
   { icon: Plus, title: "Tidy up", note: "Remove the unused Services/Products/Order pages and fix the old page titles." },
 ];
