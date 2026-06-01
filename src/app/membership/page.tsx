@@ -2,7 +2,16 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Users, UserCheck, Handshake, ArrowRight } from "lucide-react";
+import {
+  Users,
+  UserCheck,
+  Handshake,
+  ArrowRight,
+  Heart,
+  Flag,
+  BookOpen,
+  Award,
+} from "lucide-react";
 import MembershipCheck from "./MembershipCheck";
 
 export const metadata: Metadata = {
@@ -32,6 +41,46 @@ const categories = [
     title: "Affiliate Member",
     description:
       "Open to selected individuals and organizations who share PMAFI's values and support its vision, mission, and objectives.",
+  },
+];
+
+// NOTE: draft benefits — confirm the actual member perks with PMAFI.
+const benefits = [
+  {
+    icon: Heart,
+    title: "Advance the Mission",
+    description:
+      "Directly support PMA's pursuit of academic excellence and the formation of officers of character.",
+  },
+  {
+    icon: Users,
+    title: "Belong to a Community",
+    description:
+      "Join a nationwide network of alumni, faculty, partners, and friends of the Academy.",
+  },
+  {
+    icon: Flag,
+    title: "A Voice in the Foundation",
+    description:
+      "Regular members take part in electing the Board of Trustees that governs PMAFI.",
+  },
+  {
+    icon: BookOpen,
+    title: "Stay Informed",
+    description:
+      "Receive updates on programs, projects, and the real impact your support makes at PMA.",
+  },
+  {
+    icon: Handshake,
+    title: "Events & Gatherings",
+    description:
+      "Invitations to PMAFI events, reunions, and fundraising activities throughout the year.",
+  },
+  {
+    icon: Award,
+    title: "Recognition & Legacy",
+    description:
+      "Opportunities to leave a lasting mark through named professorial chairs and endowment funds.",
   },
 ];
 
@@ -122,6 +171,45 @@ export default function MembershipPage() {
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
             <MembershipCheck applyHref={APPLICATION_FORM_URL} />
+          </div>
+        </div>
+      </section>
+
+      {/* Member benefits */}
+      <section className="relative overflow-hidden bg-[#0a1628] py-24">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
+        <div className="animate-drift pointer-events-none absolute left-1/2 top-0 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-[#C8A951]/[0.06] blur-3xl" />
+        <div className="relative mx-auto max-w-7xl px-6">
+          <div className="mb-14 text-center">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+              <span className="h-px w-8 bg-[#C8A951]/50" />
+              Member Benefits
+              <span className="h-px w-8 bg-[#C8A951]/50" />
+            </p>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-white">
+              Why Become a Member
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-slate-300/90">
+              Membership is first and foremost an act of service — but it also
+              connects you to the Academy and the community that sustains it.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {benefits.map(({ icon: Icon, title, description }) => (
+              <div
+                key={title}
+                className="group rounded-2xl border border-white/10 bg-white/[0.03] p-7 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#C8A951]/40 hover:bg-white/[0.05]"
+              >
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#C8A951]/10 text-[#C8A951] transition-transform duration-300 group-hover:scale-110">
+                  <Icon size={24} />
+                </div>
+                <h3 className="text-lg font-bold text-white">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-300/80">
+                  {description}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
