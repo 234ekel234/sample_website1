@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState, type CSSProperties } from "react";
 import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -15,7 +16,28 @@ const item: Variants = {
   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: "easeOut" } },
 };
 
+// Deterministic pseudo-random so SSR and client render identical particles
+// (Math.random would cause a hydration mismatch). Seeded by index.
+const rand = (i: number, salt: number) => {
+  const x = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+const EMBERS = Array.from({ length: 26 }, (_, i) => ({
+  left: rand(i, 1) * 100,
+  size: 1.5 + rand(i, 2) * 2.5,
+  maxOp: 0.18 + rand(i, 3) * 0.42,
+  dur: 13 + rand(i, 4) * 12,
+  delay: -(rand(i, 5) * 18),
+  drift: (rand(i, 6) - 0.5) * 70,
+}));
+
 export default function Hero() {
+  // Render embers only after mount. Their positions derive from Math.sin, which
+  // differs subtly between the Node server and the browser, so server-rendering
+  // them causes a hydration mismatch. They're decorative, so client-only is fine.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a1628]">
       {/* Deep base gradient for richness */}
@@ -38,6 +60,27 @@ export default function Hero() {
       <div className="animate-drift pointer-events-none absolute left-1/2 top-1/2 h-[760px] w-[760px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C8A951]/[0.07] blur-3xl" />
       <div className="animate-drift-slow pointer-events-none absolute -bottom-24 -left-24 h-80 w-80 rounded-full bg-[#1B2A4A] blur-3xl" />
       <div className="animate-drift-slow pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-[#C8A951]/10 blur-3xl" />
+
+      {/* Rising gold embers (client-only — see note above) */}
+      <div className="hero-embers pointer-events-none absolute inset-0 overflow-hidden">
+        {mounted && EMBERS.map((e, i) => (
+          <span
+            key={i}
+            className="animate-ember absolute bottom-0 rounded-full bg-[#C8A951] shadow-[0_0_6px_1px_rgba(200,169,81,0.5)]"
+            style={
+              {
+                left: `${e.left}%`,
+                width: `${e.size}px`,
+                height: `${e.size}px`,
+                "--max-op": e.maxOp,
+                "--dur": `${e.dur}s`,
+                "--delay": `${e.delay}s`,
+                "--drift": `${e.drift}px`,
+              } as CSSProperties
+            }
+          />
+        ))}
+      </div>
 
       {/* Top and bottom vignettes to seat the section */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070f1d] to-transparent" />

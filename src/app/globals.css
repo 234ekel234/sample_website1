@@ -164,6 +164,30 @@
   }
 }
 
+/* Rising gold embers for the hero backdrop. Each particle sets its own
+   --max-op (peak opacity) and --drift (horizontal drift) via inline style. */
+@keyframes ember-rise {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.8);
+    opacity: 0;
+  }
+  12% {
+    opacity: var(--max-op, 0.4);
+  }
+  88% {
+    opacity: var(--max-op, 0.4);
+  }
+  100% {
+    transform: translate3d(var(--drift, 0px), -82vh, 0) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.animate-ember {
+  animation: ember-rise var(--dur, 16s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
 .animate-drift {
   animation: drift 14s ease-in-out infinite;
 }
@@ -195,6 +219,10 @@
   .animate-ping,
   .text-gold-shimmer {
     animation: none;
+  }
+  /* Hide the decorative ember field entirely for reduced-motion users. */
+  .hero-embers {
+    display: none;
   }
   html {
     scroll-behavior: auto;
