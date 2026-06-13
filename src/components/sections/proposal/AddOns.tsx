@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Zap, Wrench, Building2 } from "lucide-react";
+import { Zap, Wrench, Building2, Sparkles } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 const tiers = [
@@ -15,9 +15,10 @@ const tiers = [
     items: [
       "Official PMAFI logo/seal + high-res trustee photos",
       "Official social media links (Facebook, etc.)",
-      "Donation channels shown clearly on the site",
+      "Real donation channels on the Donate page (bank / GCash)",
       "Link preview image for Facebook/Messenger shares",
       "Google Analytics to see visitor traffic",
+      "Transparency page — financial reports & board resolutions",
     ],
   },
   {
@@ -27,12 +28,10 @@ const tiers = [
     color: "bg-[#1B2A4A]/10 text-[#1B2A4A]",
     cardColor: "border-[#C8A951]/20 bg-[#C8A951]/[0.06]",
     items: [
-      "Dedicated “Donate” page with accepted channels",
-      "News / announcements section for events & reunions",
-      "Automated invoice email to each new applicant",
-      "Tagalog / English language toggle",
+      "Self-service content editing — update News & messages via a Google Sheet or a simple editor",
+      "Automated invoice & receipt emails",
       "Newsletter signup for supporters",
-      "A message from the Chairman / President section",
+      "Tagalog / English language toggle",
     ],
   },
   {
@@ -42,11 +41,11 @@ const tiers = [
     color: "bg-purple-100 text-purple-700",
     cardColor: "border-purple-100 bg-purple-50/40",
     items: [
-      "Online dues payment — GCash, PayMaya, card (via PayMongo)",
-      "Members-only area — login + member resources",
+      "Online dues & donation payments — GCash, Maya, card (via PayMongo)",
+      "Automatic receipts for every online payment",
       "Member management dashboard for PMAFI staff",
+      "Members-only area — login + member resources",
       "Custom domain + PMAFI email addresses",
-      "Online donation checkout with receipts",
     ],
   },
 ];
@@ -106,6 +105,32 @@ export default function AddOns() {
             </motion.div>
           ))}
         </div>
+
+        {/* Recommended starting point */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="mt-10 flex items-start gap-4 rounded-2xl border border-[#C8A951]/30 bg-[#C8A951]/[0.08] p-7"
+        >
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#C8A951] text-[#1B2A4A]">
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <h3 className="font-bold text-[#1B2A4A]">
+              Where this delivers the most value next
+            </h3>
+            <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+              If the Foundation pursues a second phase, the highest-impact step is{" "}
+              <span className="font-semibold text-[#1B2A4A]">online payments</span>{" "}
+              (dues &amp; donations) paired with a{" "}
+              <span className="font-semibold text-[#1B2A4A]">staff dashboard</span> —
+              together they complete the apply → pay → active flow end to end, with
+              automatic receipts and no manual record-keeping. Everything else can
+              follow whenever it suits PMAFI&apos;s priorities and budget.
+            </p>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
