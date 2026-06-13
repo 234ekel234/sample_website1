@@ -64,7 +64,7 @@ export default function Risks() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             What Could Go Wrong
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -107,10 +107,10 @@ export default function Risks() {
                     <p className="mt-1 text-sm leading-relaxed text-slate-600">{risk}</p>
                   </div>
 
-                  <div className="border-l-2 border-blue-200 pl-4">
+                  <div className="border-l-2 border-[#C8A951]/30 pl-4">
                     <div className="flex items-center gap-2">
-                      <Shield size={13} className="text-blue-600" />
-                      <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">
+                      <Shield size={13} className="text-[#1B2A4A]" />
+                      <p className="text-xs font-semibold uppercase tracking-widest text-[#C8A951]">
                         How we handle it
                       </p>
                     </div>

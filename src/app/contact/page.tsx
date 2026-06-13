@@ -5,9 +5,9 @@ import FAQ from "@/components/sections/contact/FAQ";
 import OrderCTA from "@/components/sections/OrderCTA";
 
 export const metadata: Metadata = {
-  title: "Contact — Tusi Solutions",
+  title: "Contact | PMAFI",
   description:
-    "Get in touch with Tusi Solutions. Reach us by email or phone — we respond within 24 hours.",
+    "Get in touch with the Philippine Military Academy Foundation, Inc. Reach us by email about membership, donations, or partnerships — we respond within 24 hours.",
 };
 
 export default function ContactPage() {

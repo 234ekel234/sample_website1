@@ -99,10 +99,10 @@ export default function Footer() {
           <address className="space-y-2 text-sm not-italic">
             <p>
               <a
-                href="mailto:pmafi@pma.edu.ph"
+                href="mailto:pmafi.web@gmail.com"
                 className="transition-colors hover:text-white"
               >
-                pmafi@pma.edu.ph
+                pmafi.web@gmail.com
               </a>
             </p>
             <p className="text-slate-500">

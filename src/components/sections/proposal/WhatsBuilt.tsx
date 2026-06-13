@@ -47,7 +47,7 @@ export default function WhatsBuilt() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             Already Done
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -70,15 +70,15 @@ export default function WhatsBuilt() {
             >
               <Link
                 href={href}
-                className="group flex h-full items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all hover:-translate-y-1 hover:border-blue-200 hover:bg-blue-50 hover:shadow-md"
+                className="group flex h-full items-start gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all hover:-translate-y-1 hover:border-[#C8A951]/40 hover:bg-white hover:shadow-md"
               >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700 transition-colors group-hover:bg-blue-700 group-hover:text-white">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-colors group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
                   <Icon size={20} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-semibold text-slate-900">{name}</h3>
-                    <ExternalLink size={14} className="text-slate-400 transition-colors group-hover:text-blue-600" />
+                    <ExternalLink size={14} className="text-slate-400 transition-colors group-hover:text-[#C8A951]" />
                   </div>
                   <p className="mt-1 text-sm text-slate-500">{desc}</p>
                 </div>
@@ -92,14 +92,14 @@ export default function WhatsBuilt() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-8 overflow-hidden rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-8"
+          className="mt-8 overflow-hidden rounded-2xl border border-[#C8A951]/30 bg-gradient-to-br from-[#C8A951]/[0.08] to-white p-8"
         >
           <div className="flex items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-600 text-white">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A] text-white">
               <BadgeCheck size={22} />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-widest text-blue-600">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#C8A951]">
                 Flagship Feature
               </p>
               <h3 className="mt-1 text-2xl font-bold text-slate-900">
@@ -120,7 +120,7 @@ export default function WhatsBuilt() {
                   "Full roster stays private — never sent to the browser",
                 ].map((f) => (
                   <div key={f} className="flex items-start gap-2.5">
-                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1B2A4A] text-white">
                       <Check size={12} strokeWidth={3} />
                     </span>
                     <span className="text-sm text-slate-700">{f}</span>
@@ -136,15 +136,15 @@ export default function WhatsBuilt() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-12 rounded-2xl border border-blue-100 bg-blue-50/50 p-8"
+          className="mt-12 rounded-2xl border border-[#C8A951]/20 bg-[#C8A951]/[0.06] p-8"
         >
-          <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-blue-600">
+          <p className="mb-5 text-xs font-semibold uppercase tracking-widest text-[#C8A951]">
             Built-in Features
           </p>
           <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {features.map((f) => (
               <li key={f} className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white">
+                <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1B2A4A] text-white">
                   <Check size={12} strokeWidth={3} />
                 </span>
                 <span className="text-sm text-slate-700">{f}</span>

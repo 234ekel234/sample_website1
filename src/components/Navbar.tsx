@@ -13,8 +13,11 @@ const links = [
   { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
-  // TEMPORARY: internal proposal link — remove before public launch.
-  { label: "Proposal", href: "/proposal" },
+  // Internal proposal page — shown only in local dev, hidden in production
+  // builds so it never appears on the public site.
+  ...(process.env.NODE_ENV === "development"
+    ? [{ label: "Proposal", href: "/proposal" }]
+    : []),
 ];
 
 export default function Navbar() {
@@ -84,6 +87,7 @@ export default function Navbar() {
 
         <button
           aria-label="Toggle menu"
+          aria-expanded={open}
           className={`md:hidden ${scrolled ? "text-[#1B2A4A]" : "text-white"}`}
           onClick={() => setOpen(!open)}
         >

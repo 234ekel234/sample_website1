@@ -4,13 +4,16 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, Phone, Clock, MessageSquare } from "lucide-react";
 
+// INTERIM CONTACTS: email points to the Foundation's working inbox so messages
+// actually arrive. Swap to the official address/number once PMAFI confirms them
+// (open items 3 & 4 in the client follow-up email).
 const channels = [
   {
     icon: Mail,
     label: "Email",
-    value: "pmafi@pma.edu.ph",
+    value: "pmafi.web@gmail.com",
     description: "Best for donation inquiries, partnerships, and membership details.",
-    href: "mailto:pmafi@pma.edu.ph",
+    href: "mailto:pmafi.web@gmail.com",
   },
   {
     icon: Phone,
@@ -140,10 +143,10 @@ export default function ContactDetails() {
               <p className="mt-1 text-sm text-slate-600">
                 Email us at{" "}
                 <a
-                  href="mailto:pmafi@pma.edu.ph"
+                  href="mailto:pmafi.web@gmail.com"
                   className="font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"
                 >
-                  pmafi@pma.edu.ph
+                  pmafi.web@gmail.com
                 </a>{" "}
                 with the details, and we&apos;ll come back to you with a clear
                 next step on how to get involved.

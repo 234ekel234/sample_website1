@@ -71,7 +71,7 @@ export default function DomainOptions() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             Picking a Domain Registrar
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -92,19 +92,19 @@ export default function DomainOptions() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: i * 0.15 }}
               className={`relative flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm ${
-                recommended ? "border-blue-300 ring-2 ring-blue-200" : "border-slate-200"
+                recommended ? "border-[#C8A951]/40 ring-2 ring-[#C8A951]/30" : "border-slate-200"
               }`}
             >
               {recommended && (
-                <div className="absolute right-0 top-0 flex items-center gap-1.5 rounded-bl-xl bg-blue-600 px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-white">
+                <div className="absolute right-0 top-0 flex items-center gap-1.5 rounded-bl-xl bg-[#1B2A4A] px-3 py-1.5 text-xs font-semibold uppercase tracking-widest text-white">
                   <Trophy size={12} /> Recommended
                 </div>
               )}
 
-              <div className={`px-8 py-8 ${recommended ? "bg-gradient-to-br from-blue-50 to-white" : "bg-slate-50"}`}>
+              <div className={`px-8 py-8 ${recommended ? "bg-gradient-to-br from-[#C8A951]/[0.08] to-white" : "bg-slate-50"}`}>
                 <div className="flex items-start gap-4">
                   <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
-                    recommended ? "bg-blue-600 text-white" : "bg-slate-200 text-slate-700"
+                    recommended ? "bg-[#1B2A4A] text-white" : "bg-slate-200 text-slate-700"
                   }`}>
                     <Icon size={22} />
                   </div>
@@ -115,7 +115,7 @@ export default function DomainOptions() {
                 </div>
 
                 <div className="mt-6">
-                  <p className={`text-3xl font-extrabold ${recommended ? "text-blue-700" : "text-slate-900"}`}>
+                  <p className={`text-3xl font-extrabold ${recommended ? "text-[#1B2A4A]" : "text-slate-900"}`}>
                     {price}
                   </p>
                   <p className="mt-1 text-sm text-slate-500">{priceNote}</p>
@@ -167,20 +167,19 @@ export default function DomainOptions() {
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-bold text-slate-900">
-                Lock In the Price — Pay for Multiple Years Upfront
+                Multi-Year Registration (Namecheap Only)
               </h3>
               <p className="mt-2 leading-relaxed text-slate-600">
-                Both registrars let us register the domain for up to 10 years
-                at a time. For an organization that wants to look established,
-                paying ahead is a smart move — it locks in pricing, removes
-                the risk of forgetting to renew, and signals long-term
-                commitment.
+                Namecheap lets you register a domain for up to 10 years in a
+                single upfront payment — no annual renewals to worry about.
+                Cloudflare is annual-only, but its at-cost pricing means the
+                renewal fee never increases year over year.
               </p>
 
               {/* Benefits */}
               <ul className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {[
-                  { icon: Wallet, text: "Locks in today's price — no renewal surprises" },
+                  { icon: Wallet, text: "Locks in today's Namecheap price — no renewal surprises" },
                   { icon: BellRing, text: "No risk of forgetting to renew (= site going down)" },
                   { icon: Award, text: "Longer registration looks more legitimate to visitors and search engines" },
                   { icon: ShieldCheck, text: "Predictable budgeting — pay once, set and forget" },
@@ -196,41 +195,41 @@ export default function DomainOptions() {
               <div className="mt-7 overflow-hidden rounded-xl border border-slate-200">
                 <div className="grid grid-cols-3 bg-slate-50 px-5 py-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
                   <span>Term</span>
-                  <span>Cloudflare (at-cost, USD)</span>
-                  <span>Namecheap (est., USD)</span>
+                  <span>Cloudflare (annual × term, est.)</span>
+                  <span>Namecheap (single payment)</span>
                 </div>
                 {[
                   { term: "1 year", cf: "$10.46", nc: "$10 – 15" },
-                  { term: "3 years", cf: "$31.38", nc: "$41 – 46" },
-                  { term: "5 years", cf: "$52.30", nc: "$71 – 76", suggested: true },
-                  { term: "10 years", cf: "$104.60", nc: "$148 – 153" },
+                  { term: "3 years", cf: "$31.38 *", nc: "$41 – 46" },
+                  { term: "5 years", cf: "$52.30 *", nc: "$71 – 76", suggested: true },
+                  { term: "10 years", cf: "$104.60 *", nc: "$148 – 153" },
                 ].map(({ term, cf, nc, suggested }, idx, arr) => (
                   <div
                     key={term}
                     className={`grid grid-cols-3 px-5 py-3 text-sm ${
                       idx !== arr.length - 1 ? "border-b border-slate-100" : ""
-                    } ${suggested ? "bg-blue-50" : "bg-white"}`}
+                    } ${suggested ? "bg-[#C8A951]/[0.08]" : "bg-white"}`}
                   >
-                    <span className={`font-semibold ${suggested ? "text-blue-900" : "text-slate-900"}`}>
+                    <span className={`font-semibold ${suggested ? "text-[#1B2A4A]" : "text-slate-900"}`}>
                       {term}
                       {suggested && (
-                        <span className="ml-2 rounded bg-blue-600 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-white">
+                        <span className="ml-2 rounded bg-[#1B2A4A] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-white">
                           Sweet spot
                         </span>
                       )}
                     </span>
-                    <span className={suggested ? "font-bold text-blue-700" : "text-slate-700"}>{cf}</span>
+                    <span className={suggested ? "font-bold text-[#1B2A4A]" : "text-slate-700"}>{cf}</span>
                     <span className="text-slate-700">{nc}</span>
                   </div>
                 ))}
               </div>
 
               <p className="mt-5 text-sm leading-relaxed text-slate-500">
-                <span className="font-semibold text-slate-700">Suggested term: 5 years.</span>{" "}
-                With Cloudflare, that&apos;s ~$52 (≈ ₱3,100) paid once — long enough to
-                project stability, short enough to stay flexible if business
-                priorities shift. 10 years works if we&apos;re confident the
-                brand is here to stay.
+                <span className="font-semibold text-slate-700">* Cloudflare is annual-only</span> — those
+                figures are an estimated running total, not a single payment option. If paying upfront for
+                multiple years is preferred, Namecheap is the registrar to use.{" "}
+                <span className="font-semibold text-slate-700">Suggested Namecheap term: 5 years</span>{" "}
+                (~$71–76 paid once — long enough to project stability, short enough to stay flexible).
               </p>
             </div>
           </div>
@@ -241,18 +240,18 @@ export default function DomainOptions() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-10 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-8 py-10 text-white"
+          className="mt-10 rounded-2xl bg-gradient-to-br from-[#16294d] to-[#0a1628] px-8 py-10 text-white"
         >
           <div className="flex flex-col items-center gap-6 lg:flex-row lg:items-start">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15">
               <Trophy size={26} className="text-white" />
             </div>
             <div className="flex-1 text-center lg:text-left">
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-200">
+              <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
                 Our Recommendation
               </p>
               <h3 className="mt-2 text-2xl font-bold">Go with Cloudflare</h3>
-              <p className="mt-3 text-blue-100">
+              <p className="mt-3 text-slate-300">
                 For an organization that wants to look professional, Cloudflare
                 is the right choice. It&apos;s the same infrastructure used by enterprise
                 brands — at-cost pricing means our domain bill never goes up,
@@ -261,7 +260,7 @@ export default function DomainOptions() {
                 one-time cost for permanent savings and a more professional
                 technical foundation.
               </p>
-              <p className="mt-4 text-sm text-blue-200">
+              <p className="mt-4 text-sm text-[#C8A951]">
                 If we ever need a <span className="font-semibold text-white">.ph</span>{" "}
                 domain specifically, we&apos;d register that separately through
                 dot.ph (~₱2,500/yr).

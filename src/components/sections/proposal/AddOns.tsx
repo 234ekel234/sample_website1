@@ -14,20 +14,18 @@ const tiers = [
     cardColor: "border-green-100 bg-green-50/40",
     items: [
       "Official PMAFI logo/seal + high-res trustee photos",
-      "Fix the leftover “Tusi Solutions” page titles",
       "Official social media links (Facebook, etc.)",
       "Donation channels shown clearly on the site",
       "Link preview image for Facebook/Messenger shares",
       "Google Analytics to see visitor traffic",
-      "Remove the unused Services / Products / Order pages",
     ],
   },
   {
     icon: Wrench,
     label: "Medium Features",
     effort: "1–2 weeks each",
-    color: "bg-blue-100 text-blue-700",
-    cardColor: "border-blue-100 bg-blue-50/40",
+    color: "bg-[#1B2A4A]/10 text-[#1B2A4A]",
+    cardColor: "border-[#C8A951]/20 bg-[#C8A951]/[0.06]",
     items: [
       "Dedicated “Donate” page with accepted channels",
       "News / announcements section for events & reunions",
@@ -66,7 +64,7 @@ export default function AddOns() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             What Could Come Next
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">

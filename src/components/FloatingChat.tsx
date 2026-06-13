@@ -1,9 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { MessageCircle, X, Phone } from "lucide-react";
+import { MessageCircle, X, Phone, Mail } from "lucide-react";
 
-const MESSENGER_URL = "https://m.me/";
-const PHONE_URL = "tel:+63740000000";
+// Configured contact channels. Leave a URL empty ("") to hide that action —
+// this keeps the widget free of dead links until the official details land
+// (open items 3 & 4 in the client follow-up email). Email points to the
+// Foundation's working inbox so messages actually arrive.
+const EMAIL_URL = "mailto:pmafi.web@gmail.com";
+const MESSENGER_URL = ""; // set to the PMAFI Facebook m.me link once confirmed
+const PHONE_URL = ""; // set to the official "tel:" number once confirmed
 
 function MessengerIcon({ size = 16 }: { size?: number }) {
   return (
@@ -35,25 +40,38 @@ export default function FloatingChat() {
         }`}
       >
         <a
-          href={MESSENGER_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={EMAIL_URL}
           className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
         >
-          <span className="text-sm font-medium text-slate-700">Message us</span>
+          <span className="text-sm font-medium text-slate-700">Email us</span>
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B2A4A] text-white">
-            <MessengerIcon size={16} />
+            <Mail size={15} />
           </span>
         </a>
-        <a
-          href={PHONE_URL}
-          className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
-        >
-          <span className="text-sm font-medium text-slate-700">Call us</span>
-          <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#C8A951] text-[#1B2A4A]">
-            <Phone size={15} />
-          </span>
-        </a>
+        {MESSENGER_URL && (
+          <a
+            href={MESSENGER_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
+          >
+            <span className="text-sm font-medium text-slate-700">Message us</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1B2A4A] text-white">
+              <MessengerIcon size={16} />
+            </span>
+          </a>
+        )}
+        {PHONE_URL && (
+          <a
+            href={PHONE_URL}
+            className="flex items-center gap-3 rounded-full bg-white px-4 py-2.5 shadow-lg ring-1 ring-slate-200 transition-all hover:-translate-x-1 hover:shadow-xl"
+          >
+            <span className="text-sm font-medium text-slate-700">Call us</span>
+            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#C8A951] text-[#1B2A4A]">
+              <Phone size={15} />
+            </span>
+          </a>
+        )}
       </div>
 
       {/* Toggle button */}

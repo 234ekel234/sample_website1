@@ -54,7 +54,7 @@ export default function MarketValue() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             Market Value
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -76,20 +76,20 @@ export default function MarketValue() {
               transition={{ duration: 0.4, delay: i * 0.08 }}
               className={`relative grid grid-cols-1 gap-2 px-6 py-5 sm:grid-cols-[1.3fr_1fr_2fr] sm:items-center sm:gap-6 ${
                 i !== tiers.length - 1 ? "border-b border-slate-100" : ""
-              } ${match ? "bg-blue-50" : ""}`}
+              } ${match ? "bg-[#C8A951]/[0.08]" : ""}`}
             >
               {match && (
-                <span className="absolute -top-px left-0 rounded-br-lg rounded-tl-lg bg-blue-600 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-white">
+                <span className="absolute -top-px left-0 rounded-br-lg rounded-tl-lg bg-[#1B2A4A] px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-widest text-white">
                   This Build
                 </span>
               )}
               <div className="flex items-center gap-2">
-                {match && <CheckCircle2 size={16} className="text-blue-600" />}
-                <span className={`font-semibold ${match ? "text-blue-900" : "text-slate-900"}`}>
+                {match && <CheckCircle2 size={16} className="text-[#1B2A4A]" />}
+                <span className={`font-semibold ${match ? "text-[#1B2A4A]" : "text-slate-900"}`}>
                   {label}
                 </span>
               </div>
-              <span className={`text-lg font-bold ${match ? "text-blue-700" : "text-slate-900"}`}>
+              <span className={`text-lg font-bold ${match ? "text-[#1B2A4A]" : "text-slate-900"}`}>
                 {price}
               </span>
               <span className="text-sm text-slate-500">{note}</span>
@@ -102,10 +102,10 @@ export default function MarketValue() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 rounded-2xl border border-blue-100 bg-blue-50/50 p-8"
+          className="mt-10 rounded-2xl border border-[#C8A951]/20 bg-[#C8A951]/[0.06] p-8"
         >
           <div className="flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A]">
               <TrendingUp size={20} />
             </div>
             <div>
@@ -115,7 +115,7 @@ export default function MarketValue() {
               <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {built.map((b) => (
                   <li key={b} className="flex items-start gap-2.5 text-sm text-slate-700">
-                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" />
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C8A951]/[0.08]0" />
                     <span>{b}</span>
                   </li>
                 ))}
@@ -129,9 +129,9 @@ export default function MarketValue() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-10 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-8 py-10 text-center text-white"
+          className="mt-10 rounded-2xl bg-gradient-to-br from-[#16294d] to-[#0a1628] px-8 py-10 text-center text-white"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-200">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             The Bottom Line
           </p>
           <p className="mx-auto mt-3 max-w-2xl text-lg leading-relaxed">

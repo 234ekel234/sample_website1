@@ -42,11 +42,11 @@ export default function Hero() {
       {/* Top and bottom vignettes to seat the section */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#070f1d] to-transparent" />
 
-      <div className="relative mx-auto max-w-5xl px-6 text-center">
+      <div className="relative mx-auto w-full min-w-0 max-w-5xl px-6 text-center">
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.div variants={item}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-[#C8A951]/30 bg-[#C8A951]/10 px-5 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#C8A951] shadow-[0_0_30px_-8px_rgba(200,169,81,0.5)] backdrop-blur-sm">
-              <span className="relative flex h-1.5 w-1.5">
+            <span className="inline-flex max-w-[90vw] items-center gap-2 rounded-full border border-[#C8A951]/30 bg-[#C8A951]/10 px-4 py-1.5 text-center text-[10px] font-semibold uppercase tracking-widest text-[#C8A951] shadow-[0_0_30px_-8px_rgba(200,169,81,0.5)] backdrop-blur-sm sm:px-5 sm:text-xs">
+              <span className="relative flex h-1.5 w-1.5 shrink-0">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#C8A951] opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#C8A951]" />
               </span>
@@ -56,7 +56,7 @@ export default function Hero() {
 
           <motion.h1
             variants={item}
-            className="mt-8 text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-7xl"
+            className="mt-8 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl sm:leading-[1.05] md:text-7xl"
           >
             Forging Leaders of
             <br />

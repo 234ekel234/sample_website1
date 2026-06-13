@@ -126,6 +126,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Guard against horizontal scroll/clipping from decorative blurred glows
+       that extend past the viewport edges (e.g. the hero ambient blobs). */
+    overflow-x: hidden;
   }
   html {
     @apply font-sans;
@@ -189,6 +192,7 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-drift,
   .animate-drift-slow,
+  .animate-ping,
   .text-gold-shimmer {
     animation: none;
   }

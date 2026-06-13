@@ -63,7 +63,7 @@ export default function Maintenance() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             After Launch
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -86,7 +86,7 @@ export default function Maintenance() {
               className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
               <div className="flex items-start gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A]">
                   <Icon size={20} />
                 </div>
                 <div className="flex-1">

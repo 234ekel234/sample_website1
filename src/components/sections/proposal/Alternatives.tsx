@@ -111,7 +111,7 @@ export default function Alternatives() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             How We Stack Up
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -134,10 +134,10 @@ export default function Alternatives() {
           <div className="grid grid-cols-6 gap-4 bg-slate-50 px-6 py-4 text-xs font-semibold uppercase tracking-widest text-slate-500">
             <span></span>
             {cols.map((c) => (
-              <div key={c.key} className={c.highlight ? "rounded-lg bg-blue-600 px-3 py-1.5 text-white" : ""}>
+              <div key={c.key} className={c.highlight ? "rounded-lg bg-[#1B2A4A] px-3 py-1.5 text-white" : ""}>
                 <p className={c.highlight ? "text-white" : "text-slate-700"}>{c.title}</p>
                 <p className={`mt-0.5 text-[10px] font-normal normal-case tracking-normal ${
-                  c.highlight ? "text-blue-100" : "text-slate-400"
+                  c.highlight ? "text-slate-300" : "text-slate-400"
                 }`}>
                   {c.subtitle}
                 </p>
@@ -154,7 +154,7 @@ export default function Alternatives() {
               }`}
             >
               <span className="text-sm font-semibold text-slate-900">{row.label}</span>
-              <div className="rounded-lg bg-blue-50 px-3 py-1.5">
+              <div className="rounded-lg bg-[#C8A951]/[0.08] px-3 py-1.5">
                 <Cell value={row.ours.value} good={row.ours.good} />
               </div>
               <Cell value={row.wix.value} good={row.wix.good} />
@@ -174,12 +174,12 @@ export default function Alternatives() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: ci * 0.08 }}
               className={`rounded-2xl border bg-white p-5 shadow-sm ${
-                col.highlight ? "border-blue-300 ring-2 ring-blue-200" : "border-slate-200"
+                col.highlight ? "border-[#C8A951]/40 ring-2 ring-[#C8A951]/30" : "border-slate-200"
               }`}
             >
-              <div className={`mb-4 -mx-5 -mt-5 px-5 py-3 ${col.highlight ? "bg-blue-600 text-white" : "bg-slate-50"}`}>
+              <div className={`mb-4 -mx-5 -mt-5 px-5 py-3 ${col.highlight ? "bg-[#1B2A4A] text-white" : "bg-slate-50"}`}>
                 <p className={`font-bold ${col.highlight ? "text-white" : "text-slate-900"}`}>{col.title}</p>
-                <p className={`text-xs ${col.highlight ? "text-blue-100" : "text-slate-500"}`}>{col.subtitle}</p>
+                <p className={`text-xs ${col.highlight ? "text-slate-300" : "text-slate-500"}`}>{col.subtitle}</p>
               </div>
               <dl className="space-y-2">
                 {rows.map((row) => {
@@ -203,14 +203,14 @@ export default function Alternatives() {
           initial={{ opacity: 0, y: 30 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-8 py-10 text-white"
+          className="mt-10 rounded-2xl bg-gradient-to-br from-[#16294d] to-[#0a1628] px-8 py-10 text-white"
         >
           <div className="flex flex-col items-center gap-5 lg:flex-row lg:items-start">
             <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15">
               <Code2 size={26} />
             </div>
             <div className="flex-1 text-center lg:text-left">
-              <p className="text-sm font-semibold uppercase tracking-widest text-blue-200">
+              <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
                 The Honest Trade-off
               </p>
               <p className="mt-3 leading-relaxed">

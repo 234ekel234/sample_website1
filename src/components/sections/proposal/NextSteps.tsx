@@ -29,7 +29,7 @@ export default function NextSteps() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             To Finish &amp; Polish
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -50,16 +50,16 @@ export default function NextSteps() {
               className="flex gap-5"
             >
               <div className="flex flex-col items-center">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-blue-100 bg-white text-blue-600">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 border-[#C8A951]/20 bg-white text-[#1B2A4A]">
                   <Icon size={20} />
                 </div>
                 {i < steps.length - 1 && (
-                  <div className="my-1 w-px flex-1 bg-blue-100" />
+                  <div className="my-1 w-px flex-1 bg-[#1B2A4A]/10" />
                 )}
               </div>
               <div className="pb-8">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-widest text-blue-500">
+                  <span className="text-xs font-semibold uppercase tracking-widest text-[#1B2A4A]">
                     Step {String(i + 1).padStart(2, "0")}
                   </span>
                 </div>
@@ -91,7 +91,7 @@ export default function NextSteps() {
               href="/"
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "bg-blue-700 px-8 text-white hover:bg-blue-800"
+                "bg-[#1B2A4A] px-8 text-white hover:bg-[#16294d]"
               )}
             >
               Browse the live site
@@ -100,7 +100,7 @@ export default function NextSteps() {
               href="/contact"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
-                "border-slate-300 text-slate-700 hover:border-blue-600 hover:text-blue-600"
+                "border-slate-300 text-slate-700 hover:border-[#1B2A4A] hover:text-[#1B2A4A]"
               )}
             >
               Discuss next steps

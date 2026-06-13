@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import ProposalHero from "@/components/sections/proposal/ProposalHero";
+import ProposalTOC from "@/components/sections/proposal/ProposalTOC";
+import BackToTop from "@/components/sections/proposal/BackToTop";
 import WhatsBuilt from "@/components/sections/proposal/WhatsBuilt";
 import OperatingCosts from "@/components/sections/proposal/OperatingCosts";
 import DomainOptions from "@/components/sections/proposal/DomainOptions";
@@ -17,19 +19,42 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// scroll-mt offsets each anchor target so it isn't hidden behind the fixed navbar.
+const anchor = "scroll-mt-24";
+
 export default function ProposalPage() {
   return (
     <main>
       <ProposalHero />
-      <WhatsBuilt />
-      <OperatingCosts />
-      <DomainOptions />
-      <MarketValue />
-      <Alternatives />
-      <AddOns />
-      <Risks />
-      <Maintenance />
-      <NextSteps />
+      <ProposalTOC />
+      <div id="whats-built" className={anchor}>
+        <WhatsBuilt />
+      </div>
+      <div id="operating-costs" className={anchor}>
+        <OperatingCosts />
+      </div>
+      <div id="domain-options" className={anchor}>
+        <DomainOptions />
+      </div>
+      <div id="market-value" className={anchor}>
+        <MarketValue />
+      </div>
+      <div id="alternatives" className={anchor}>
+        <Alternatives />
+      </div>
+      <div id="add-ons" className={anchor}>
+        <AddOns />
+      </div>
+      <div id="risks" className={anchor}>
+        <Risks />
+      </div>
+      <div id="maintenance" className={anchor}>
+        <Maintenance />
+      </div>
+      <div id="next-steps" className={anchor}>
+        <NextSteps />
+      </div>
+      <BackToTop />
     </main>
   );
 }

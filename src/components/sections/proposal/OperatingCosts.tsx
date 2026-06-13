@@ -47,7 +47,7 @@ export default function OperatingCosts() {
           transition={{ duration: 0.6 }}
           className="mb-14 text-center"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-600">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             What It Costs to Run
           </p>
           <h2 className="mt-2 text-4xl font-bold text-slate-900">
@@ -68,13 +68,13 @@ export default function OperatingCosts() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               className="flex items-start gap-5 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-blue-700">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A]">
                 <Icon size={22} />
               </div>
               <div className="flex-1">
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="font-semibold text-slate-900">{name}</h3>
-                  <span className={`text-lg font-bold ${highlight ? "text-blue-600" : "text-slate-900"}`}>
+                  <span className={`text-lg font-bold ${highlight ? "text-[#1B2A4A]" : "text-slate-900"}`}>
                     {price}
                   </span>
                 </div>
@@ -88,13 +88,13 @@ export default function OperatingCosts() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-10 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-900 px-8 py-10 text-center text-white"
+          className="mt-10 rounded-2xl bg-gradient-to-br from-[#16294d] to-[#0a1628] px-8 py-10 text-center text-white"
         >
-          <p className="text-sm font-semibold uppercase tracking-widest text-blue-200">
+          <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             Cost to Run Today
           </p>
           <p className="mt-2 text-5xl font-extrabold">≈ ₱0 / year</p>
-          <p className="mx-auto mt-3 max-w-xl text-blue-100">
+          <p className="mx-auto mt-3 max-w-xl text-slate-300">
             The site is already live at no cost. A custom domain (optional,
             ~$10/year at-cost) is the only spend. For comparison, builders like Wix or
             Squarespace charge <span className="font-semibold text-white">₱2,000+/month</span> — over <span className="font-semibold text-white">₱24,000/year</span>.

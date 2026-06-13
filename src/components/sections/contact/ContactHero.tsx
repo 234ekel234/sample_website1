@@ -30,7 +30,7 @@ export default function ContactHero() {
       <div className="animate-drift-slow pointer-events-none absolute bottom-0 right-1/4 h-56 w-56 rounded-full bg-[#1B2A4A] blur-3xl" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070f1d] to-transparent" />
 
-      <div className="relative mx-auto max-w-4xl px-6 py-24 text-center">
+      <div className="relative mx-auto w-full min-w-0 max-w-4xl px-6 py-24 text-center">
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.div variants={item}>
             <span className="inline-flex items-center gap-2 rounded-full border border-[#C8A951]/30 bg-[#C8A951]/10 px-5 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#C8A951] shadow-[0_0_30px_-8px_rgba(200,169,81,0.5)] backdrop-blur-sm">
@@ -44,7 +44,7 @@ export default function ContactHero() {
 
           <motion.h1
             variants={item}
-            className="mt-6 text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-6xl"
+            className="mt-6 text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl sm:leading-[1.05] md:text-6xl"
           >
             Let&apos;s Start a{" "}
             <span className="text-gold-shimmer">Conversation</span>
@@ -54,9 +54,9 @@ export default function ContactHero() {
             variants={item}
             className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300"
           >
-            Have a project in mind, a question about our services, or just want
-            to explore what&apos;s possible? We&apos;re easy to reach and quick to
-            respond.
+            Whether you&apos;d like to become a member, make a donation, or
+            explore a partnership in support of the Academy, we&apos;d be glad to
+            hear from you. We&apos;re easy to reach and quick to respond.
           </motion.p>
         </motion.div>
       </div>
