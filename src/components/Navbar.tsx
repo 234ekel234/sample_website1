@@ -76,7 +76,7 @@ export default function Navbar() {
         </ul>
 
         <Link
-          href="/contact"
+          href="/donate"
           className={cn(
             buttonVariants(),
             "hidden bg-[#C8A951] font-semibold text-[#1B2A4A] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white md:inline-flex"
@@ -111,7 +111,7 @@ export default function Navbar() {
             ))}
           </ul>
           <Link
-            href="/contact"
+            href="/donate"
             onClick={() => setOpen(false)}
             className={cn(
               buttonVariants(),

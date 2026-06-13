@@ -30,6 +30,7 @@ const quickLinks = [
   { label: "Programs", href: "/programs" },
   { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
+  { label: "Donate", href: "/donate" },
   { label: "Contact", href: "/contact" },
 ];
 

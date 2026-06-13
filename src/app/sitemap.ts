@@ -9,6 +9,7 @@ const routes: { path: string; priority: number; changeFrequency: "monthly" | "ye
   { path: "/programs", priority: 0.8, changeFrequency: "monthly" },
   { path: "/board", priority: 0.7, changeFrequency: "yearly" },
   { path: "/membership", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/donate", priority: 0.9, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.6, changeFrequency: "yearly" },
 ];
 
