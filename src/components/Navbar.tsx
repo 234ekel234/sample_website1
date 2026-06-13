@@ -13,11 +13,9 @@ const links = [
   { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
-  // Internal proposal page — shown only in local dev, hidden in production
-  // builds so it never appears on the public site.
-  ...(process.env.NODE_ENV === "development"
-    ? [{ label: "Proposal", href: "/proposal" }]
-    : []),
+  // Proposal page is linked in the nav for the client, but kept noindex and out
+  // of the sitemap so search engines don't crawl it (unlisted, not private).
+  { label: "Proposal", href: "/proposal" },
 ];
 
 export default function Navbar() {
