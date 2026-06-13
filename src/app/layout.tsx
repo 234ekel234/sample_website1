@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
+import { SITE_URL } from "@/lib/site";
 
 const geistSans = Geist({
   variable: "--font-sans",
@@ -17,8 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   // Absolute base for resolving OG / Twitter image URLs in shared links.
-  // Update to the custom domain (e.g. https://pmafi.org) once it goes live.
-  metadataBase: new URL("https://pmafi.vercel.app"),
+  metadataBase: new URL(SITE_URL),
   title: "PMAFI — Philippine Military Academy Foundation, Inc.",
   description:
     "Supporting the Philippine Military Academy in developing officers of integrity, competence, and character — building the next generation of leaders for our nation.",
