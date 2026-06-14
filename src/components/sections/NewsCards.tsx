@@ -1,6 +1,7 @@
 "use client";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import Image from "next/image";
 import { Calendar, ArrowRight } from "lucide-react";
 import type { NewsItem } from "@/lib/news";
 
@@ -10,7 +11,7 @@ export default function NewsCards({ items }: { items: NewsItem[] }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 md:grid-cols-3" ref={ref}>
-      {items.map(({ date, category, title, excerpt, link }, i) => {
+      {items.map(({ date, category, title, excerpt, link, image }, i) => {
         const Wrapper = link ? "a" : "div";
         const wrapperProps = link
           ? { href: link, target: "_blank", rel: "noopener noreferrer" }
@@ -26,7 +27,17 @@ export default function NewsCards({ items }: { items: NewsItem[] }) {
           >
             <Wrapper {...wrapperProps} className="contents">
               <div className="relative flex h-40 items-center justify-center overflow-hidden bg-gradient-to-br from-[#16294d] to-[#0a1628]">
-                <Calendar size={36} className="text-white/15" />
+                {image ? (
+                  <Image
+                    src={image}
+                    alt={title}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    sizes="(min-width: 768px) 33vw, 100vw"
+                  />
+                ) : (
+                  <Calendar size={36} className="text-white/15" />
+                )}
                 {category && (
                   <span className="absolute left-4 top-4 rounded-full bg-[#C8A951] px-3 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#1B2A4A]">
                     {category}

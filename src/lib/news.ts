@@ -23,11 +23,12 @@ export interface NewsItem {
   category: string;
   date: string;
   link: string;
+  image: string;
 }
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
-const NEWS_RANGE = "News!A2:F";
+const NEWS_RANGE = "News!A2:G";
 
 let tokenCache: { token: string; expires: number } | null = null;
 
@@ -69,6 +70,19 @@ async function getAccessToken(): Promise<string> {
   return tokenCache.token;
 }
 
+// Convert any Google Drive share URL to a direct image URL that next/image can load.
+// Accepts:  https://drive.google.com/file/d/{ID}/view?...
+//           https://drive.google.com/open?id={ID}
+//           https://drive.google.com/uc?id={ID}&export=view
+// Returns:  https://lh3.googleusercontent.com/d/{ID}  (or the original if not Drive)
+function toDriveImageUrl(raw: string): string {
+  if (!raw) return "";
+  const fileId =
+    raw.match(/\/file\/d\/([^/?#]+)/)?.[1] ??
+    raw.match(/[?&]id=([^&]+)/)?.[1];
+  return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : raw;
+}
+
 const FALLBACK: NewsItem[] = [
   {
     title: "Annual General Membership Meeting",
@@ -76,6 +90,7 @@ const FALLBACK: NewsItem[] = [
     category: "Events",
     date: "Upcoming",
     link: "",
+    image: "",
   },
   {
     title: "Professorial Chair & Endowment Awarding",
@@ -83,6 +98,7 @@ const FALLBACK: NewsItem[] = [
     category: "Programs",
     date: "Upcoming",
     link: "",
+    image: "",
   },
   {
     title: "Class Reunion & Homecoming Support",
@@ -90,6 +106,7 @@ const FALLBACK: NewsItem[] = [
     category: "Community",
     date: "Upcoming",
     link: "",
+    image: "",
   },
 ];
 
@@ -125,7 +142,8 @@ export async function getNews(): Promise<NewsItem[]> {
       if (!title || !excerpt) continue;
       if (published !== "yes" && published !== "true") continue;
 
-      items.push({ title, excerpt, category, date, link });
+      const image = toDriveImageUrl(String(row[6] ?? "").trim());
+      items.push({ title, excerpt, category, date, link, image });
     }
 
     return items.length > 0 ? items : FALLBACK;
