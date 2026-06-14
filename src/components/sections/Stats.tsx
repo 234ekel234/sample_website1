@@ -6,23 +6,23 @@ import { Shield, Users, BookOpen, Award } from "lucide-react";
 const pillars = [
   {
     icon: Shield,
-    label: "PMA Heritage",
-    note: "Supporting the Philippine Military Academy's century-long mission of excellence",
+    label: "Over a Century of Service",
+    note: "Standing behind PMA since its founding — funding the Academy that has defended the Philippines for generations.",
   },
   {
     icon: Users,
-    label: "Alumni Network",
-    note: "A nationwide community of PMA graduates and dedicated supporters",
+    label: "A Brotherhood of Supporters",
+    note: "Alumni, families, and civic partners across the country — united by a shared commitment to PMA and the nation.",
   },
   {
     icon: BookOpen,
-    label: "Academic Excellence",
-    note: "Advancing cadet education, research, and institutional development",
+    label: "Scholars, Not Just Soldiers",
+    note: "Funding the classrooms, faculty, and research programs that produce officers who lead with both skill and intellect.",
   },
   {
     icon: Award,
-    label: "Leadership Formation",
-    note: "Building officers of integrity, courage, and principled national service",
+    label: "Character Before Command",
+    note: "Investing in the values, ethics, and formation that define officers trusted to serve God, country, and people.",
   },
 ];
 
