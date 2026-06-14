@@ -9,21 +9,21 @@ import { Calendar, ArrowRight } from "lucide-react";
 // once content is provided. Until then the cards are non-linking.
 const posts = [
   {
-    date: "Sample",
+    date: "Upcoming",
     category: "Events",
     title: "Annual General Membership Meeting",
     excerpt:
       "Members gather for the yearly assembly — Foundation updates, the Board report, and fellowship among PMA alumni and supporters.",
   },
   {
-    date: "Sample",
+    date: "Upcoming",
     category: "Programs",
     title: "Professorial Chair & Endowment Awarding",
     excerpt:
       "Recognizing donors and grantees of professorial chairs and endowment funds that sustain teaching excellence at the Academy.",
   },
   {
-    date: "Sample",
+    date: "Upcoming",
     category: "Community",
     title: "Class Reunion & Homecoming Support",
     excerpt:

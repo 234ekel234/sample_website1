@@ -1,11 +1,27 @@
+"use client";
+import { useRef } from "react";
+import { motion, useInView, type Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Heart } from "lucide-react";
 
+const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.12 } },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
+};
+
 export default function SupportCTA() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
-    <section className="relative overflow-hidden bg-[#0a1628] py-28">
+    <section className="relative overflow-hidden bg-[#0a1628] py-28" ref={ref}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.05]"
@@ -19,21 +35,26 @@ export default function SupportCTA() {
         }}
       />
       <div className="animate-drift pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C8A951]/[0.08] blur-3xl" />
-      <div className="relative mx-auto max-w-3xl px-6 text-center">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#C8A951]/20 bg-[#C8A951]/15 text-[#C8A951] shadow-[0_0_40px_-10px_rgba(200,169,81,0.6)]">
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate={inView ? "show" : "hidden"}
+        className="relative mx-auto max-w-3xl px-6 text-center"
+      >
+        <motion.div variants={item} className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl border border-[#C8A951]/20 bg-[#C8A951]/15 text-[#C8A951] shadow-[0_0_40px_-10px_rgba(200,169,81,0.6)]">
           <Heart size={32} />
-        </div>
-        <h2 className="text-4xl font-bold text-white">
+        </motion.div>
+        <motion.h2 variants={item} className="text-4xl font-bold text-white">
           Join the Mission.
-        </h2>
-        <p className="mt-1 text-4xl font-bold text-[#C8A951]">
+        </motion.h2>
+        <motion.p variants={item} className="mt-1 text-4xl font-bold text-[#C8A951]">
           Support the Future of Leadership.
-        </p>
-        <p className="mx-auto mt-6 max-w-lg text-lg text-slate-300">
+        </motion.p>
+        <motion.p variants={item} className="mx-auto mt-6 max-w-lg text-lg text-slate-300">
           Your support helps PMAFI provide the resources, programs, and
           opportunities that shape the next generation of Philippine military officers.
-        </p>
-        <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        </motion.p>
+        <motion.div variants={item} className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
             href="/donate"
             className={cn(
@@ -53,8 +74,8 @@ export default function SupportCTA() {
           >
             Learn About Us
           </Link>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

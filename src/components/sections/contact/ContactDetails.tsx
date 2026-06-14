@@ -5,8 +5,7 @@ import { useRef } from "react";
 import { Mail, Phone, Clock, MessageSquare } from "lucide-react";
 
 // INTERIM CONTACTS: email points to the Foundation's working inbox so messages
-// actually arrive. Swap to the official address/number once PMAFI confirms them
-// (open items 3 & 4 in the client follow-up email).
+// actually arrive. Swap to the official address/number once PMAFI confirms them.
 const channels = [
   {
     icon: Mail,
@@ -15,13 +14,14 @@ const channels = [
     description: "Best for donation inquiries, partnerships, and membership details.",
     href: "mailto:pmafi.web@gmail.com",
   },
-  {
-    icon: Phone,
-    label: "Phone / SMS",
-    value: "(074) 000 0000",
-    description: "Call or text to speak with the Foundation team directly.",
-    href: "tel:+63740000000",
-  },
+  // Phone number hidden until PMAFI confirms the official number.
+  // {
+  //   icon: Phone,
+  //   label: "Phone / SMS",
+  //   value: "(074) 000 0000",
+  //   description: "Call or text to speak with the Foundation team directly.",
+  //   href: "tel:+63740000000",
+  // },
 ];
 
 const expectations = [

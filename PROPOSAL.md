@@ -1,103 +1,90 @@
-# Website Proposal
+# PMAFI Website Proposal
 
-A public-facing website for [Company Name] where customers can browse offerings and place orders through an integrated Google Form workflow.
+A complete, live website for the **Philippine Military Academy Foundation, Inc.**
+
+> The full interactive version of this proposal is available at **/proposal** on the live site.
 
 ---
 
 ## What's Already Built
 
-A complete, mobile-responsive website ready to go live with minimal configuration.
+A complete, mobile-responsive website with six pages and a self-service membership system — already live at **https://pmafi.vercel.app**.
 
 ### Pages
 
-| Page | Purpose |
+| Page | Description |
 |---|---|
-| **Home** | Hero, company stats, services overview, featured products, payment methods, call-to-action |
-| **About** | Company story, milestones timeline, mission & values |
-| **Services** | Three core service categories with detailed offerings, "How It Works" process |
-| **Products** | Product packages with pricing tiers, feature comparison, guarantees |
-| **Contact** | Direct contact channels (email/phone), expectations, click-to-message |
-| **Order** | 4-step ordering walkthrough, links directly to Google Form |
+| **Home** | Hero, foundation pillars, programs overview, Chairman's message, news & announcements, CTA |
+| **About** | PMAFI story, mission, vision, and core values |
+| **Programs** | Four strategic program areas (Facilities, Academic Excellence, Leadership, Partnerships) |
+| **Board of Trustees** | 2025–2026 Board with roles and credentials |
+| **Membership** | Apply online + private member status check (Active / Pending / Lapsed) |
+| **Contact** | Contact details, what to expect, FAQ |
+| **Donate** | Ways to give, how-to steps, payment channels |
 
 ### Built-in Features
 
-- Fully responsive (desktop, tablet, mobile)
-- Smooth scroll animations and modern UI
-- SEO metadata on every page
-- Click-to-call and click-to-email contact links
-- Google Form integration for order intake
-- Reusable design system (easy to update colors, copy, branding)
-- Fast page loads (built with Next.js — modern web framework)
+- Fully responsive — desktop, tablet, and mobile
+- Private member status check (Active / Pending / Lapsed)
+- Online membership application via Google Form
+- Auto-tracks new applicants as "Pending Payment"
+- Privacy by design — the roster never reaches the browser
+- SEO metadata, smooth animations, modern UI
+- Secure secrets, version-controlled in Git
+- Free hosting on Vercel — essentially ₱0/month
 
 ---
 
 ## Operating Costs
 
-Real ongoing costs to keep the site live. **All easily under ₱1,000/year for basics.**
-
 | Item | Cost | Notes |
 |---|---|---|
-| Hosting (Vercel) | **Free** | Free tier covers most small business traffic; can upgrade later if needed |
-| Domain (.com) | ~₱600/year | Registered through Namecheap, GoDaddy, etc. |
-| Domain (.ph) | ~₱2,500/year | If a local .ph domain is preferred |
-| Custom email (e.g. orders@company.com) | Free | Via Zoho Mail free tier, or ~₱180/user/month via Google Workspace |
-| Google Forms | **Free** | Unlimited responses |
-| **Total minimum** | **~₱600/year** | Just the domain |
+| Hosting (Vercel) | **Free** | Free tier handles a foundation's traffic easily |
+| Membership form (Google Forms) | **Free** | Unlimited applications, archived to Google Sheet |
+| Member roster (Google Sheets) | **Free** | Read securely server-side via a service account |
+| Custom domain (optional) | ~$10 / year | e.g. pmafi.org — only if PMAFI wants its own address |
+| **Total** | **≈ ₱0 / year** | Domain is the only optional cost |
+
+For comparison: Wix or Squarespace charge ₱2,000+/month (₱24,000+/year).
 
 ---
 
 ## Suggested Add-Ons
 
-Features the boss may want to consider, grouped by effort.
-
 ### Quick Wins (1–3 days each)
-
-- **Real branding** — Add the official logo and finalize brand colors (current name "Tusi Solutions" is in place; logo and color palette still needed)
-- **Real photography** — Replace gradient placeholders with actual product/team photos
-- **Social media links** — Facebook, Instagram, TikTok icons in header/footer (important for PH small businesses)
-- **Replace placeholder stats** — Use real numbers (years in business, customers served, etc.) or remove the section
-- **FAQ section** — Reduces repetitive customer questions
-- **Customer testimonials section** — Trust-building social proof
-- **Open Graph / link preview image** — So the site looks good when shared on Messenger or Facebook
-- **Google Analytics** — Track visitors and which pages perform best
+- Official PMAFI logo/seal + high-res trustee photos
+- Official social media links (Facebook, etc.)
+- Real donation channels on the Donate page (bank / GCash)
+- Link preview image for Facebook/Messenger shares
+- Google Analytics to see visitor traffic
+- Transparency page — financial reports & board resolutions
 
 ### Medium Features (1–2 weeks each)
-
-- **Product catalog with images** — Browse-able product gallery (currently products are just pricing cards)
-- **Image gallery / portfolio** — Showcase past work, products, or events
-- **Blog / news section** — For announcements, promotions, or articles (good for SEO)
-- **Newsletter signup** — Email collection for future marketing (via Mailchimp / Brevo, free tiers available)
-- **Live chat integration** — Facebook Messenger plugin or WhatsApp button for instant inquiries
-- **Tagalog/English toggle** — If targeting both local and English-speaking customers
-- **Replace Google Form with native form** — Cleaner UX, still emails orders to Gmail and saves to a sheet
+- Self-service content editing via Google Sheet or a simple editor
+- Automated invoice & receipt emails
+- Newsletter signup for supporters
+- Tagalog / English language toggle
 
 ### Larger Features (3–6 weeks each)
+- Online dues & donation payments — GCash, Maya, card (via PayMongo)
+- Automatic receipts for every online payment
+- Member management dashboard for PMAFI staff
+- Members-only area — login + member resources
+- Custom domain + PMAFI email addresses
 
-- **Online payment integration** — Pay directly via GCash, PayMaya, or card (via PayMongo or Xendit, transaction fees apply)
-- **Customer accounts** — Login, order history, saved details
-- **Inventory & order management dashboard** — Internal tool to manage orders, mark them as fulfilled, etc.
-- **Booking / appointment calendar** — If services need scheduling
-- **Full e-commerce checkout** — Cart, payment, order confirmation emails, shipping integration
+---
+
+## Market Value
+
+A website at this quality — with a custom membership system — would cost between **₱80,000 and ₱150,000** if built externally by a senior freelancer or boutique studio. Operating cost is **≈ ₱0/year**.
 
 ---
 
 ## Recommended First Steps
 
-If the boss says yes, suggested order of work:
-
-1. **Get the brand assets** — real company name, logo, colors, sample photos
-2. **Replace all placeholder content** — story, stats, product info
-3. **Buy a domain and connect it** (~30 min, ~₱600)
-4. **Go live** — site can be deployed for free immediately
-5. **Set up Google Analytics** to start measuring
-6. **Add 1–2 high-impact features** from the Quick Wins list
-
----
-
-## What Makes This Approach Worth It
-
-- **Low operating cost** — under ₱1,000/year to keep running, vs. typical website builder subscriptions (₱2,000+/month)
-- **Fully owned** — no vendor lock-in; site can be moved or modified at any time
-- **Looks professional** — built to the same standard as bigger company websites
-- **Scales with the business** — features can be added incrementally without rebuilding
-- **Already working** — order intake flows directly into a Google Sheet via Google Forms, no extra tools needed
+1. Send official PMAFI logo/seal and high-resolution trustee photos
+2. Confirm membership dues per category and payment channels
+3. Install the form's "Pending Payment" trigger (one-time, ~3 minutes — see `references/membership-setup-todo.md`)
+4. Connect a custom domain, e.g. pmafi.org (~30 min, ~$10/year via Cloudflare)
+5. Add Google Analytics
+6. Remove or repurpose placeholder content (news, Chairman's message) once real content is provided

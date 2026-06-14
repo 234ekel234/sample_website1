@@ -4,7 +4,7 @@ import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ArrowRight, ChevronDown, BadgeCheck } from "lucide-react";
 
 const container: Variants = {
   hidden: {},
@@ -117,7 +117,7 @@ export default function Hero() {
 
           <motion.div
             variants={item}
-            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
+            className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:flex-wrap"
           >
             <Link
               href="/donate"
@@ -128,6 +128,16 @@ export default function Hero() {
             >
               Support PMAFI
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+            <Link
+              href="/membership"
+              className={cn(
+                buttonVariants({ size: "lg" }),
+                "group border border-[#C8A951]/40 bg-[#C8A951]/10 text-[#C8A951] backdrop-blur-sm transition-all hover:border-[#C8A951]/70 hover:bg-[#C8A951]/20 hover:text-white"
+              )}
+            >
+              <BadgeCheck className="mr-2 h-4 w-4" />
+              Apply for Membership
             </Link>
             <Link
               href="/programs"

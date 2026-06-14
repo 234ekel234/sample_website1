@@ -44,43 +44,42 @@ const categories = [
   },
 ];
 
-// NOTE: draft benefits — confirm the actual member perks with PMAFI.
 const benefits = [
   {
     icon: Heart,
-    title: "Advance the Mission",
+    title: "Invest in PMA Directly",
     description:
-      "Directly support PMA's pursuit of academic excellence and the formation of officers of character.",
+      "Your dues fund the scholarships, facilities, and programs that shape every cadet who walks through Fort del Pilar — a tangible investment in the next generation of officers.",
   },
   {
     icon: Users,
-    title: "Belong to a Community",
+    title: "Join a Nationwide Brotherhood",
     description:
-      "Join a nationwide network of alumni, faculty, partners, and friends of the Academy.",
+      "Become part of a community of PMA alumni, faculty, and supporters united by a shared commitment to the Academy and to the nation it serves.",
   },
   {
     icon: Flag,
-    title: "A Voice in the Foundation",
+    title: "Shape the Foundation's Direction",
     description:
-      "Regular members take part in electing the Board of Trustees that governs PMAFI.",
+      "Regular members vote in the election of the Board of Trustees — a direct say in how PMAFI is governed and where its resources go.",
   },
   {
     icon: BookOpen,
-    title: "Stay Informed",
+    title: "See the Impact You Make",
     description:
-      "Receive updates on programs, projects, and the real impact your support makes at PMA.",
+      "Members receive regular updates on programs, projects, and milestones — so you always know exactly how your support is being put to work at the Academy.",
   },
   {
     icon: Handshake,
-    title: "Events & Gatherings",
+    title: "Invitations to PMAFI Events",
     description:
-      "Invitations to PMAFI events, reunions, and fundraising activities throughout the year.",
+      "From the Annual General Membership Meeting to alumni reunions and awarding ceremonies — membership keeps you connected to the Foundation's community all year.",
   },
   {
     icon: Award,
-    title: "Recognition & Legacy",
+    title: "Build a Lasting Legacy",
     description:
-      "Opportunities to leave a lasting mark through named professorial chairs and endowment funds.",
+      "Establish a professorial chair or endowment fund in your name or your class's honor — a permanent contribution whose earnings support PMA in perpetuity.",
   },
 ];
 

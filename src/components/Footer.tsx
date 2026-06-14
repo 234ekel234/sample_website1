@@ -20,9 +20,10 @@ function InstagramIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-const socials = [
-  { icon: FacebookIcon, label: "Facebook", href: "https://facebook.com" },
-  { icon: InstagramIcon, label: "Instagram", href: "https://instagram.com" },
+const socials: { icon: typeof FacebookIcon; label: string; href: string }[] = [
+  // Uncomment and set real URLs once PMAFI's official pages are confirmed:
+  // { icon: FacebookIcon, label: "Facebook", href: "https://facebook.com/pmafi" },
+  // { icon: InstagramIcon, label: "Instagram", href: "https://instagram.com/pmafi" },
 ];
 
 const quickLinks = [

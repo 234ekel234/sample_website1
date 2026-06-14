@@ -1,3 +1,6 @@
+"use client";
+import { useRef } from "react";
+import { motion, useInView } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -37,10 +40,18 @@ const programs = [
 ];
 
 export default function Programs() {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
   return (
-    <section className="bg-slate-50 py-24">
+    <section className="bg-slate-50 py-24" ref={ref}>
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-14 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6 }}
+          className="mb-14 text-center"
+        >
           <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
             <span className="h-px w-8 bg-[#C8A951]/50" />
             What We Do
@@ -53,41 +64,50 @@ export default function Programs() {
             PMAFI channels support into four strategic areas that strengthen
             the Philippine Military Academy and the cadets it produces.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {programs.map(({ icon: Icon, title, badge, description }) => (
-            <Card
+          {programs.map(({ icon: Icon, title, badge, description }, i) => (
+            <motion.div
               key={title}
-              className="group relative overflow-hidden border-slate-200/80 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#C8A951]/40 hover:shadow-[0_24px_50px_-20px_rgba(27,42,74,0.4)]"
+              initial={{ opacity: 0, y: 30 }}
+              animate={inView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
-              <CardHeader className="pb-4">
-                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
-                  <Icon size={24} />
-                </div>
-                <div className="flex flex-col gap-1">
-                  <CardTitle className="text-base text-slate-900">
-                    {title}
-                  </CardTitle>
-                  <Badge
-                    variant="secondary"
-                    className="w-fit text-xs bg-[#C8A951]/15 text-[#7A5C1A] border-0"
-                  >
-                    {badge}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed text-slate-500">
-                  {description}
-                </p>
-              </CardContent>
-            </Card>
+              <Card className="group relative h-full overflow-hidden border-slate-200/80 transition-all duration-300 hover:-translate-y-1.5 hover:border-[#C8A951]/40 hover:shadow-[0_24px_50px_-20px_rgba(27,42,74,0.4)]">
+                <span className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
+                <CardHeader className="pb-4">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
+                    <Icon size={24} />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <CardTitle className="text-base text-slate-900">
+                      {title}
+                    </CardTitle>
+                    <Badge
+                      variant="secondary"
+                      className="w-fit text-xs bg-[#C8A951]/15 text-[#7A5C1A] border-0"
+                    >
+                      {badge}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm leading-relaxed text-slate-500">
+                    {description}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
-        <div className="mt-12 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.5, delay: 0.45 }}
+          className="mt-12 text-center"
+        >
           <Link
             href="/programs"
             className={cn(
@@ -97,7 +117,7 @@ export default function Programs() {
           >
             View All Programs
           </Link>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
