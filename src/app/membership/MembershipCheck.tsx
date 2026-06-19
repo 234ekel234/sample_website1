@@ -121,7 +121,7 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
         <p className="mt-3 text-sm font-medium text-red-600">{state.message}</p>
       )}
 
-      <p className="mt-4 text-xs text-slate-400">
+      <p className="mt-4 text-xs text-slate-500">
         We check your email privately against our member records and only show
         your own status — your information is never shared.
       </p>

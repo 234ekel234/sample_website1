@@ -369,11 +369,11 @@ export default function DigitalIdGenerator() {
           Download ID (PNG)
         </button>
         {!canDownload && (
-          <p className="mt-2 text-center text-xs text-slate-400">
+          <p className="mt-2 text-center text-xs text-slate-500">
             Enter a name and add a photo to download.
           </p>
         )}
-        <p className="mt-4 text-xs text-slate-400">
+        <p className="mt-4 text-xs text-slate-500">
           Your photo never leaves your device — the card is built right here in
           your browser.
         </p>
@@ -381,7 +381,7 @@ export default function DigitalIdGenerator() {
 
       {/* Live preview */}
       <div>
-        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-400">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-slate-500">
           Live preview
         </p>
         <div className="overflow-hidden rounded-2xl shadow-xl ring-1 ring-black/5">

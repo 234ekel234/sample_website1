@@ -79,7 +79,7 @@ export default function FAQ() {
           transition={{ duration: 0.6 }}
           className="mb-12 text-center"
         >
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
             <span className="h-px w-8 bg-[#C8A951]/50" />
             Common Questions
             <span className="h-px w-8 bg-[#C8A951]/50" />

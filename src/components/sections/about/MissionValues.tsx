@@ -61,7 +61,7 @@ export default function MissionValues() {
           </div>
 
           <div className="rounded-2xl border-2 border-[#C8A951]/30 bg-white p-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#C8A951]">
+            <p className="text-xs font-bold uppercase tracking-widest text-gold-ink">
               Our Vision
             </p>
             <h3 className="mt-3 text-2xl font-bold text-[#1B2A4A]">
@@ -83,7 +83,7 @@ export default function MissionValues() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="mb-10 text-center"
         >
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
             <span className="h-px w-8 bg-[#C8A951]/50" />
             What Guides Us
             <span className="h-px w-8 bg-[#C8A951]/50" />

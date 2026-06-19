@@ -37,7 +37,7 @@ export default function BoardMemberCard({
       >
         {member.name}
       </h3>
-      <p className="mt-1 text-sm font-medium text-[#C8A951]">{member.role}</p>
+      <p className="mt-1 text-sm font-medium text-gold-ink">{member.role}</p>
 
       {/* Full credentials */}
       {member.highlights.length > 0 && (
