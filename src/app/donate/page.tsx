@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import DonateHero from "@/components/sections/donate/DonateHero";
 import WaysToGive from "@/components/sections/donate/WaysToGive";
+import GivingPromise from "@/components/sections/donate/GivingPromise";
 import HowToDonate from "@/components/sections/donate/HowToDonate";
 import OrderCTA from "@/components/sections/OrderCTA";
 
@@ -15,6 +16,7 @@ export default function DonatePage() {
     <main>
       <DonateHero />
       <WaysToGive />
+      <GivingPromise />
       <HowToDonate />
       <OrderCTA />
     </main>
