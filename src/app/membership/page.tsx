@@ -11,6 +11,7 @@ import {
   Flag,
   BookOpen,
   Award,
+  IdCard,
 } from "lucide-react";
 import MembershipCheck from "./MembershipCheck";
 
@@ -170,6 +171,29 @@ export default function MembershipPage() {
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
             <MembershipCheck applyHref={APPLICATION_FORM_URL} />
+          </div>
+
+          <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
+            <div>
+              <p className="flex items-center justify-center gap-2 font-semibold text-white sm:justify-start">
+                <IdCard className="h-5 w-5 text-[#C8A951]" />
+                Get your digital member ID
+              </p>
+              <p className="mt-1 text-sm text-slate-300">
+                Create a personalized PMAFI ID card with your photo — ready to
+                download in seconds.
+              </p>
+            </div>
+            <Link
+              href="/membership/id"
+              className={cn(
+                buttonVariants(),
+                "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#A07830] hover:text-white"
+              )}
+            >
+              Create my ID
+              <ArrowRight className="ml-1.5 h-4 w-4" />
+            </Link>
           </div>
         </div>
       </section>
