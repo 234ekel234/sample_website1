@@ -156,7 +156,7 @@ export default function ProgramsPage() {
                   <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1B2A4A] text-[#C8A951]">
                     <Icon size={28} />
                   </div>
-                  <p className="text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+                  <p className="text-sm font-semibold uppercase tracking-widest text-gold-ink">
                     {tagline}
                   </p>
                   <h2 className="mt-2 text-3xl font-bold text-[#1B2A4A]">
@@ -169,7 +169,7 @@ export default function ProgramsPage() {
 
                 {/* Initiatives side */}
                 <div className={`rounded-2xl bg-slate-50 p-8 ${i % 2 === 1 ? "lg:order-1" : ""}`}>
-                  <p className="mb-5 text-xs font-bold uppercase tracking-widest text-slate-400">
+                  <p className="mb-5 text-xs font-bold uppercase tracking-widest text-slate-500">
                     Key Initiatives
                   </p>
                   <ul className="space-y-4">
@@ -191,7 +191,7 @@ export default function ProgramsPage() {
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-14 text-center">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               Get Involved
               <span className="h-px w-8 bg-[#C8A951]/50" />

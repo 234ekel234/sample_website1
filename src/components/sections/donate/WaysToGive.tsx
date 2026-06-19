@@ -48,7 +48,7 @@ export default function WaysToGive() {
     <section id="ways-to-give" className="scroll-mt-24 bg-white py-24" ref={ref}>
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-14 text-center">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
             <span className="h-px w-8 bg-[#C8A951]/50" />
             Ways to Give
             <span className="h-px w-8 bg-[#C8A951]/50" />
@@ -78,7 +78,7 @@ export default function WaysToGive() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-[#1B2A4A]">{title}</h3>
-                  <p className="text-sm font-semibold text-[#C8A951]">{amount}</p>
+                  <p className="text-sm font-semibold text-gold-ink">{amount}</p>
                 </div>
               </div>
               <p className="mt-4 flex-1 text-sm leading-relaxed text-slate-500">

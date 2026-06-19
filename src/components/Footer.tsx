@@ -107,7 +107,7 @@ export default function Footer() {
                 pmafi.web@gmail.com
               </a>
             </p>
-            <p className="text-slate-500">
+            <p className="text-slate-400">
               Fort del Pilar, Baguio City, Philippines
             </p>
           </address>
@@ -116,7 +116,7 @@ export default function Footer() {
 
       <Separator className="bg-white/5" />
 
-      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-4 text-xs text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
         <span>© {new Date().getFullYear()} Philippine Military Academy Foundation, Inc. All rights reserved.</span>
         <span className="sm:text-right">
           PMAFI is an independent foundation supporting the PMA — not an

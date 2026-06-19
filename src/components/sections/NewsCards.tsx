@@ -45,7 +45,7 @@ export default function NewsCards({ items }: { items: NewsItem[] }) {
                 )}
               </div>
               <div className="flex flex-1 flex-col p-6">
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-slate-400">
+                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-slate-500">
                   <Calendar size={13} />
                   {date || "Upcoming"}
                 </div>

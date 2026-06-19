@@ -52,7 +52,7 @@ export default function ContactDetails() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
           >
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               Reach Us Directly
             </p>
@@ -79,7 +79,7 @@ export default function ContactDetails() {
                     <Icon size={22} />
                   </div>
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
                       {label}
                     </p>
                     <p className="mt-0.5 text-lg font-semibold text-slate-900 group-hover:text-[#1B2A4A]">
@@ -98,7 +98,7 @@ export default function ContactDetails() {
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut", delay: 0.15 }}
           >
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               What to Expect
             </p>

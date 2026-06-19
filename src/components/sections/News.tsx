@@ -8,7 +8,7 @@ export default async function News() {
     <section className="bg-slate-50 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-14 text-center">
-          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+          <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
             <span className="h-px w-8 bg-[#C8A951]/50" />
             Latest Updates
             <span className="h-px w-8 bg-[#C8A951]/50" />

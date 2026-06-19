@@ -11,9 +11,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
     <div className="mb-10 flex items-center gap-4">
       <div className="h-px flex-1 bg-slate-200" />
-      <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
+      <h2 className="text-xs font-bold uppercase tracking-widest text-slate-500">
         {children}
-      </span>
+      </h2>
       <div className="h-px flex-1 bg-slate-200" />
     </div>
   );

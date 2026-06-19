@@ -155,7 +155,7 @@ export default function MembershipPage() {
       <section className="bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               Already a Member?
               <span className="h-px w-8 bg-[#C8A951]/50" />
@@ -241,7 +241,7 @@ export default function MembershipPage() {
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
           <div className="mb-14 text-center">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               Membership Categories
               <span className="h-px w-8 bg-[#C8A951]/50" />
@@ -279,7 +279,7 @@ export default function MembershipPage() {
       <section className="bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-12 text-center">
-            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-[#C8A951]">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
               <span className="h-px w-8 bg-[#C8A951]/50" />
               How to Join
               <span className="h-px w-8 bg-[#C8A951]/50" />
@@ -322,7 +322,7 @@ export default function MembershipPage() {
               Apply for Membership
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </a>
-            <p className="mt-4 text-sm text-slate-400">
+            <p className="mt-4 text-sm text-slate-500">
               Have questions first?{" "}
               <Link
                 href="/contact"
