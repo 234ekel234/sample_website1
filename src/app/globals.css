@@ -138,6 +138,13 @@
   html {
     @apply font-sans;
     scroll-behavior: smooth;
+    /* Remove the grey/blue flash when tapping links & buttons on mobile. */
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Branded text selection. */
+  ::selection {
+    background-color: #1b2a4a;
+    color: #fff;
   }
 }
 
