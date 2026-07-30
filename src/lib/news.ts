@@ -1,8 +1,8 @@
 // Server-side news fetcher.
 //
-// Reads published news items from the PMAFI News Google Sheet using the same
-// service account credentials as the membership roster. The sheet must be
-// shared with GOOGLE_SERVICE_ACCOUNT_EMAIL (Viewer access is enough).
+// Reads published news items from the PMAFI News Google Sheet via the shared
+// client in src/lib/sheets.ts. The sheet must be shared with
+// GOOGLE_SERVICE_ACCOUNT_EMAIL (Viewer access is enough).
 //
 // Required environment variables:
 //   NEWS_SHEET_ID                        – spreadsheet ID from its URL
@@ -15,7 +15,7 @@
 // Sheet columns (row 1 = headers, data starts at row 2):
 //   A: Title  B: Excerpt  C: Category  D: Date  E: Link  F: Published (Yes/No)
 
-import crypto from "node:crypto";
+import { readRange } from "@/lib/sheets";
 
 export interface NewsItem {
   title: string;
@@ -26,49 +26,7 @@ export interface NewsItem {
   image: string;
 }
 
-const TOKEN_URL = "https://oauth2.googleapis.com/token";
-const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
 const NEWS_RANGE = "News!A2:G";
-
-let tokenCache: { token: string; expires: number } | null = null;
-
-function base64url(input: Buffer | string): string {
-  return Buffer.from(input)
-    .toString("base64")
-    .replace(/=/g, "")
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_");
-}
-
-async function getAccessToken(): Promise<string> {
-  if (tokenCache && tokenCache.expires > Date.now()) return tokenCache.token;
-
-  const clientEmail = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL ?? "";
-  const privateKey = (process.env.GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY ?? "").replace(/\\n/g, "\n");
-
-  if (!clientEmail || !privateKey) throw new Error("Missing Google service account credentials");
-
-  const now = Math.floor(Date.now() / 1000);
-  const header = { alg: "RS256", typ: "JWT" };
-  const claims = { iss: clientEmail, scope: SHEETS_SCOPE, aud: TOKEN_URL, iat: now, exp: now + 3600 };
-
-  const signingInput = `${base64url(JSON.stringify(header))}.${base64url(JSON.stringify(claims))}`;
-  const signature = base64url(crypto.sign("RSA-SHA256", Buffer.from(signingInput), privateKey));
-  const assertion = `${signingInput}.${signature}`;
-
-  const res = await fetch(TOKEN_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer", assertion }),
-    cache: "no-store",
-  });
-
-  if (!res.ok) throw new Error(`Token request failed (${res.status})`);
-
-  const json = (await res.json()) as { access_token: string; expires_in: number };
-  tokenCache = { token: json.access_token, expires: Date.now() + (json.expires_in - 60) * 1000 };
-  return tokenCache.token;
-}
 
 // Convert any Google Drive share URL to a direct image URL that next/image can load.
 // Accepts:  https://drive.google.com/file/d/{ID}/view?...
@@ -115,20 +73,7 @@ export async function getNews(): Promise<NewsItem[]> {
   if (!sheetId) return FALLBACK;
 
   try {
-    const token = await getAccessToken();
-    const url =
-      `https://sheets.googleapis.com/v4/spreadsheets/${encodeURIComponent(sheetId)}` +
-      `/values/${encodeURIComponent(NEWS_RANGE)}?majorDimension=ROWS&valueRenderOption=UNFORMATTED_VALUE`;
-
-    const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${token}` },
-      next: { revalidate: 60 },
-    });
-
-    if (!res.ok) return FALLBACK;
-
-    const json = (await res.json()) as { values?: unknown[][] };
-    const rows = json.values ?? [];
+    const rows = await readRange(sheetId, NEWS_RANGE, { revalidate: 60 });
 
     const items: NewsItem[] = [];
     for (const row of rows) {

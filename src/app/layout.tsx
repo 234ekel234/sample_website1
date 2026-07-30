@@ -4,6 +4,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingChat from "@/components/FloatingChat";
+import { getContent } from "@/lib/content";
+import { getFaqs } from "@/lib/faq";
 import StructuredData from "@/components/StructuredData";
 import Analytics from "@/components/Analytics";
 import { SITE_URL } from "@/lib/site";
@@ -67,11 +69,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // The assistant's contact channels and approved answers both come from the
+  // staff-editable sheet; blank values are hidden rather than guessed.
+  const [{ contact }, faqs] = await Promise.all([getContent(), getFaqs()]);
+
   return (
     <html
       lang="en"
@@ -82,7 +88,7 @@ export default function RootLayout({
         <Navbar />
         {children}
         <Footer />
-        <FloatingChat />
+        <FloatingChat email={contact.email} phone={contact.phone} faqs={faqs} />
         <Analytics />
       </body>
     </html>

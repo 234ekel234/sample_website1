@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import LogoMark from "@/components/LogoMark";
+import { getContent } from "@/lib/content";
 
 function FacebookIcon({ size = 16 }: { size?: number }) {
   return (
@@ -20,11 +21,9 @@ function InstagramIcon({ size = 16 }: { size?: number }) {
   );
 }
 
-const socials: { icon: typeof FacebookIcon; label: string; href: string }[] = [
-  // Uncomment and set real URLs once PMAFI's official pages are confirmed:
-  // { icon: FacebookIcon, label: "Facebook", href: "https://facebook.com/pmafi" },
-  // { icon: InstagramIcon, label: "Instagram", href: "https://instagram.com/pmafi" },
-];
+// Social links come from the staff-editable content sheet. Any link left blank
+// there is simply not rendered — we never publish a guessed URL.
+type Social = { icon: typeof FacebookIcon; label: string; href: string };
 
 const quickLinks = [
   { label: "About", href: "/about" },
@@ -35,7 +34,18 @@ const quickLinks = [
   { label: "Contact", href: "/contact" },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const { contact, social } = await getContent();
+
+  const socials: Social[] = [
+    ...(social.facebook
+      ? [{ icon: FacebookIcon, label: "Facebook", href: social.facebook }]
+      : []),
+    ...(social.instagram
+      ? [{ icon: InstagramIcon, label: "Instagram", href: social.instagram }]
+      : []),
+  ];
+
   return (
     <footer className="bg-[#0D1628] text-slate-400">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-10 px-6 py-16 md:grid-cols-3">
@@ -101,15 +111,25 @@ export default function Footer() {
           <address className="space-y-2 text-sm not-italic">
             <p>
               <a
-                href="mailto:pmafi.web@gmail.com"
+                href={`mailto:${contact.email}`}
                 className="transition-colors hover:text-white"
               >
-                pmafi.web@gmail.com
+                {contact.email}
               </a>
             </p>
-            <p className="text-slate-400">
-              Fort del Pilar, Baguio City, Philippines
-            </p>
+            {contact.address && (
+              <p className="text-slate-400">{contact.address}</p>
+            )}
+            {contact.phone && (
+              <p>
+                <a
+                  href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
+                  className="transition-colors hover:text-white"
+                >
+                  {contact.phone}
+                </a>
+              </p>
+            )}
           </address>
         </div>
       </div>
