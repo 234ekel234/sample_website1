@@ -17,12 +17,16 @@ export interface FloatingChatProps {
   email: string;
   phone: string;
   faqs: FaqEntry[];
-  messengerUrl?: string;
 }
 
 type Message =
   | { id: number; role: "user"; text: string }
   | { id: number; role: "bot"; text: string; entry?: FaqEntry; unmatched?: boolean };
+
+function starters(faqs: FaqEntry[]): FaqEntry[] {
+  const flagged = faqs.filter((f) => f.suggested).slice(0, 4);
+  return flagged.length > 0 ? flagged : faqs.slice(0, 4);
+}
 
 const GREETING =
   "Hello! I can answer common questions about the Foundation, membership and giving. Tap a question below, or type your own.";
@@ -31,7 +35,6 @@ export default function FloatingChat({
   email,
   phone,
   faqs,
-  messengerUrl = "",
 }: FloatingChatProps) {
   const emailUrl = `mailto:${email}`;
   const phoneUrl = phone ? `tel:${phone.replace(/[^+\d]/g, "")}` : "";
@@ -58,9 +61,8 @@ export default function FloatingChat({
   // Seed the conversation the first time the panel is opened.
   useEffect(() => {
     if (!open || messages.length > 0) return;
-    const starters = faqs.filter((f) => f.suggested).slice(0, 4);
     setMessages([{ id: nextId.current++, role: "bot", text: GREETING }]);
-    setSuggestions(starters.length > 0 ? starters : faqs.slice(0, 4));
+    setSuggestions(starters(faqs));
   }, [open, messages.length, faqs]);
 
   // Keep the newest message in view.
@@ -109,7 +111,8 @@ export default function FloatingChat({
           };
 
       setMessages((prev) => [...prev, userMsg, botMsg]);
-      setSuggestions(entry ? relatedQuestions(entry, faqs) : []);
+      // On a miss, offer the starters again rather than leaving a dead end.
+      setSuggestions(entry ? relatedQuestions(entry, faqs) : starters(faqs));
       setInput("");
     },
     [faqs]
@@ -128,7 +131,7 @@ export default function FloatingChat({
           role="dialog"
           aria-modal="false"
           aria-labelledby={titleId}
-          className="flex h-[min(32rem,calc(100vh-8rem))] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_60px_-20px_rgba(27,42,74,0.45)]"
+          className="flex h-[min(32rem,calc(100dvh-8rem))] w-[min(23rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_60px_-20px_rgba(27,42,74,0.45)]"
         >
           {/* Header */}
           <div className="flex items-center justify-between gap-3 bg-[#1B2A4A] px-4 py-3">
@@ -226,7 +229,7 @@ export default function FloatingChat({
                     <button
                       type="button"
                       onClick={() => ask(s.question, s)}
-                      className="rounded-full border border-slate-300 px-3 py-1.5 text-left text-xs text-slate-700 transition-colors hover:border-[#C8A951] hover:bg-[#C8A951]/10"
+                      className="rounded-xl border border-slate-300 px-3 py-1.5 text-left text-xs leading-snug text-slate-700 transition-colors hover:border-[#C8A951] hover:bg-[#C8A951]/10"
                     >
                       {s.question}
                     </button>
@@ -282,12 +285,6 @@ export default function FloatingChat({
         {open ? <X size={22} aria-hidden="true" /> : <MessageCircle size={22} aria-hidden="true" />}
       </button>
 
-      {/* Messenger stays available as a direct channel when configured. */}
-      {!open && messengerUrl && (
-        <a href={messengerUrl} target="_blank" rel="noopener noreferrer" className="sr-only">
-          Message the Foundation on Messenger
-        </a>
-      )}
     </div>
   );
 }
