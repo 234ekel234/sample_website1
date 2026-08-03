@@ -18,6 +18,9 @@ This version has breaking changes — APIs, conventions, and file structure may 
 ## Key facts for agents
 
 - All pages are in `src/app/` using the App Router. Section components live in `src/components/sections/`, one subfolder per page.
+- **`BUILD-STATUS.md` is the source of truth for what is and isn't working.** The scope docs (`PHASE-1/2/3-SCOPE.md`) describe what was sold, not what is live. `references/pmafi-information-request.md` lists everything still outstanding from the client.
+- The **Board of Trustees** is a section of `/about` (`src/components/sections/about/BoardOfTrustees.tsx`), not its own page. Its `id="board"` anchor is load-bearing — nav, footer, programs page and the FAQ assistant all link to `/about#board`, and `/board` 308-redirects there via `next.config.ts`.
+- The **donor giving lookup** at `/donate/status` requires email **plus** a reference code, unlike the membership check which needs only an email. That asymmetry is deliberate: it exposes amounts rather than a standing. Every failed lookup must keep returning one identical message — distinguishing "no such reference" from "wrong email" would turn the page into an oracle for whether an address has ever donated.
 - The site uses **Tailwind CSS v4** — the config is in `src/app/globals.css` (not `tailwind.config.js`). Custom animations (`animate-drift`, `animate-drift-slow`, `animate-ember`) are defined there.
 - **Brand gold has two tokens** (defined in `globals.css` `@theme`): `text-gold` (`#C8A951`, vivid — use on dark/navy backgrounds) and `text-gold-ink` (`#8A6A22`, darker — use for small text on light/white backgrounds). The vivid gold fails WCAG AA contrast on light backgrounds, so always use `text-gold-ink` for gold text on white/slate sections. Likewise, muted helper text on light backgrounds must be `text-slate-500`+ (not `text-slate-400`, which fails AA). All public pages currently score 100 on Lighthouse accessibility — keep it that way.
 - Animations use **Framer Motion** (`motion.*`, `useInView`, `useInView`). Server components that need scroll-triggered animations must add `"use client"`.
@@ -27,12 +30,15 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Content placeholders still outstanding
 
+Full list with priorities: `references/pmafi-information-request.md`.
+
+- **Bank / GCash payment details — the donate page cannot accept a gift without these.** Highest-value gap on the site
 - Chairman's message (home page) — fabricated, awaiting real text
 - News & announcements (home page) — sample items, awaiting real events
 - Phone number — hidden pending confirmation
 - Social media URLs — hidden pending confirmation
-- Bank / GCash payment details — pending confirmation
 - BIR donee institution status — pending confirmation
+- `CONTENT_SHEET_ID` is unset, so all of Phase 2 runs on built-in fallbacks and staff edits have no effect
 
 ## References
 
