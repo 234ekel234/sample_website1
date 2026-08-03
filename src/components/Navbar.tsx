@@ -13,9 +13,6 @@ const links = [
   { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
-  // Proposal page is linked in the nav for the client, but kept noindex and out
-  // of the sitemap so search engines don't crawl it (unlisted, not private).
-  { label: "Proposal", href: "/proposal" },
 ];
 
 export default function Navbar() {

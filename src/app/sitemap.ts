@@ -1,8 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/site";
 
-// Public, indexable pages only. The internal /proposal page is intentionally
-// excluded (it's noindex) and so is anything we don't want crawled.
+// Public, indexable pages only — anything we don't want crawled stays out.
 const routes: { path: string; priority: number; changeFrequency: "monthly" | "yearly" }[] = [
   { path: "/", priority: 1, changeFrequency: "monthly" },
   { path: "/about", priority: 0.8, changeFrequency: "yearly" },
