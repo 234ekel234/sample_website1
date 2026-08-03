@@ -260,7 +260,7 @@ export default function ProgramsPage() {
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </Link>
             <Link
-              href="/board"
+              href="/about#board"
               className={cn(
                 buttonVariants({ variant: "outline", size: "lg" }),
                 "border-white/15 bg-white/5 text-white backdrop-blur-sm hover:border-white/30 hover:bg-white/10 hover:text-white"

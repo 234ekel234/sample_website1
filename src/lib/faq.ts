@@ -147,7 +147,7 @@ const FALLBACK: FaqEntry[] = [
       "The Board of Trustees page lists the 2025–2026 board, with each member's role and background.",
     keywords: ["board", "trustees", "leadership", "officers", "chairman", "who runs"],
     linkLabel: "Meet the Board",
-    linkHref: "/board",
+    linkHref: "/about#board",
   },
   {
     question: "What programs does the Foundation support?",

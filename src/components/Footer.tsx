@@ -28,7 +28,7 @@ type Social = { icon: typeof FacebookIcon; label: string; href: string };
 const quickLinks = [
   { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
-  { label: "Board of Trustees", href: "/board" },
+  { label: "Board of Trustees", href: "/about#board" },
   { label: "Membership", href: "/membership" },
   { label: "Donate", href: "/donate" },
   { label: "Contact", href: "/contact" },

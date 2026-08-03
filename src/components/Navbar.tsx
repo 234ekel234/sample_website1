@@ -8,9 +8,10 @@ import LogoMark from "@/components/LogoMark";
 
 const links = [
   { label: "Home", href: "/" },
+  // The board lives at /about#board — reachable from About rather than its own
+  // nav entry, so the bar stays short.
   { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
-  { label: "Board of Trustees", href: "/board" },
   { label: "Membership", href: "/membership" },
   { label: "Contact", href: "/contact" },
 ];
