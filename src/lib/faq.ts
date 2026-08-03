@@ -1,0 +1,224 @@
+// FAQ assistant answer set.
+//
+// This is Phase 2, Module B of the proposal: a rules-based assistant that
+// answers ONLY from a fixed list PMAFI has approved. There is no AI and no
+// generation, so it can never invent or misstate a fact about the Foundation.
+//
+// The list is staff-editable. It lives on an "FAQ" tab in the same spreadsheet
+// as the site content (CONTENT_SHEET_ID), so PMAFI can add, reword or remove
+// answers without a developer.
+//
+// Sheet layout — tab named "FAQ", row 1 = headers, data from row 2:
+//   A: Question   B: Answer   C: Keywords   D: Link label   E: Link URL
+//   F: Suggested (Yes/No)     G: Published (Yes/No)
+//
+// Keywords are comma-separated extra terms to match on, beyond the words in the
+// question itself. "Suggested" entries appear as tappable starter chips.
+//
+// FAIL-SAFE: if the sheet is unreachable or empty, the built-in FALLBACK set
+// below is used, so the assistant always works.
+//
+// DELIBERATELY ABSENT: nothing here states a phone number, bank account, GCash
+// number, dues amount or BIR status. Those are unconfirmed, so the answers point
+// to the contact channel instead of guessing.
+
+import { readRange } from "@/lib/sheets";
+
+export interface FaqEntry {
+  question: string;
+  answer: string;
+  /** Extra terms to match on, beyond the words in `question`. */
+  keywords: string[];
+  /** Optional call to action shown beneath the answer. */
+  linkLabel?: string;
+  linkHref?: string;
+  /** Shown as a starter chip when the panel opens. */
+  suggested?: boolean;
+}
+
+const FAQ_RANGE = "FAQ!A2:G";
+
+/**
+ * Built-in answer set. Every statement here is drawn from existing site copy —
+ * nothing is invented. Keep it that way when editing.
+ */
+const FALLBACK: FaqEntry[] = [
+  // --- Membership -----------------------------------------------------------
+  {
+    question: "How do I become a member?",
+    answer:
+      "You can apply online through the membership page. The form takes a few minutes, and once it is submitted your application is recorded as Pending Payment while the Foundation confirms your dues.",
+    keywords: ["join", "apply", "application", "sign up", "register", "membership"],
+    linkLabel: "Apply for membership",
+    linkHref: "/membership",
+    suggested: true,
+  },
+  {
+    question: "What membership categories are there?",
+    answer:
+      "PMAFI has three categories: Regular, Associate and Affiliate. The membership page explains who each one is intended for.",
+    keywords: ["category", "categories", "regular", "associate", "affiliate", "type"],
+    linkLabel: "See the categories",
+    linkHref: "/membership",
+  },
+  {
+    question: "How much are the membership dues?",
+    answer:
+      "Dues are confirmed directly by the Foundation, as they depend on your membership category. Please get in touch and we will send you the current amount and how to settle it.",
+    keywords: ["dues", "fee", "cost", "how much", "price", "payment", "annual"],
+    linkLabel: "Ask about dues",
+    linkHref: "/contact",
+  },
+  {
+    question: "How do I check my membership status?",
+    answer:
+      "Enter your email address on the membership page and the site will show your current standing — Active, Pending Payment, or Lapsed. Your details stay private; only your own record is shown.",
+    keywords: ["status", "standing", "active", "lapsed", "pending", "check", "verify"],
+    linkLabel: "Check your status",
+    linkHref: "/membership",
+    suggested: true,
+  },
+  {
+    question: "Can I get a membership ID card?",
+    answer:
+      "Yes. Members can generate a digital PMAFI ID card with their name, category, photo and a QR code, then download it. The card is created in your own browser and your photo is never uploaded or stored.",
+    keywords: ["id", "card", "identification", "digital id", "badge", "photo"],
+    linkLabel: "Create your ID",
+    linkHref: "/membership/id",
+  },
+
+  // --- Giving ---------------------------------------------------------------
+  {
+    question: "How can I support PMAFI?",
+    answer:
+      "There are several ways to get involved: make a one-time or recurring donation, become a member, endow a professorial chair, or partner with the Foundation on a specific program.",
+    keywords: ["support", "help", "contribute", "get involved", "volunteer"],
+    linkLabel: "Ways to give",
+    linkHref: "/donate",
+    suggested: true,
+  },
+  {
+    question: "Where does my donation go?",
+    answer:
+      "Contributions are channeled into the Foundation's core program areas — facilities and modernization, academic excellence and endowment, leadership formation, and partnerships with the alumni community.",
+    keywords: ["donation", "where", "spent", "used", "funds", "money", "goes"],
+    linkLabel: "See our programs",
+    linkHref: "/programs",
+    suggested: true,
+  },
+  {
+    question: "How do I make a donation?",
+    answer:
+      "The Donate page explains the ways to give and the steps involved. Payment details are confirmed directly by the Foundation, so please message us and we will send you the current channels and arrange your gift.",
+    keywords: ["donate", "give", "gift", "bank", "gcash", "transfer", "how to pay"],
+    linkLabel: "Go to the Donate page",
+    linkHref: "/donate",
+  },
+  {
+    question: "What is a professorial chair?",
+    answer:
+      "A professorial chair is an endowment that supports teaching at the Academy in a named subject area. It is one of the Foundation's strategic program areas, and donors can be recognized in the naming of the chair they support.",
+    keywords: ["professorial", "chair", "endowment", "endow", "named", "faculty"],
+    linkLabel: "About our programs",
+    linkHref: "/programs",
+  },
+  {
+    question: "Are donations tax-deductible?",
+    answer:
+      "PMAFI is a registered non-stock, non-profit foundation and provides official acknowledgment for every gift. For the current position on tax treatment of your donation, please contact the Foundation directly.",
+    keywords: ["tax", "deductible", "bir", "receipt", "donee", "exemption"],
+    linkLabel: "Ask about receipts",
+    linkHref: "/contact",
+  },
+
+  // --- The Foundation -------------------------------------------------------
+  {
+    question: "What is PMAFI?",
+    answer:
+      "The Philippine Military Academy Foundation, Inc. is a non-stock, non-profit foundation that supports the Philippine Military Academy — helping it improve the quality of its instruction, its pursuit of academic excellence, and the character development of its cadets.",
+    keywords: ["pmafi", "who", "what is", "foundation", "about", "mission"],
+    linkLabel: "About the Foundation",
+    linkHref: "/about",
+    suggested: true,
+  },
+  {
+    question: "Who is on the Board of Trustees?",
+    answer:
+      "The Board of Trustees page lists the 2025–2026 board, with each member's role and background.",
+    keywords: ["board", "trustees", "leadership", "officers", "chairman", "who runs"],
+    linkLabel: "Meet the Board",
+    linkHref: "/board",
+  },
+  {
+    question: "What programs does the Foundation support?",
+    answer:
+      "The Foundation works across four strategic areas: facilities and modernization, academic excellence and endowment, leadership formation, and partnerships with the alumni community.",
+    keywords: ["programs", "projects", "areas", "work", "activities", "initiatives"],
+    linkLabel: "Explore the programs",
+    linkHref: "/programs",
+  },
+  {
+    question: "How can I contact the Foundation?",
+    answer:
+      "The Contact page has the Foundation's current details, and messages are acknowledged by the next business day.",
+    keywords: ["contact", "email", "reach", "phone", "call", "message", "talk"],
+    linkLabel: "Contact us",
+    linkHref: "/contact",
+  },
+  {
+    question: "Is my information kept private?",
+    answer:
+      "Yes. The member roster is held privately and is never published on the website. When you check your status, only your own record is shown, and the digital ID card is generated in your browser without your photo being uploaded.",
+    keywords: ["privacy", "private", "data", "secure", "security", "confidential"],
+  },
+];
+
+function parseKeywords(raw: string): string[] {
+  return raw
+    .split(",")
+    .map((k) => k.trim().toLowerCase())
+    .filter(Boolean);
+}
+
+function isYes(raw: string): boolean {
+  const v = raw.trim().toLowerCase();
+  return v === "yes" || v === "true";
+}
+
+export async function getFaqs(): Promise<FaqEntry[]> {
+  const sheetId = process.env.CONTENT_SHEET_ID;
+  if (!sheetId) return FALLBACK;
+
+  let rows: unknown[][];
+  try {
+    rows = await readRange(sheetId, FAQ_RANGE, { revalidate: 60 });
+  } catch {
+    // Sheet or tab missing — the built-in set keeps the assistant working.
+    return FALLBACK;
+  }
+
+  const entries: FaqEntry[] = [];
+  for (const row of rows) {
+    const question = String(row[0] ?? "").trim();
+    const answer = String(row[1] ?? "").trim();
+    if (!question || !answer) continue;
+
+    // Blank "Published" is treated as published, so staff do not have to fill
+    // in every column just to add an answer.
+    const publishedCell = String(row[6] ?? "").trim();
+    if (publishedCell && !isYes(publishedCell)) continue;
+
+    const linkLabel = String(row[3] ?? "").trim();
+    const linkHref = String(row[4] ?? "").trim();
+
+    entries.push({
+      question,
+      answer,
+      keywords: parseKeywords(String(row[2] ?? "")),
+      ...(linkLabel && linkHref ? { linkLabel, linkHref } : {}),
+      suggested: isYes(String(row[5] ?? "")),
+    });
+  }
+
+  return entries.length > 0 ? entries : FALLBACK;
+}
