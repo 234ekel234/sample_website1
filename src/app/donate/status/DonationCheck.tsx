@@ -168,7 +168,7 @@ export default function DonationCheck() {
 
                   <p className="mt-2 text-sm text-slate-500">{meta.meaning}</p>
 
-                  <p className="mt-3 font-mono text-xs uppercase tracking-wider text-slate-400">
+                  <p className="mt-3 font-mono text-xs uppercase tracking-wider text-slate-500">
                     {d.reference}
                   </p>
                 </li>
