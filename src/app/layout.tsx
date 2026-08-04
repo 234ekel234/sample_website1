@@ -76,7 +76,10 @@ export default async function RootLayout({
 }>) {
   // The assistant's contact channels and approved answers both come from the
   // staff-editable sheet; blank values are hidden rather than guessed.
-  const [{ contact }, faqs] = await Promise.all([getContent(), getFaqs()]);
+  const [{ contact, social }, faqs] = await Promise.all([
+    getContent(),
+    getFaqs(),
+  ]);
 
   return (
     <html
@@ -84,7 +87,7 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <StructuredData />
+        <StructuredData contact={contact} social={social} />
         <Navbar />
         {children}
         <Footer />
