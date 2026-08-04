@@ -21,7 +21,7 @@ export default function SupportCTA() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section className="relative overflow-hidden bg-[#0a1628] py-28" ref={ref}>
+    <section className="relative overflow-hidden bg-[#0a1628] py-24" ref={ref}>
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.05]"

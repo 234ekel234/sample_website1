@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Mail, Clock } from "lucide-react";
 import DonationCheck from "./DonationCheck";
+import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
   title: "My Giving | PMAFI",
@@ -34,38 +35,15 @@ export default function GivingStatusPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0a1628] py-32 pt-40">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_-10%,#16294d_0%,#0a1628_45%,#070f1d_100%)]" />
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.05]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(135deg, #C8A951 0px, #C8A951 1px, transparent 1px, transparent 72px)",
-            maskImage:
-              "radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse 80% 70% at 50% 40%, black 30%, transparent 80%)",
-          }}
-        />
-        <div className="animate-drift pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C8A951]/[0.07] blur-3xl" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#070f1d] to-transparent" />
-        <div className="relative mx-auto max-w-4xl px-6 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#C8A951]/30 bg-[#C8A951]/10 px-5 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#C8A951] shadow-[0_0_30px_-8px_rgba(200,169,81,0.5)] backdrop-blur-sm">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#C8A951] opacity-75" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#C8A951]" />
-            </span>
-            My Giving
-          </span>
-          <h1 className="mt-6 text-5xl font-bold leading-[1.05] tracking-tight text-white md:text-6xl">
+      <PageHero
+        eyebrow="My Giving"
+        title={
+          <>
             Track Your <span className="text-gold-shimmer">Support</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-slate-300">
-            Look up a gift you&apos;ve made to the Foundation — what it was
-            designated for, and where it stands in our process.
-          </p>
-        </div>
-      </section>
+          </>
+        }
+        lede="Look up a gift you've made to the Foundation — what it was designated for, and where it stands in our process."
+      />
 
       {/* Lookup */}
       <section className="bg-white py-20">
