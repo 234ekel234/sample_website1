@@ -2,7 +2,7 @@
 
 The official website of the **Philippine Military Academy Foundation, Inc.** — a non-stock, non-profit foundation supporting PMA in developing officers of integrity, competence, and character.
 
-Live site: **https://pmafi.vercel.app**
+Live site: **https://www.pmafi.org**
 
 ---
 

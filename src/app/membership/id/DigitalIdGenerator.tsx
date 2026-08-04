@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Upload, Download, IdCard } from "lucide-react";
+import { SITE_URL, SITE_HOST } from "@/lib/site";
 
 /**
  * Standalone digital member ID generator.
@@ -137,7 +138,7 @@ export default function DigitalIdGenerator() {
       `Category: ${category} Member`,
       "Status: Active",
       `Issued: ${issued}`,
-      "Verify: https://pmafi.vercel.app/membership",
+      `Verify: ${SITE_URL}/membership`,
     ].join("\n");
     QRCode.toDataURL(qrText, {
       margin: 1,
@@ -273,7 +274,7 @@ export default function DigitalIdGenerator() {
     ctx.fillStyle = "rgba(255,255,255,0.4)";
     ctx.font = "500 12px system-ui, sans-serif";
     ctx.fillText(
-      "Scan to view membership details · pmafi.vercel.app/membership",
+      `Scan to view membership details · ${SITE_HOST}/membership`,
       48,
       CARD_H - 40
     );

@@ -10,7 +10,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 **What this is:** The official website of the Philippine Military Academy Foundation, Inc. (PMAFI) — a non-stock, non-profit foundation supporting PMA.
 
-**Live URL:** https://pmafi.vercel.app  
+**Live URL:** https://www.pmafi.org  
 **Stack:** Next.js 16 · React 19 · Tailwind CSS v4 · Framer Motion 12 · TypeScript · shadcn/ui · Vercel
 
 ---

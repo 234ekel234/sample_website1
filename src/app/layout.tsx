@@ -27,6 +27,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   // Absolute base for resolving OG / Twitter image URLs in shared links.
   metadataBase: new URL(SITE_URL),
+  // Self-referencing canonical, resolved per route against metadataBase.
+  // The app is reachable on two hosts — www.pmafi.org and the pmafi.vercel.app
+  // deployment URL, which serves the same pages with a 200 rather than
+  // redirecting. Without this, the two compete as duplicate content and the
+  // free subdomain can outrank the domain PMAFI pays for.
+  alternates: { canonical: "./" },
   // Pages set their own full "<Page> | PMAFI" titles; this is the home/default.
   title: SITE_NAME,
   description: SITE_DESCRIPTION,
