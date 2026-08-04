@@ -66,6 +66,11 @@ export default async function Footer() {
           </p>
 
           <div className="mt-6 flex gap-3">
+            {socials.length === 0 && (
+              <p className="text-sm text-slate-400">
+                Social channels — coming soon
+              </p>
+            )}
             {socials.map(({ icon: Icon, label, href }) => (
               <a
                 key={label}
@@ -120,7 +125,9 @@ export default async function Footer() {
             {contact.address && (
               <p className="text-slate-400">{contact.address}</p>
             )}
-            {contact.phone && (
+            {/* Unconfirmed details say so, rather than vanishing — a missing
+                line reads as "this Foundation has no phone number". */}
+            {contact.phone ? (
               <p>
                 <a
                   href={`tel:${contact.phone.replace(/[^+\d]/g, "")}`}
@@ -129,6 +136,8 @@ export default async function Footer() {
                   {contact.phone}
                 </a>
               </p>
+            ) : (
+              <p className="text-slate-400">Phone — coming soon</p>
             )}
           </address>
         </div>

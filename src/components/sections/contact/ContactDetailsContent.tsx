@@ -4,8 +4,12 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Mail, Phone, Clock, MessageSquare } from "lucide-react";
 
-// Contact channels come from the staff-editable content sheet. A blank phone
-// number is simply not rendered — we never publish a guessed one.
+// Contact channels come from the staff-editable content sheet.
+//
+// A channel PMAFI hasn't confirmed is shown as "Coming soon" rather than hidden.
+// Hiding it left visitors unable to tell whether the Foundation has no phone
+// number or simply hasn't published one. We still never publish a guessed value
+// — the moment the sheet has a real number, this becomes a live tel: link.
 export interface ContactDetailsContentProps {
   email: string;
   phone: string;
@@ -37,18 +41,23 @@ export default function ContactDetailsContent({
         "Best for donation inquiries, partnerships, and membership details.",
       href: `mailto:${email}`,
     },
-    ...(phone
-      ? [
-          {
-            icon: Phone,
-            label: "Phone / SMS",
-            value: phone,
-            description:
-              "Call or text to speak with the Foundation team directly.",
-            href: `tel:${phone.replace(/[^+\d]/g, "")}`,
-          },
-        ]
-      : []),
+    phone
+      ? {
+          icon: Phone,
+          label: "Phone / SMS",
+          value: phone,
+          description:
+            "Call or text to speak with the Foundation team directly.",
+          href: `tel:${phone.replace(/[^+\d]/g, "")}`,
+        }
+      : {
+          icon: Phone,
+          label: "Phone / SMS",
+          value: "Coming soon",
+          description:
+            "We're confirming the Foundation's official number. In the meantime, email reaches us just as quickly.",
+          href: undefined,
+        },
   ];
 
   const ref = useRef(null);
@@ -78,30 +87,53 @@ export default function ContactDetailsContent({
             </p>
 
             <div className="mt-10 space-y-6">
-              {channels.map(({ icon: Icon, label, value, description, href }, i) => (
-                <motion.a
-                  key={label}
-                  href={href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={inView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
-                  className="group relative flex items-start gap-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#C8A951]/40 hover:bg-white hover:shadow-[0_18px_40px_-18px_rgba(27,42,74,0.35)]"
-                >
-                  <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A] transition-all duration-300 group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]">
-                    <Icon size={22} />
-                  </div>
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-                      {label}
-                    </p>
-                    <p className="mt-0.5 text-lg font-semibold text-slate-900 group-hover:text-[#1B2A4A]">
-                      {value}
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500">{description}</p>
-                  </div>
-                </motion.a>
-              ))}
+              {channels.map(({ icon: Icon, label, value, description, href }, i) => {
+                // An unconfirmed channel is a card, not a link — there is
+                // nothing to click, and a dead <a> would still take focus.
+                const Wrapper = href ? motion.a : motion.div;
+                return (
+                  <Wrapper
+                    key={label}
+                    {...(href ? { href } : {})}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={inView ? { opacity: 1, y: 0 } : {}}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
+                    className={`group relative flex items-start gap-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all duration-300 ${
+                      href
+                        ? "hover:-translate-y-1 hover:border-[#C8A951]/40 hover:bg-white hover:shadow-[0_18px_40px_-18px_rgba(27,42,74,0.35)]"
+                        : ""
+                    }`}
+                  >
+                    {href && (
+                      <span className="absolute inset-x-0 top-0 h-0.5 origin-left scale-x-0 bg-gradient-to-r from-[#C8A951] to-[#F0D080] transition-transform duration-300 group-hover:scale-x-100" />
+                    )}
+                    <div
+                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-all duration-300 ${
+                        href
+                          ? "bg-[#1B2A4A]/10 text-[#1B2A4A] group-hover:scale-110 group-hover:bg-[#1B2A4A] group-hover:text-[#C8A951]"
+                          : "bg-slate-200/70 text-slate-500"
+                      }`}
+                    >
+                      <Icon size={22} />
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                        {label}
+                      </p>
+                      <p
+                        className={`mt-0.5 text-lg font-semibold ${
+                          href
+                            ? "text-slate-900 group-hover:text-[#1B2A4A]"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {value}
+                      </p>
+                      <p className="mt-1 text-sm text-slate-500">{description}</p>
+                    </div>
+                  </Wrapper>
+                );
+              })}
             </div>
           </motion.div>
 

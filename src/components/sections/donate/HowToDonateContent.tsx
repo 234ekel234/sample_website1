@@ -140,11 +140,19 @@ export default function HowToDonateContent({
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-6">
               <div className="flex items-start gap-3">
                 <ShieldCheck size={20} className="mt-0.5 shrink-0 text-[#1B2A4A]" />
+                {/* PMAFI's BIR donee-institution registration is documented only
+                    in a brochure roughly 14 years old and has never been
+                    confirmed. Tax-deductibility is a representation to donors,
+                    so the site states it as pending rather than as fact. Restore
+                    the full wording once PMAFI confirms the registration is
+                    current — see references/pmafi-information-ledger.md §1.6. */}
                 <p className="text-sm leading-relaxed text-slate-600">
-                  <span className="font-semibold text-[#1B2A4A]">Tax-deductible.</span>{" "}
-                  PMAFI is registered with the BIR as a donee institution under
-                  Section 30(H) of the Tax Reform Act of 1997, so donations are
-                  tax-deductible. <span className="italic">(To be confirmed with PMAFI before public launch.)</span>
+                  <span className="font-semibold text-[#1B2A4A]">
+                    Tax-deductibility — coming soon.
+                  </span>{" "}
+                  We&apos;re confirming PMAFI&apos;s current donee-institution
+                  status with the BIR and will publish the details here once
+                  verified.
                 </p>
               </div>
               <div className="mt-4 flex items-start gap-3">
