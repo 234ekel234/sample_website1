@@ -39,14 +39,14 @@ export default function Navbar() {
           <LogoMark className="h-10 w-10 shrink-0 drop-shadow-sm" />
           <span className="flex flex-col leading-tight">
             <span
-              className={`text-lg font-bold tracking-tight transition-colors ${
+              className={`text-xl font-bold tracking-tight transition-colors ${
                 scrolled ? "text-[#1B2A4A]" : "text-white"
               }`}
             >
               PMAFI
             </span>
             <span
-              className={`text-[9px] font-medium uppercase tracking-widest transition-colors ${
+              className={`text-[10px] font-medium uppercase tracking-[0.14em] transition-colors ${
                 scrolled ? "text-[#C8A951]" : "text-[#C8A951]/80"
               }`}
             >
