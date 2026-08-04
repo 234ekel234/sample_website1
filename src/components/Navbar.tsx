@@ -1,30 +1,89 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import LogoMark from "@/components/LogoMark";
 
-const links = [
+// Every route in src/app is reachable from here. Membership and Donate each own
+// a sub-page, so they group rather than sitting flat — eight top-level items
+// overflowed the bar below about 900px and read as clutter above it.
+//
+// The board is the one route-like thing absent by design: it is a section of
+// /about (/about#board), not a route.
+interface NavLink {
+  label: string;
+  href: string;
+  children?: { label: string; href: string }[];
+}
+
+const links: NavLink[] = [
   { label: "Home", href: "/" },
-  // The board lives at /about#board — reachable from About rather than its own
-  // nav entry, so the bar stays short.
   { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
-  { label: "Membership", href: "/membership" },
+  {
+    label: "Membership",
+    href: "/membership",
+    children: [
+      { label: "Join PMAFI", href: "/membership" },
+      { label: "Digital Member ID", href: "/membership/id" },
+    ],
+  },
+  {
+    label: "Donate",
+    href: "/donate",
+    children: [
+      { label: "Ways to Give", href: "/donate" },
+      { label: "My Giving", href: "/donate/status" },
+    ],
+  },
   { label: "Contact", href: "/contact" },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  /** Label of the desktop dropdown currently open, or null. */
+  const [menu, setMenu] = useState<string | null>(null);
+  const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
+
+  // Navigating anywhere closes whatever is open.
+  useEffect(() => {
+    setMenu(null);
+    setOpen(false);
+  }, [pathname]);
+
+  // Escape closes the dropdown; a click outside dismisses it. Both matter for
+  // keyboard users, who can otherwise be left with an open panel they cannot
+  // dismiss without tabbing through it.
+  useEffect(() => {
+    if (!menu) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenu(null);
+    };
+    const onClick = (e: MouseEvent) => {
+      if (navRef.current && !navRef.current.contains(e.target as Node)) {
+        setMenu(null);
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    document.addEventListener("mousedown", onClick);
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.removeEventListener("mousedown", onClick);
+    };
+  }, [menu]);
+
+  const linkColor = scrolled ? "text-slate-600" : "text-white/90";
 
   return (
     <header
@@ -34,7 +93,10 @@ export default function Navbar() {
           : "border-b border-transparent bg-transparent"
       }`}
     >
-      <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+      <nav
+        ref={navRef}
+        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4"
+      >
         <Link href="/" className="flex items-center gap-3">
           <LogoMark className="h-10 w-10 shrink-0 drop-shadow-sm" />
           <span className="flex flex-col leading-tight">
@@ -55,27 +117,78 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-8 md:flex">
-          {links.map(({ label, href }) => (
-            <li key={href}>
-              <Link
-                href={href}
-                className={`group relative text-sm font-medium transition-colors hover:text-[#C8A951] ${
-                  scrolled ? "text-slate-600" : "text-white/90"
-                }`}
+        <ul className="hidden items-center gap-7 lg:flex">
+          {links.map(({ label, href, children }) =>
+            children ? (
+              <li
+                key={href}
+                className="relative"
+                onMouseEnter={() => setMenu(label)}
+                onMouseLeave={() => setMenu(null)}
               >
-                {label}
-                <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 bg-[#C8A951] transition-transform duration-300 group-hover:scale-x-100" />
-              </Link>
-            </li>
-          ))}
+                <button
+                  type="button"
+                  aria-haspopup="true"
+                  aria-expanded={menu === label}
+                  onClick={() => setMenu(menu === label ? null : label)}
+                  className={`group relative inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
+                >
+                  {label}
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${
+                      menu === label ? "rotate-180" : ""
+                    }`}
+                  />
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 bg-[#C8A951] transition-transform duration-300 group-hover:scale-x-100" />
+                </button>
+
+                {/* Always in the DOM, shown with CSS. Mounting this only while
+                    open would keep the sub-page links out of the served HTML,
+                    where crawlers never see them and a visitor without JS could
+                    not reach them. `invisible` also drops them from the tab
+                    order while closed. */}
+                <div
+                  className={`absolute left-1/2 top-full z-50 w-56 -translate-x-1/2 pt-3 transition-opacity duration-200 ${
+                    menu === label
+                      ? "visible opacity-100"
+                      : "invisible opacity-0"
+                  }`}
+                >
+                  <ul className="overflow-hidden rounded-xl border border-slate-200/80 bg-white py-2 shadow-[0_18px_40px_-18px_rgba(27,42,74,0.45)]">
+                    {children.map((child) => (
+                      <li key={child.href}>
+                        <Link
+                          href={child.href}
+                          onClick={() => setMenu(null)}
+                          className="block px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#1B2A4A]"
+                        >
+                          {child.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            ) : (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={`group relative text-sm font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
+                >
+                  {label}
+                  <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 bg-[#C8A951] transition-transform duration-300 group-hover:scale-x-100" />
+                </Link>
+              </li>
+            )
+          )}
         </ul>
 
         <Link
           href="/donate"
           className={cn(
             buttonVariants(),
-            "hidden bg-[#C8A951] font-semibold text-[#1B2A4A] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white md:inline-flex"
+            "hidden bg-[#C8A951] font-semibold text-[#1B2A4A] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white lg:inline-flex"
           )}
         >
           Support Us
@@ -84,7 +197,7 @@ export default function Navbar() {
         <button
           aria-label="Toggle menu"
           aria-expanded={open}
-          className={`md:hidden ${scrolled ? "text-[#1B2A4A]" : "text-white"}`}
+          className={`lg:hidden ${scrolled ? "text-[#1B2A4A]" : "text-white"}`}
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
@@ -92,17 +205,38 @@ export default function Navbar() {
       </nav>
 
       {open && (
-        <div className="border-t border-slate-100 bg-white px-6 py-4 md:hidden">
+        <div className="border-t border-slate-100 bg-white px-6 py-4 lg:hidden">
           <ul className="flex flex-col gap-4">
-            {links.map(({ label, href }) => (
+            {links.map(({ label, href, children }) => (
               <li key={href}>
-                <Link
-                  href={href}
-                  className="text-sm font-medium text-slate-700 hover:text-[#C8A951]"
-                  onClick={() => setOpen(false)}
-                >
-                  {label}
-                </Link>
+                {children ? (
+                  <>
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                      {label}
+                    </p>
+                    <ul className="mt-2 flex flex-col gap-3 border-l border-slate-200 pl-4">
+                      {children.map((child) => (
+                        <li key={child.href}>
+                          <Link
+                            href={child.href}
+                            className="text-sm font-medium text-slate-700 hover:text-[#C8A951]"
+                            onClick={() => setOpen(false)}
+                          >
+                            {child.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <Link
+                    href={href}
+                    className="text-sm font-medium text-slate-700 hover:text-[#C8A951]"
+                    onClick={() => setOpen(false)}
+                  >
+                    {label}
+                  </Link>
+                )}
               </li>
             ))}
           </ul>
