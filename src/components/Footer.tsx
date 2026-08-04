@@ -146,7 +146,23 @@ export default async function Footer() {
       <Separator className="bg-white/5" />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-        <span>© {new Date().getFullYear()} Philippine Military Academy Foundation, Inc. All rights reserved.</span>
+        <span>
+          © {new Date().getFullYear()} Philippine Military Academy Foundation,
+          Inc. All rights reserved.
+          {/* Discreet build credit — the standing referral channel agreed in
+              place of a one-off testimonial. Kept to the copyright line so it
+              reads as attribution rather than advertising. */}
+          <span className="ml-2 text-slate-500">
+            Site by{" "}
+            <a
+              href="mailto:tusi.ekel@gmail.com"
+              className="transition-colors hover:text-[#C8A951]"
+            >
+              Simoun Tusi
+            </a>
+            .
+          </span>
+        </span>
         <span className="sm:text-right">
           PMAFI is an independent foundation supporting the PMA — not an
           official website of the Philippine Military Academy or the AFP.
