@@ -104,7 +104,6 @@ const FALLBACK: FaqEntry[] = [
     keywords: ["donation", "where", "spent", "used", "funds", "money", "goes"],
     linkLabel: "See our programs",
     linkHref: "/programs",
-    suggested: true,
   },
   {
     question: "How do I make a donation?",
@@ -170,6 +169,135 @@ const FALLBACK: FaqEntry[] = [
     answer:
       "Yes. The member roster is held privately and is never published on the website. When you check your status, only your own record is shown, and the digital ID card is generated in your browser without your photo being uploaded.",
     keywords: ["privacy", "private", "data", "secure", "security", "confidential"],
+  },
+  // --- Membership, in more detail ---------------------------------------
+  {
+    question: "Who can become a Regular or Associate member?",
+    answer:
+      "Both categories are open to alumni, faculty and staff of the Philippine Military Academy. Regular members take an active role in the Foundation's mission; Associate members support its programs and objectives alongside them.",
+    keywords: ["eligible", "eligibility", "who can join", "qualify", "regular", "associate", "alumni", "faculty"],
+    linkLabel: "See the categories",
+    linkHref: "/membership",
+  },
+  {
+    question: "Who can become an Affiliate member?",
+    answer:
+      "Affiliate membership is open to selected individuals and organizations who share PMAFI's values and support its vision, mission and objectives. You do not need to be a PMA graduate.",
+    keywords: ["affiliate", "organization", "company", "not alumni", "partner"],
+    linkLabel: "See the categories",
+    linkHref: "/membership",
+  },
+  {
+    question: "What are the benefits of membership?",
+    answer:
+      "Members invest directly in the Academy, join a nationwide community of alumni and supporters, receive regular updates on programs and milestones, and are invited to PMAFI events. Regular members also vote in the election of the Board of Trustees.",
+    keywords: ["benefits", "perks", "why join", "advantages", "what do i get"],
+    linkLabel: "See member benefits",
+    linkHref: "/membership",
+  },
+  {
+    question: "What happens after I submit my application?",
+    answer:
+      "Your application is reviewed and your membership category confirmed. You then receive an invoice with payment instructions, settle the dues and send proof of payment, and your membership is activated once that payment is confirmed.",
+    keywords: ["after applying", "next steps", "process", "what happens", "approval", "review"],
+    linkLabel: "See how to join",
+    linkHref: "/membership",
+  },
+  {
+    question: "Can I vote in PMAFI elections?",
+    answer:
+      "Regular members vote in the election of the Board of Trustees, giving them a direct say in how the Foundation is governed and where its resources go.",
+    keywords: ["vote", "voting", "election", "elect", "governance", "trustees"],
+    linkLabel: "About membership",
+    linkHref: "/membership",
+  },
+
+  // --- Giving, in more detail --------------------------------------------
+  {
+    question: "What is an endowment fund?",
+    answer:
+      "An endowment is a lasting fund whose principal is never spent. Only the annual earnings are used, so the gift continues to sustain PMA programs and academic excellence year after year. Endowments start from \u20b1100,000.",
+    keywords: ["endowment", "perpetuity", "lasting", "principal", "fund"],
+    linkLabel: "Ways to give",
+    linkHref: "/donate",
+  },
+  {
+    question: "How much do I need to establish a professorial chair?",
+    answer:
+      "A professorial chair may be established from \u20b1250,000. The principal is preserved and only the earnings fund the grant, so the chair continues in your name or your class's honor.",
+    keywords: ["professorial chair", "how much", "minimum", "establish", "cost"],
+    linkLabel: "Ways to give",
+    linkHref: "/donate",
+  },
+  {
+    question: "Can I choose what my donation supports?",
+    answer:
+      "Yes. You can establish a professorial chair or an endowment fund in your name, or give an unrestricted gift that PMAFI directs to its most pressing needs \u2014 faculty development, facilities, scholarships and cadet programs.",
+    keywords: ["designate", "choose", "specific", "restricted", "unrestricted", "earmark"],
+    linkLabel: "Ways to give",
+    linkHref: "/donate",
+  },
+  {
+    question: "How will I know my donation was received?",
+    answer:
+      "After sending your gift, email your name, contact details and proof of payment to the Foundation. You will then receive an official acknowledgment and receipt.",
+    keywords: ["confirm", "receipt", "acknowledgment", "proof", "received", "confirmation"],
+    linkLabel: "How to give",
+    linkHref: "/donate",
+  },
+  {
+    question: "How can I check a donation I have already made?",
+    answer:
+      "Use the My Giving page. Enter the email address you gave under together with the reference code from your acknowledgment, and you will see each of your gifts \u2014 the amount, the date, what it was designated for, and where it stands in our process.",
+    keywords: ["check donation", "my giving", "track", "look up", "history", "reference"],
+    linkLabel: "View my giving",
+    linkHref: "/donate/status",
+    suggested: true,
+  },
+  {
+    question: "Why is my donation not showing in My Giving?",
+    answer:
+      "Gifts are listed once our team has verified the transfer and recorded it, so a very recent donation may not appear yet. Please also check that the email address and reference match your acknowledgment exactly. If something still looks wrong, get in touch and we will look it up for you.",
+    keywords: ["not showing", "missing", "cannot find", "no record", "problem"],
+    linkLabel: "Contact us",
+    linkHref: "/contact",
+  },
+
+  // --- Digital member ID --------------------------------------------------
+  {
+    question: "How do I create my digital member ID?",
+    answer:
+      "Go to the digital ID page, enter your name and membership category, and add a photo. The card is generated instantly and you can download it to keep on your phone.",
+    keywords: ["id card", "digital id", "create id", "member id", "card", "download"],
+    linkLabel: "Create my ID",
+    linkHref: "/membership/id",
+    suggested: true,
+  },
+  {
+    question: "Is my photo uploaded when I create an ID?",
+    answer:
+      "No. The card is put together entirely in your browser \u2014 your photo is never uploaded to us and is not stored anywhere.",
+    keywords: ["photo", "upload", "stored", "picture", "image"],
+    linkLabel: "Create my ID",
+    linkHref: "/membership/id",
+  },
+
+  // --- About the Foundation ------------------------------------------------
+  {
+    question: "Is PMAFI part of the Philippine Military Academy or the AFP?",
+    answer:
+      "No. PMAFI is an independent non-stock, non-profit foundation that supports the Academy. This is not an official website of the Philippine Military Academy or the Armed Forces of the Philippines.",
+    keywords: ["official", "part of", "afp", "government", "independent", "affiliated"],
+    linkLabel: "About PMAFI",
+    linkHref: "/about",
+  },
+  {
+    question: "What does PMAFI stand for?",
+    answer:
+      "PMAFI is the Philippine Military Academy Foundation, Inc. \u2014 a non-stock, non-profit foundation supporting the PMA in developing officers of integrity, competence and character.",
+    keywords: ["stand for", "acronym", "abbreviation", "full name", "meaning"],
+    linkLabel: "About PMAFI",
+    linkHref: "/about",
   },
 ];
 
