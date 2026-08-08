@@ -6,6 +6,7 @@ import {
   type DonationRecord,
 } from "@/lib/donations";
 import { sendGivingSummary } from "@/lib/giving-email";
+import { rateLimit } from "@/lib/rate-limit";
 
 export type GivingCheckState =
   | { status: "idle" }
@@ -35,6 +36,14 @@ export async function checkGivingAction(
       status: "error",
       message: "Please enter the reference from your acknowledgment.",
     };
+  }
+
+  // The reference path reveals figures on screen, so throttle guessing. Keyed on
+  // the email being probed rather than the reference, since an attacker varies
+  // the reference while holding the address fixed.
+  const guessLimit = rateLimit(`giving-lookup:${email.toLowerCase()}`, 10, 10 * 60 * 1000);
+  if (!guessLimit.ok) {
+    return { status: "nomatch" };
   }
 
   let history;
@@ -87,6 +96,16 @@ export async function emailGivingSummaryAction(
 
   if (!EMAIL_RE.test(email)) {
     return { status: "error", message: "Please enter a valid email address." };
+  }
+
+  // Throttle on the RECIPIENT, not the sender: the harm here is a donor's inbox
+  // filling with summaries, and the person submitting is not the person hurt.
+  // Three an hour is far above any honest use — a donor asks once.
+  const limited = rateLimit(`giving-email:${email.toLowerCase()}`, 3, 60 * 60 * 1000);
+  if (!limited.ok) {
+    // Deliberately identical in shape to success. Saying "too many requests for
+    // this address" would confirm the address is worth targeting.
+    return { status: "sent" };
   }
 
   let history;
