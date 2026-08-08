@@ -126,7 +126,23 @@ export default function MembershipPage() {
           </>
         }
         lede="Join a community of alumni, friends, and partners committed to strengthening the Philippine Military Academy and the officers it produces."
-      />
+      >
+        {/* The page's primary action, in the hero — a visitor who arrives
+            already intending to join should not have to scroll past the
+            status check and three explainer sections to find it. */}
+        <a
+          href={APPLICATION_FORM_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            buttonVariants({ size: "lg" }),
+            "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
+          )}
+        >
+          Apply for Membership
+          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </a>
+      </PageHero>
 
       {/* Status check */}
       <section className="bg-white py-20">
