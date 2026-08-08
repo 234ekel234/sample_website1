@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import DigitalIdGenerator from "./DigitalIdGenerator";
+import IdGate from "./IdGate";
 import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
@@ -21,13 +21,13 @@ export default function DigitalIdPage() {
             Create Your <span className="text-gold-shimmer">Member ID</span>
           </>
         }
-        lede="Add your details and a photo to generate a personalized PMAFI digital member ID, then download it to keep on your phone."
+        lede="Confirm your membership, add a photo, and your PMAFI digital member ID is generated from the Foundation's own records — ready to download and keep on your phone."
       />
 
       {/* Generator */}
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <DigitalIdGenerator />
+          <IdGate />
 
           <div className="mt-10 text-center">
             <Link

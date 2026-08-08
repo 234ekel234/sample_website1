@@ -26,6 +26,9 @@ const GOLD = "#C8A951";
 const CATEGORIES = ["Regular", "Associate", "Affiliate"] as const;
 type Category = (typeof CATEGORIES)[number];
 
+/** localStorage key for the member's own photo. Browser-local, never uploaded. */
+const PHOTO_CACHE_KEY = "pmafi:id-photo";
+
 function loadImage(src: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -98,19 +101,40 @@ function fitFont(
   return size;
 }
 
-export default function DigitalIdGenerator() {
+/** The verified member this card is for. Supplied by the roster, never typed. */
+export interface VerifiedMember {
+  name: string;
+  category: string;
+  standing: "Active" | "Lapsed" | "Pending";
+}
+
+export default function DigitalIdGenerator({
+  member,
+}: {
+  member: VerifiedMember;
+}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [name, setName] = useState("");
-  const [category, setCategory] = useState<Category>("Regular");
+  const { name, category, standing } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [qr, setQr] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
 
-  const displayName = name.trim() || "Member Name";
-  const memberId = useMemo(
-    () => (name.trim() ? idFromName(name) : "PMAFI-——————"),
-    [name]
-  );
+  // The photo is the one input the roster cannot supply, so it is remembered
+  // HERE — in this browser, never on a server. That keeps "your photo never
+  // leaves your device" literally true while sparing a returning member the
+  // re-upload. Persisting photos server-side would mean holding personal data
+  // the Foundation has no privacy notice for; that is Phase 3 territory.
+  useEffect(() => {
+    try {
+      const cached = window.localStorage.getItem(PHOTO_CACHE_KEY);
+      if (cached) loadImage(cached).then(setPhoto).catch(() => {});
+    } catch {
+      // Private browsing or a full quota — the uploader still works.
+    }
+  }, []);
+
+  const displayName = name.trim();
+  const memberId = useMemo(() => idFromName(name), [name]);
   const issued = new Date().toLocaleDateString("en-PH", {
     day: "numeric",
     month: "long",
@@ -136,7 +160,7 @@ export default function DigitalIdGenerator() {
       `Name: ${displayName}`,
       `ID: ${memberId}`,
       `Category: ${category} Member`,
-      "Status: Active",
+      `Status: ${standing}`,
       `Issued: ${issued}`,
       `Verify: ${SITE_URL}/membership`,
     ].join("\n");
@@ -239,15 +263,22 @@ export default function DigitalIdGenerator() {
     ctx.font = "600 18px system-ui, sans-serif";
     ctx.fillText(`${category} Member`, tx, py + 90);
 
-    // Status pill (Active)
+    // Status pill — colour follows the roster, so a lapsed card reads as lapsed
+    // at a glance rather than only in small print.
     ctx.font = "700 14px system-ui, sans-serif";
-    const pillText = "ACTIVE";
+    const pillText = standing.toUpperCase();
     const pillW = ctx.measureText(pillText).width + 32;
     const pillY = py + 112;
-    ctx.fillStyle = "rgba(16,185,129,0.18)";
+    const pillColor =
+      standing === "Active"
+        ? { bg: "rgba(16,185,129,0.18)", fg: "#34d399" }   // emerald
+        : standing === "Pending"
+          ? { bg: "rgba(56,189,248,0.18)", fg: "#38bdf8" } // sky
+          : { bg: "rgba(251,191,36,0.18)", fg: "#fbbf24" }; // amber — lapsed
+    ctx.fillStyle = pillColor.bg;
     roundRect(ctx, tx, pillY, pillW, 30, 15);
     ctx.fill();
-    ctx.fillStyle = "#34d399";
+    ctx.fillStyle = pillColor.fg;
     ctx.fillText(pillText, tx + 16, pillY + 20);
 
     // ID + issued
@@ -289,8 +320,33 @@ export default function DigitalIdGenerator() {
     if (!file) return;
     const url = URL.createObjectURL(file);
     loadImage(url)
-      .then((img) => setPhoto(img))
+      .then((img) => {
+        setPhoto(img);
+        cachePhoto(img);
+      })
       .finally(() => URL.revokeObjectURL(url));
+  };
+
+  /** Remember the photo in this browser only, downscaled to keep it small. */
+  const cachePhoto = (img: HTMLImageElement) => {
+    try {
+      const max = 600;
+      const scale = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale);
+      c.height = Math.round(img.height * scale);
+      c.getContext("2d")?.drawImage(img, 0, 0, c.width, c.height);
+      window.localStorage.setItem(PHOTO_CACHE_KEY, c.toDataURL("image/jpeg", 0.8));
+    } catch {
+      // Quota exceeded or storage unavailable — caching is a convenience only.
+    }
+  };
+
+  const forgetPhoto = () => {
+    try {
+      window.localStorage.removeItem(PHOTO_CACHE_KEY);
+    } catch {}
+    setPhoto(null);
   };
 
   const canDownload = name.trim().length > 0 && photo !== null;
@@ -317,32 +373,30 @@ export default function DigitalIdGenerator() {
           Your details
         </p>
 
-        <label className="mt-5 block text-sm font-medium text-slate-700">
-          Full name
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Juan Dela Cruz"
-            maxLength={40}
-            className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
-          />
-        </label>
-
-        <label className="mt-4 block text-sm font-medium text-slate-700">
-          Membership category
-          <select
-            value={category}
-            onChange={(e) => setCategory(e.target.value as Category)}
-            className="mt-1.5 w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition-colors focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>
-                {c} Member
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* Name and category are not editable — they come from the roster, so a
+            card cannot assert something the Foundation's records do not. */}
+        <dl className="mt-5 space-y-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Name
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">{name}</dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Category
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">
+              {category} Member
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Standing
+            </dt>
+            <dd className="text-sm font-semibold text-slate-900">{standing}</dd>
+          </div>
+        </dl>
 
         <div className="mt-4">
           <span className="block text-sm font-medium text-slate-700">
@@ -376,7 +430,21 @@ export default function DigitalIdGenerator() {
         )}
         <p className="mt-4 text-xs text-slate-500">
           Your photo never leaves your device — the card is built right here in
-          your browser.
+          your browser, and the photo is remembered only in this browser so you
+          need not upload it again.
+          {photo && (
+            <>
+              {" "}
+              <button
+                type="button"
+                onClick={forgetPhoto}
+                className="font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"
+              >
+                Forget my photo
+              </button>
+              .
+            </>
+          )}
         </p>
       </div>
 
