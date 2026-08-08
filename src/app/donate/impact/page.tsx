@@ -43,7 +43,7 @@ export default async function FundUpdatesPage() {
       <section className="bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
           {funds.length === 0 ? (
-            /* Honest empty state — never invent an account of what a gift did. */
+            /* Honest empty state — never invent an account of what a donation did. */
             <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-slate-50 p-10 text-center">
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-[#1B2A4A]/10 text-[#1B2A4A]">
                 <Landmark size={22} />
@@ -129,9 +129,9 @@ export default async function FundUpdatesPage() {
 
           <div className="mt-14 flex flex-col items-center gap-4 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-7 text-center sm:flex-row sm:justify-between sm:text-left">
             <div>
-              <p className="font-bold text-white">Gave to one of these funds?</p>
+              <p className="font-bold text-white">Donated to one of these funds?</p>
               <p className="mt-1 text-sm text-slate-300">
-                Look up your own giving to see what it was designated for and
+                Look up your own donations to see what they were designated for and
                 where it stands.
               </p>
             </div>
@@ -142,7 +142,7 @@ export default async function FundUpdatesPage() {
                 "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#A07830] hover:text-white"
               )}
             >
-              View my giving
+              View my donations
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Link>
           </div>

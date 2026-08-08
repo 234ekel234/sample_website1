@@ -15,7 +15,7 @@ const faqs = [
   },
   {
     q: "How do I make a donation?",
-    a: "Message us by email or phone and we'll share the Foundation's official bank transfer and e-wallet details. Once your gift is received, we issue an acknowledgment and an official receipt for your records.",
+    a: "Message us by email or phone and we'll share the Foundation's official bank transfer and e-wallet details. Once your donation is received, we issue an acknowledgment and an official receipt for your records.",
   },
   {
     q: "Are donations to PMAFI tax-deductible?",

@@ -10,7 +10,7 @@ const promises = [
     icon: InfinityIcon,
     title: "Preserved in Perpetuity",
     description:
-      "Endowment and chair principal is never spent — only the earnings fund programs, so your gift gives forever.",
+      "Endowment and chair principal is never spent — only the earnings fund programs, so your donation gives forever.",
   },
   {
     icon: Compass,

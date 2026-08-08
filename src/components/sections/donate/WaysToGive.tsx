@@ -13,14 +13,14 @@ const ways = [
     title: "General Donation",
     amount: "Any amount",
     description:
-      "An unrestricted gift that PMAFI directs where it's needed most — faculty development, facilities, scholarships, and cadet programs.",
+      "An unrestricted donation that PMAFI directs where it's needed most — faculty development, facilities, scholarships, and cadet programs.",
   },
   {
     icon: BookOpen,
     title: "Professorial Chair Fund",
     amount: "From ₱250,000",
     description:
-      "Establish a chair in your name or your class's honor. The principal is preserved — only the earnings fund the grant, so your gift gives in perpetuity.",
+      "Establish a chair in your name or your class's honor. The principal is preserved — only the earnings fund the grant, so your donation gives in perpetuity.",
   },
   {
     icon: Landmark,
@@ -57,7 +57,7 @@ export default function WaysToGive() {
             Choose How You&apos;d Like to Help
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            Whether a one-time gift or a lasting endowment, every contribution
+            Whether a one-time donation or a lasting endowment, every contribution
             advances the mission of the Academy.
           </p>
         </div>

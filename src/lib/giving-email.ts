@@ -42,7 +42,7 @@ export function renderText(history: GivingHistory): string {
     history.donorName ? `Dear ${history.donorName},` : "Dear friend of PMAFI,",
     "",
     "Thank you for supporting the Philippine Military Academy Foundation.",
-    "Here is a summary of the gifts we have recorded against this address.",
+    "Here is a summary of the donations we have recorded against this address.",
     "",
   ];
   for (const d of history.donations) {
@@ -54,9 +54,9 @@ export function renderText(history: GivingHistory): string {
   }
   lines.push(
     "",
-    `  Total recorded: ${peso.format(history.total)}`,
+    `  Total donated: ${peso.format(history.total)}`,
     "",
-    "Only gifts our team has verified and recorded appear here, so a very",
+    "Only donations our team has verified and recorded appear here, so a very",
     "recent donation may not yet be listed.",
     "",
     `See what each fund has achieved: ${SITE_URL}/donate/impact`,
@@ -84,9 +84,9 @@ export function renderHtml(history: GivingHistory): string {
 
   return `<div style="font-family:Georgia,serif;max-width:640px;margin:0 auto;padding:24px;color:#0f172a;">
   <p style="font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8A6A22;margin:0 0 4px;">Philippine Military Academy Foundation</p>
-  <h1 style="font-size:22px;color:#1B2A4A;margin:0 0 16px;">Your giving summary</h1>
+  <h1 style="font-size:22px;color:#1B2A4A;margin:0 0 16px;">Your donation summary</h1>
   <p style="color:#334155;line-height:1.6;">${history.donorName ? `Dear ${escapeHtml(history.donorName)},` : "Dear friend of PMAFI,"}</p>
-  <p style="color:#334155;line-height:1.6;">Thank you for supporting the Academy. Here is a summary of the gifts we have recorded against this address.</p>
+  <p style="color:#334155;line-height:1.6;">Thank you for supporting the Academy. Here is a summary of the donations we have recorded against this address.</p>
   <table style="width:100%;border-collapse:collapse;margin:20px 0;font-family:system-ui,sans-serif;font-size:14px;">
     <thead>
       <tr style="text-align:left;">
@@ -98,8 +98,8 @@ export function renderHtml(history: GivingHistory): string {
     </thead>
     <tbody>${rows}</tbody>
   </table>
-  <p style="font-size:16px;color:#1B2A4A;"><strong>Total recorded: ${escapeHtml(peso.format(history.total))}</strong></p>
-  <p style="color:#64748b;font-size:13px;line-height:1.6;">Only gifts our team has verified and recorded appear here, so a very recent donation may not yet be listed.</p>
+  <p style="font-size:16px;color:#1B2A4A;"><strong>Total donated: ${escapeHtml(peso.format(history.total))}</strong></p>
+  <p style="color:#64748b;font-size:13px;line-height:1.6;">Only donations our team has verified and recorded appear here, so a very recent donation may not yet be listed.</p>
   <p style="margin:20px 0;"><a href="${SITE_URL}/donate/impact" style="color:#8A6A22;">See what each fund has achieved &rarr;</a></p>
   <p style="color:#64748b;font-size:13px;">If anything looks wrong, reply to this message and we will look into it.</p>
 </div>`;
@@ -127,7 +127,7 @@ export async function sendGivingSummary(
     body: JSON.stringify({
       from: process.env.GIVING_FROM_EMAIL || DEFAULT_FROM,
       to: [to],
-      subject: "Your PMAFI giving summary",
+      subject: "Your PMAFI donation summary",
       text: renderText(history),
       html: renderHtml(history),
     }),

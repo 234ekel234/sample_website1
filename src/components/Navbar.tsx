@@ -37,7 +37,7 @@ const links: NavLink[] = [
     children: [
       { label: "Ways to Give", href: "/donate" },
       { label: "Fund Updates", href: "/donate/impact" },
-      { label: "My Giving", href: "/donate/status" },
+      { label: "My Donations", href: "/donate/status" },
     ],
   },
   { label: "Contact", href: "/contact" },

@@ -23,7 +23,7 @@ export default function DonatePage() {
       <GivingPromise />
       <HowToDonate />
 
-      {/* Existing donors: look up a gift already made. */}
+      {/* Existing donors: look up a donation already made. */}
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-3xl px-6">
           <div className="flex flex-col items-center gap-4 rounded-2xl border border-slate-200 bg-white p-7 text-center sm:flex-row sm:justify-between sm:text-left">
@@ -44,7 +44,7 @@ export default function DonatePage() {
                 "shrink-0 bg-[#1B2A4A] font-semibold text-white hover:bg-[#0a1628]"
               )}
             >
-              View my giving
+              View my donations
               <ArrowRight className="ml-1.5 h-4 w-4" />
             </Link>
           </div>

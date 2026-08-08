@@ -18,7 +18,7 @@ export interface HowToDonateContentProps {
 
 const steps = [
   "Choose how you'd like to give from the options above.",
-  "Send your gift through the channel provided (or email us to arrange it).",
+  "Send your donation through the channel provided (or email us to arrange it).",
   "Email your name, contact details, and proof of payment so we can acknowledge it.",
   "Receive your official acknowledgment and receipt from the Foundation.",
 ];
@@ -49,7 +49,7 @@ export default function HowToDonateContent({
       value: gcashConfirmed ? gcashNumber : "Coming soon",
       note: gcashConfirmed
         ? gcashName || "GCash"
-        : "An e-wallet option will be added for quick, smaller gifts.",
+        : "An e-wallet option will be added for quick, smaller donations.",
     },
   ];
 
@@ -71,7 +71,7 @@ export default function HowToDonateContent({
               How to Give
             </p>
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-              Making Your Gift
+              Making Your Donation
             </h2>
             <ol className="mt-8 space-y-6">
               {steps.map((step, i) => (
@@ -129,7 +129,7 @@ export default function HowToDonateContent({
                     Ready to give now? Email us.
                   </p>
                   <p className="mt-1 text-sm text-slate-600">
-                    We&apos;ll send current payment details and arrange your gift —{" "}
+                    We&apos;ll send current payment details and arrange your donation —{" "}
                     <span className="font-medium text-[#1B2A4A]">{email}</span>
                   </p>
                 </div>
@@ -160,7 +160,7 @@ export default function HowToDonateContent({
                 <p className="text-sm leading-relaxed text-slate-600">
                   <span className="font-semibold text-[#1B2A4A]">Principal preserved.</span>{" "}
                   For professorial chairs and endowments, the principal is never
-                  spent — only the earnings fund grants, so your gift keeps giving.
+                  spent — only the earnings fund grants, so your contribution lasts.
                 </p>
               </div>
             </div>

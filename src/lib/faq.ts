@@ -240,7 +240,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How will I know my donation was received?",
     answer:
-      "After sending your gift, email your name, contact details and proof of payment to the Foundation. You will then receive an official acknowledgment and receipt.",
+      "After sending your donation, email your name, contact details and proof of payment to the Foundation. You will then receive an official acknowledgment and receipt.",
     keywords: ["confirm", "receipt", "acknowledgment", "proof", "received", "confirmation"],
     linkLabel: "How to give",
     linkHref: "/donate",
@@ -248,16 +248,16 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How can I check a donation I have already made?",
     answer:
-      "Use the My Giving page. Enter the email address you gave under together with the reference code from your acknowledgment, and you will see each of your gifts \u2014 the amount, the date, what it was designated for, and where it stands in our process.",
-    keywords: ["check donation", "my giving", "track", "look up", "history", "reference"],
-    linkLabel: "View my giving",
+      "Use the My Donations page. Enter the email address you gave under together with the reference code from your acknowledgment, and you will see each of your gifts \u2014 the amount, the date, what it was designated for, and where it stands in our process.",
+    keywords: ["check donation", "my donations", "track", "look up", "history", "reference"],
+    linkLabel: "View my donations",
     linkHref: "/donate/status",
     suggested: true,
   },
   {
-    question: "Why is my donation not showing in My Giving?",
+    question: "Why is my donation not showing in My Donations?",
     answer:
-      "Gifts are listed once our team has verified the transfer and recorded it, so a very recent donation may not appear yet. Please also check that the email address and reference match your acknowledgment exactly. If something still looks wrong, get in touch and we will look it up for you.",
+      "Donations are listed once our team has verified the transfer and recorded it, so a very recent donation may not appear yet. Please also check that the email address and reference match your acknowledgment exactly. If something still looks wrong, get in touch and we will look it up for you.",
     keywords: ["not showing", "missing", "cannot find", "no record", "problem"],
     linkLabel: "Contact us",
     linkHref: "/contact",

@@ -43,7 +43,7 @@ const STATUS_META: Record<
   Received: {
     icon: CheckCircle2,
     className: "border-sky-200 bg-sky-50 text-sky-800",
-    meaning: "Your gift has been received and recorded.",
+    meaning: "Your donation has been received and recorded.",
   },
   Acknowledged: {
     icon: HeartHandshake,
@@ -58,7 +58,7 @@ const STATUS_META: Record<
   Allocated: {
     icon: Sparkles,
     className: "border-[#C8A951]/40 bg-[#C8A951]/10 text-[#8A6A22]",
-    meaning: "Your gift has been put to work in the fund you chose.",
+    meaning: "Your donation has been put to work in the fund you chose.",
   },
 };
 
@@ -102,7 +102,7 @@ export default function DonationCheck() {
           disabled={pending}
           className="inline-flex items-center justify-center gap-2 self-start rounded-lg bg-[#1B2A4A] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#0a1628] disabled:opacity-60"
         >
-          {pending ? "Looking up…" : "View my giving"}
+          {pending ? "Looking up…" : "View my donations"}
         </button>
       </form>
 
@@ -117,13 +117,13 @@ export default function DonationCheck() {
               </p>
               <p className="mt-1 text-sm text-slate-300">
                 {state.donations.length === 1
-                  ? "We have 1 gift recorded under your email."
-                  : `We have ${state.donations.length} gifts recorded under your email.`}
+                  ? "We have 1 donation recorded under your email."
+                  : `We have ${state.donations.length} donations recorded under your email.`}
               </p>
             </div>
             <div className="shrink-0 sm:text-right">
               <p className="text-xs font-semibold uppercase tracking-widest text-[#C8A951]">
-                Total given
+                Total donated
               </p>
               <p className="text-2xl font-bold text-white">
                 {peso.format(state.total)}
@@ -177,8 +177,8 @@ export default function DonationCheck() {
           </ul>
 
           <p className="mt-4 text-xs text-slate-500">
-            Recorded gifts only. If you gave very recently it may not appear
-            here yet — a gift is listed once our team has verified and logged
+            Recorded donations only. If you gave very recently it may not appear
+            here yet — a donation is listed once our team has verified and logged
             it.{" "}
             <Link
               href="/contact"
@@ -199,7 +199,7 @@ export default function DonationCheck() {
           </p>
           <p className="mt-1 text-sm text-slate-600">
             Please check that both the email address and the reference match
-            your acknowledgment exactly. If you gave recently, your gift may not
+            your acknowledgment exactly. If you gave recently, your donation may not
             be logged yet.
           </p>
           <Link
@@ -217,8 +217,8 @@ export default function DonationCheck() {
 
       <p className="mt-4 text-xs text-slate-500">
         We ask for a reference as well as your email so that no one else can
-        look up your giving. Your records are checked privately and only your
-        own gifts are shown.
+        look up your donations. Your records are checked privately and only
+        your own donations are shown.
       </p>
     </div>
   );

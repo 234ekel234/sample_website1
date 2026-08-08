@@ -56,7 +56,7 @@ export async function checkGivingAction(
     return {
       status: "error",
       message:
-        "We couldn't look up your giving right now. Please try again shortly, or contact us if it persists.",
+        "We couldn't look up your donations right now. Please try again shortly, or contact us if it persists.",
     };
   }
 

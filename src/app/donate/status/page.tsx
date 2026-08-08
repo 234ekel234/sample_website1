@@ -6,7 +6,7 @@ import EmailSummary from "./EmailSummary";
 import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
-  title: "My Giving | PMAFI",
+  title: "My Donations | PMAFI",
   description:
     "Look up a donation to the Philippine Military Academy Foundation using your email address and the reference from your acknowledgment.",
 };
@@ -16,19 +16,19 @@ const notes = [
     icon: Mail,
     title: "Where to find your reference",
     description:
-      "It appears on the acknowledgment we send after a gift is verified — a short code such as PMAFI-2026-K7QX3M.",
+      "It appears on the acknowledgment we send after a donation is verified — a short code such as PMAFI-2026-K7QX3M.",
   },
   {
     icon: Clock,
     title: "Recently given?",
     description:
-      "Gifts are listed once our team has verified the transfer and recorded it, so a very recent donation may not appear yet.",
+      "Donations are listed once our team has verified the transfer and recorded it, so a very recent donation may not appear yet.",
   },
   {
     icon: ShieldCheck,
     title: "Why it works this way",
     description:
-      "An email alone would let anyone look up someone else's giving, so we send the summary to that address instead. A reference code proves the record is yours and lets us show it here.",
+      "An email alone would let anyone look up someone else's donations, so we send the summary to that address instead. A reference code proves the record is yours and lets us show it here.",
   },
 ];
 
@@ -37,13 +37,13 @@ export default function GivingStatusPage() {
     <main>
       {/* Hero */}
       <PageHero
-        eyebrow="My Giving"
+        eyebrow="My Donations"
         title={
           <>
             Track Your <span className="text-gold-shimmer">Support</span>
           </>
         }
-        lede="Look up a gift you've made to the Foundation — what it was designated for, and where it stands in our process."
+        lede="Look up a donation you've made to the Foundation — what it was designated for, and where it stands in our process."
       />
 
       {/* Lookup */}
@@ -56,7 +56,7 @@ export default function GivingStatusPage() {
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1B2A4A]">
-              Find Your Giving Record
+              Find Your Donation Record
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
               Have your summary sent to your inbox, or if you have the reference

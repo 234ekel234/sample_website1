@@ -29,7 +29,7 @@ function starters(faqs: FaqEntry[]): FaqEntry[] {
 }
 
 const GREETING =
-  "Hello! I can answer common questions about the Foundation, membership and giving. Tap a question below, or type your own.";
+  "Hello! I can answer common questions about the Foundation, membership and donations. Tap a question below, or type your own.";
 
 export default function FloatingChat({
   email,

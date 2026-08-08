@@ -183,7 +183,7 @@ export default function ContactDetailsContent({
               className="mt-10 rounded-2xl border border-[#C8A951]/30 bg-[#C8A951]/[0.08] p-6"
             >
               <p className="text-sm font-semibold text-[#1B2A4A]">
-                Planning a major gift or partnership?
+                Planning a major donation or partnership?
               </p>
               <p className="mt-1 text-sm text-slate-600">
                 Email us at{" "}

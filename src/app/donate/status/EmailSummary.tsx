@@ -33,7 +33,7 @@ export default function EmailSummary() {
         <div>
           <p className="font-semibold text-emerald-900">Check your inbox.</p>
           <p className="mt-1 text-sm text-emerald-800">
-            If we have any gifts recorded against that address, a summary is on
+            If we have any donations recorded against that address, a summary is on
             its way to it. We send it to the address rather than showing it here
             so that only you can see your figures.
           </p>
@@ -72,7 +72,7 @@ export default function EmailSummary() {
 
       <p className="mt-4 text-xs text-slate-500">
         No reference code needed. Your summary is sent to the address you enter,
-        never displayed here — so nobody can look up someone else&apos;s giving.{" "}
+        never displayed here — so nobody can look up someone else&apos;s donations.{" "}
         <Link
           href="/contact"
           className="font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"

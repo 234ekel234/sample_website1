@@ -56,7 +56,7 @@ export default function SupportImpact() {
             <span className="h-px w-8 bg-[#C8A951]/50" />
           </p>
           <h2 className="mt-3 text-4xl font-bold tracking-tight text-white">
-            Every Gift Strengthens the Academy
+            Every Contribution Strengthens the Academy
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-slate-300">
             PMAFI channels the generosity of alumni and partners into the people,
