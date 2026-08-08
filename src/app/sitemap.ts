@@ -8,6 +8,7 @@ const routes: { path: string; priority: number; changeFrequency: "monthly" | "ye
   { path: "/programs", priority: 0.8, changeFrequency: "monthly" },
   { path: "/membership", priority: 0.9, changeFrequency: "monthly" },
   { path: "/donate", priority: 0.9, changeFrequency: "monthly" },
+  { path: "/donate/impact", priority: 0.7, changeFrequency: "monthly" },
   { path: "/donate/status", priority: 0.5, changeFrequency: "yearly" },
   { path: "/contact", priority: 0.6, changeFrequency: "yearly" },
 ];

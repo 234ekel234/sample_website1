@@ -177,6 +177,42 @@ export interface GivingHistory {
   total: number;
 }
 
+/** Newest first, with unparseable dates ranked to the bottom rather than
+ *  sorting on their first character against an ISO string. */
+function newestFirst(a: DonationRecord, b: DonationRecord): number {
+  const isIso = (d: DonationRecord) => /^\d{4}-\d{2}-\d{2}$/.test(d.date);
+  if (isIso(a) !== isIso(b)) return isIso(a) ? -1 : 1;
+  return b.date.localeCompare(a.date);
+}
+
+/**
+ * Every gift recorded against an email address, with no proof of ownership.
+ *
+ * DANGEROUS ON SCREEN — this is the lookup the proposal deliberately refuses to
+ * render, because anyone could type a fellow alumnus's address and read what
+ * they gave. It exists solely so the result can be **sent to that address**,
+ * where only the person who can open the inbox ever sees it.
+ *
+ * Callers must never vary their response by whether this returns null.
+ */
+export async function getGivingByEmail(
+  email: string
+): Promise<GivingHistory | null> {
+  const needle = email.trim().toLowerCase();
+  if (!needle) return null;
+
+  const own = (await loadDonations())
+    .filter((d) => d.email.toLowerCase() === needle)
+    .sort(newestFirst);
+  if (own.length === 0) return null;
+
+  return {
+    donorName: own[0].donorName,
+    donations: own,
+    total: own.reduce((sum, d) => sum + d.amount, 0),
+  };
+}
+
 /**
  * Verify an email/reference pair and return that donor's giving history.
  *
@@ -205,16 +241,9 @@ export async function getGivingHistory(
   );
   if (!matched) return null;
 
-  // Newest first. A date we couldn't parse is kept as raw text, and comparing
-  // that against an ISO string sorts on its first character rather than on
-  // time — so rank those to the bottom explicitly instead.
-  const isIso = (d: DonationRecord) => /^\d{4}-\d{2}-\d{2}$/.test(d.date);
   const own = donations
     .filter((d) => d.email.toLowerCase() === emailNeedle)
-    .sort((a, b) => {
-      if (isIso(a) !== isIso(b)) return isIso(a) ? -1 : 1;
-      return b.date.localeCompare(a.date);
-    });
+    .sort(newestFirst);
 
   return {
     donorName: matched.donorName,

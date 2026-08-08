@@ -173,3 +173,40 @@ describe("getGivingHistory — parsing what staff typed", () => {
     await expect(getGivingHistory("a@b.com", "R1")).rejects.toThrow("sheet unreachable");
   });
 });
+
+describe("getGivingByEmail — the emailed-summary lookup", () => {
+  it("returns every gift for the address without any reference", async () => {
+    const { getGivingByEmail } = await load();
+    const h = await getGivingByEmail("juan@example.com");
+    expect(h!.donations).toHaveLength(2);
+    expect(h!.total).toBe(15000);
+  });
+
+  it("returns null for an address with no recorded gifts", async () => {
+    const { getGivingByEmail } = await load();
+    expect(await getGivingByEmail("nobody@example.com")).toBeNull();
+  });
+
+  it("ignores case and whitespace", async () => {
+    const { getGivingByEmail } = await load();
+    expect(await getGivingByEmail("  MARIA@Example.com ")).not.toBeNull();
+  });
+
+  it("returns null for a blank address", async () => {
+    const { getGivingByEmail } = await load();
+    expect(await getGivingByEmail("   ")).toBeNull();
+  });
+
+  it("never leaks another donor's gifts", async () => {
+    const { getGivingByEmail } = await load();
+    const h = await getGivingByEmail("maria@example.com");
+    expect(h!.donations.every((d) => d.email === "maria@example.com")).toBe(true);
+    expect(h!.total).toBe(2500);
+  });
+
+  it("sorts newest first, like the reference lookup", async () => {
+    const { getGivingByEmail } = await load();
+    const h = await getGivingByEmail("juan@example.com");
+    expect(h!.donations.map((d) => d.date)).toEqual(["2026-03-15", "2026-01-02"]);
+  });
+});

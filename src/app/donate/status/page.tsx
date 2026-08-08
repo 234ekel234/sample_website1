@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Mail, Clock } from "lucide-react";
 import DonationCheck from "./DonationCheck";
+import EmailSummary from "./EmailSummary";
 import PageHero from "@/components/ui/PageHero";
 
 export const metadata: Metadata = {
@@ -25,9 +26,9 @@ const notes = [
   },
   {
     icon: ShieldCheck,
-    title: "Why we ask for both",
+    title: "Why it works this way",
     description:
-      "An email alone would let anyone look up someone else's giving. The reference keeps your record yours.",
+      "An email alone would let anyone look up someone else's giving, so we send the summary to that address instead. A reference code proves the record is yours and lets us show it here.",
   },
 ];
 
@@ -58,12 +59,32 @@ export default function GivingStatusPage() {
               Find Your Giving Record
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Enter the email address you gave under, along with the reference
-              from your acknowledgment.
+              Have your summary sent to your inbox, or if you have the reference
+              code from your acknowledgment, see it here straight away.
             </p>
           </div>
 
+          {/* Path A — no reference needed; the summary goes to the inbox.
+              This is the route the proposal describes, and the safer of the
+              two: nothing is rendered for an unverified visitor. */}
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
+              Option 1 — have it emailed
+            </p>
+            <h3 className="mt-1 mb-4 text-lg font-bold text-[#1B2A4A]">
+              Send my summary to my email
+            </h3>
+            <EmailSummary />
+          </div>
+
+          {/* Path B — for donors holding a reference code, shown on screen. */}
+          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
+            <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
+              Option 2 — have your reference code?
+            </p>
+            <h3 className="mt-1 mb-4 text-lg font-bold text-[#1B2A4A]">
+              See it here now
+            </h3>
             <DonationCheck />
           </div>
 
