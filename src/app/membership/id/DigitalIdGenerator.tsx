@@ -120,6 +120,10 @@ export interface VerifiedMember {
   /** Roster key — the member number is derived from this, so it stays stable. */
   email: string;
   name: string;
+  /** PMA class or batch. Blank rows simply omit the line. */
+  pmaClass: string;
+  /** Year joined. Preferred over the issue date, which moves every download. */
+  memberSince: string;
   category: string;
   standing: "Active" | "Lapsed" | "Pending";
 }
@@ -130,7 +134,7 @@ export default function DigitalIdGenerator({
   member: VerifiedMember;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { email, name, category, standing } = member;
+  const { email, name, category, standing, pmaClass, memberSince } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
 
@@ -253,6 +257,18 @@ export default function DigitalIdGenerator({
     ctx.fillStyle = GOLD;
     ctx.font = "600 18px system-ui, sans-serif";
     ctx.fillText(`${category} Member`, tx, py + 90);
+    // PMA class — the identity marker that carries most weight in this
+    // community, and already collected on the application form. Omitted
+    // entirely when the roster has no class for this member.
+    if (pmaClass) {
+      const catW = ctx.measureText(`${category} Member`).width;
+      const prevFill = ctx.fillStyle;
+      ctx.fillStyle = "rgba(255,255,255,0.35)";
+      ctx.fillText("·", tx + catW + 10, py + 90);
+      ctx.fillStyle = "#C8A951";
+      ctx.fillText(`PMA ${pmaClass}`, tx + catW + 22, py + 90);
+      ctx.fillStyle = prevFill;
+    }
 
     // Status pill — colour follows the roster, so a lapsed card reads as lapsed
     // at a glance rather than only in small print.
@@ -276,12 +292,15 @@ export default function DigitalIdGenerator({
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = "600 12px system-ui, sans-serif";
     ctx.fillText("MEMBER NO.", tx, py + 192);
-    ctx.fillText("ISSUED", tx, py + 240);
+    // "Member since" beats an issue date: the date moves every time the card is
+    // downloaded, which is odd on a credential. Falls back to the issue date
+    // when the roster has not recorded a joining year.
+    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 240);
     ctx.fillStyle = "#ffffff";
     ctx.font = "600 22px ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
     ctx.fillText(memberId, tx, py + 220);
     ctx.font = "500 18px system-ui, sans-serif";
-    ctx.fillText(issued, tx, py + 268);
+    ctx.fillText(memberSince || issued, tx, py + 268);
 
     // Footer note. No "scan to verify" claim: there is nothing to scan, and
     // nothing on the site could verify it yet. Scan-to-verify needs a lookup
@@ -293,7 +312,7 @@ export default function DigitalIdGenerator({
       48,
       CARD_H - 40
     );
-  }, [seal, photo, displayName, category, memberId, issued, standing]);
+  }, [seal, photo, displayName, category, memberId, issued, standing, pmaClass, memberSince]);
 
   useEffect(() => {
     draw();
@@ -380,6 +399,22 @@ export default function DigitalIdGenerator({
             </dt>
             <dd className="text-sm font-semibold text-slate-900">{standing}</dd>
           </div>
+          {pmaClass && (
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                PMA Class
+              </dt>
+              <dd className="text-sm font-semibold text-slate-900">{pmaClass}</dd>
+            </div>
+          )}
+          {memberSince && (
+            <div>
+              <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                Member since
+              </dt>
+              <dd className="text-sm font-semibold text-slate-900">{memberSince}</dd>
+            </div>
+          )}
         </dl>
 
         <div className="mt-4">

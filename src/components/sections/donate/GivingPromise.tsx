@@ -16,7 +16,7 @@ const promises = [
     icon: Compass,
     title: "Directed Where It Matters",
     description:
-      "Unrestricted gifts go straight to the Academy's most pressing needs, guided by PMAFI's board.",
+      "Unrestricted donations go straight to the Academy's most pressing needs, guided by PMAFI's board.",
   },
   {
     icon: Award,
@@ -51,7 +51,7 @@ export default function GivingPromise() {
             <span className="h-px w-8 bg-[#C8A951]/50" />
           </p>
           <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-            How Your Gift Is Honored
+            How Your Donation Is Honored
           </h2>
           <p className="mt-4 text-slate-500">
             Every contribution is stewarded with care, transparency, and a

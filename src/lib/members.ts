@@ -13,7 +13,13 @@
 //   MEMBERS_SHEET_ID                     – the spreadsheet ID from its URL
 //   GOOGLE_SERVICE_ACCOUNT_EMAIL         – ...@...iam.gserviceaccount.com
 //   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY   – the PEM private key (\n-escaped is OK)
-//   MEMBERS_SHEET_RANGE   (optional)     – defaults to "Members!A2:D"
+//   MEMBERS_SHEET_RANGE   (optional)     – defaults to "Members!A2:F"
+//
+// Sheet layout — tab named "Members", row 1 = headers, data from row 2:
+//   A: Name  B: Email  C: Category  D: Status  E: PMA Class  F: Member Since
+//
+// Columns E and F are optional: the site holds only what it uses, and a blank
+// cell simply omits that line from the member ID rather than breaking anything.
 
 import { readRange } from "@/lib/sheets";
 
@@ -22,6 +28,10 @@ export interface MemberRecord {
   email: string;
   category: "Regular" | "Associate" | "Affiliate";
   standing: "Active" | "Lapsed" | "Pending";
+  /** PMA class or batch, e.g. "1988". Blank for members who never supplied one. */
+  pmaClass: string;
+  /** Year they joined, e.g. "2019". Blank when the roster has not recorded it. */
+  memberSince: string;
 }
 
 // --- Small server-side cache (this module is never bundled to the client) ---
@@ -36,6 +46,24 @@ function requireEnv(name: string): string {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
+}
+
+/**
+ * Pull a four-digit year out of whatever staff typed — "1988", "Class 1988",
+ * "PMA '88" all mean the same thing. Anything without a plausible year is
+ * dropped rather than printed raw onto a member's card.
+ */
+function normalizeYear(value: string): string {
+  const raw = value.trim();
+  if (!raw) return "";
+  const full = raw.match(/\b(19|20)\d{2}\b/);
+  if (full) return full[0];
+  const short = raw.match(/'(\d{2})\b/);
+  if (short) {
+    const n = Number(short[1]);
+    return String(n <= 30 ? 2000 + n : 1900 + n);
+  }
+  return "";
 }
 
 function normalizeCategory(value: string): MemberRecord["category"] | null {
@@ -66,7 +94,7 @@ async function loadMembers(): Promise<MemberRecord[]> {
   }
 
   const sheetId = requireEnv("MEMBERS_SHEET_ID");
-  const range = process.env.MEMBERS_SHEET_RANGE ?? "Members!A2:D";
+  const range = process.env.MEMBERS_SHEET_RANGE ?? "Members!A2:F";
   const rows = await readRange(sheetId, range);
 
   const members: MemberRecord[] = [];
@@ -81,6 +109,8 @@ async function loadMembers(): Promise<MemberRecord[]> {
       email,
       category,
       standing: normalizeStanding(String(row[3] ?? "")),
+      pmaClass: normalizeYear(String(row[4] ?? "")),
+      memberSince: normalizeYear(String(row[5] ?? "")),
     });
   }
 

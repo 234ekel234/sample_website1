@@ -12,6 +12,8 @@ export type MembershipCheckState =
       name: string;
       category: string;
       standing: "Active" | "Lapsed" | "Pending";
+      pmaClass: string;
+      memberSince: string;
     };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -50,5 +52,7 @@ export async function checkMembershipAction(
     name: member.name,
     category: member.category,
     standing: member.standing,
+    pmaClass: member.pmaClass,
+    memberSince: member.memberSince,
   };
 }

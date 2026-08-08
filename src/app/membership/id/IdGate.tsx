@@ -42,6 +42,8 @@ export default function IdGate() {
           name: state.name,
           category: state.category,
           standing: state.standing,
+          pmaClass: state.pmaClass,
+          memberSince: state.memberSince,
         }}
       />
     );

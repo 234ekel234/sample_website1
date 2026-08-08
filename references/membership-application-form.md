@@ -167,8 +167,18 @@ the bottom — read **"Before you publish"** first, especially the email part.
    still apply. Turn off "Collect email addresses → Verified" if it forces
    sign-in.
 
-4. **The members sheet (separate from this) needs these columns:** `Email`,
-   `Name`, `Category` (Regular/Associate/Affiliate), `Status` (Active/Lapsed).
+4. **The members sheet (separate from this) needs these columns:**
+   `A: Name`, `B: Email`, `C: Category` (Regular/Associate/Affiliate),
+   `D: Status` (Active/Lapsed/Pending), `E: PMA Class`, `F: Member Since`.
+
+   Columns E and F are optional and appear on the member's digital ID —
+   `PMA 1988` beside their category, and "Member since 2019" in place of a
+   download date. A blank cell simply omits that line. Anything that is not
+   plausibly a year is ignored rather than printed, so "n/a" is safe.
+
+   Only copy across what the site uses. The other form answers — mailing
+   address, profession, motivation — should stay in the form's own response
+   sheet: holding them in the roster is personal data with no purpose.
    When you approve an applicant, copy their Email + Name into that members sheet
    and set Category + Status. (See `references/membership-setup-todo.md`.)
 
