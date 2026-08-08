@@ -55,7 +55,7 @@ export default function GivingStatusPage() {
               Look Up a Donation
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
-            <h2 className="mt-3 text-3xl font-bold tracking-tight text-[#1B2A4A]">
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
               Find Your Donation Record
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">

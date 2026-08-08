@@ -35,7 +35,7 @@ export default function ChairmansMessageContent({
             transition={{ duration: 0.7, ease: "easeOut" }}
             className="relative mx-auto w-full max-w-[320px]"
           >
-            <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-[#16294d] to-[#0a1628] shadow-lg">
+            <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-[#16294d] to-[#0a1628] shadow-lg">
               {/* Chairman portrait (reused from the Board of Trustees page) */}
               <div className="relative aspect-[4/5]">
                 <Image

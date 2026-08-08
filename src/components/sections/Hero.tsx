@@ -91,7 +91,7 @@ export default function Hero() {
             {/* The Foundation's own name, in the eyebrow style used across the
                 rest of the site. It was previously a small pill with a pulsing
                 dot, which read as a status badge rather than an identity. */}
-            <p className="mx-auto flex max-w-[90vw] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#C8A951] sm:text-sm">
+            <p className="mx-auto flex max-w-[90vw] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-widest text-[#C8A951] sm:text-sm">
               <span className="hidden h-px w-8 bg-[#C8A951]/50 sm:block" />
               Philippine Military Academy Foundation, Inc.
               <span className="hidden h-px w-8 bg-[#C8A951]/50 sm:block" />

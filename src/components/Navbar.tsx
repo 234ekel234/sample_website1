@@ -189,7 +189,7 @@ export default function Navbar() {
           href="/donate"
           className={cn(
             buttonVariants(),
-            "hidden bg-[#C8A951] font-semibold text-[#1B2A4A] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white lg:inline-flex"
+            "hidden bg-[#C8A951] font-semibold text-[#0a1628] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white lg:inline-flex"
           )}
         >
           Support Us
@@ -246,7 +246,7 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
             className={cn(
               buttonVariants(),
-              "mt-4 w-full bg-[#C8A951] text-[#1B2A4A] font-semibold hover:bg-[#A07830] hover:text-white"
+              "mt-4 w-full bg-[#C8A951] text-[#0a1628] font-semibold hover:bg-[#A07830] hover:text-white"
             )}
           >
             Support Us
