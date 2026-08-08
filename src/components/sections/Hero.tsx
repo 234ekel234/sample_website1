@@ -88,13 +88,14 @@ export default function Hero() {
       <div className="relative mx-auto w-full min-w-0 max-w-5xl px-6 text-center">
         <motion.div variants={container} initial="hidden" animate="show">
           <motion.div variants={item}>
-            <span className="inline-flex max-w-[90vw] items-center gap-2 rounded-full border border-[#C8A951]/30 bg-[#C8A951]/10 px-4 py-1.5 text-center text-[10px] font-semibold uppercase tracking-widest text-[#C8A951] shadow-[0_0_30px_-8px_rgba(200,169,81,0.5)] backdrop-blur-sm sm:px-5 sm:text-xs">
-              <span className="relative flex h-1.5 w-1.5 shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#C8A951] opacity-75" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#C8A951]" />
-              </span>
+            {/* The Foundation's own name, in the eyebrow style used across the
+                rest of the site. It was previously a small pill with a pulsing
+                dot, which read as a status badge rather than an identity. */}
+            <p className="mx-auto flex max-w-[90vw] flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-[0.18em] text-[#C8A951] sm:text-sm">
+              <span className="hidden h-px w-8 bg-[#C8A951]/50 sm:block" />
               Philippine Military Academy Foundation, Inc.
-            </span>
+              <span className="hidden h-px w-8 bg-[#C8A951]/50 sm:block" />
+            </p>
           </motion.div>
 
           <motion.h1
