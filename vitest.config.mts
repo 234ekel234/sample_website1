@@ -10,5 +10,8 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["src/**/*.test.ts"],
+    // The email preview writes files rather than asserting; run it on demand
+    // with `npm run preview:email`, not as part of the pass/fail suite.
+    exclude: ["**/node_modules/**", "**/*.preview.test.ts"],
   },
 });

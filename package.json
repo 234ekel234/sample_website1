@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "preview:email": "PREVIEW_DIR=/private/tmp/claude-501/-Users-camillepaulatusi-dev/89e555ae-cf34-496e-8115-7a971f6324e0/scratchpad vitest run src/lib/giving-email.preview.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
