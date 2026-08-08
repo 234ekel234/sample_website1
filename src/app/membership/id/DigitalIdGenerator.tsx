@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import QRCode from "qrcode";
 import { Upload, Download, IdCard } from "lucide-react";
 import { SITE_URL, SITE_HOST } from "@/lib/site";
 
@@ -40,14 +39,29 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 }
 
 // Deterministic short ID so the same name always yields the same number.
-function idFromName(name: string): string {
-  const s = name.trim().toLowerCase();
+/**
+ * Stable member number.
+ *
+ * Derived from the EMAIL, not the name. The email is the roster's key: it is
+ * unique by definition, and correcting a typo or adding a middle initial to a
+ * member's name no longer silently reissues them a different number.
+ *
+ * Uses the full 32-bit digest. Truncating to six hex characters gave a 24-bit
+ * space, where a roster of ~3,300 members carries a 27.7% chance that two of
+ * them share a number. At 32 bits that falls to 0.13%.
+ *
+ * NOT PMAFI's own scheme — the Foundation has never supplied one, and it is on
+ * the information request. This only guarantees the number is consistent for a
+ * given member.
+ */
+function idFromEmail(email: string): string {
+  const s = email.trim().toLowerCase();
   let h = 2166136261;
   for (let i = 0; i < s.length; i++) {
     h ^= s.charCodeAt(i);
     h = Math.imul(h, 16777619);
   }
-  return `PMAFI-${(h >>> 0).toString(16).toUpperCase().padStart(6, "0").slice(0, 6)}`;
+  return `PMAFI-${(h >>> 0).toString(16).toUpperCase().padStart(8, "0")}`;
 }
 
 function roundRect(
@@ -103,6 +117,8 @@ function fitFont(
 
 /** The verified member this card is for. Supplied by the roster, never typed. */
 export interface VerifiedMember {
+  /** Roster key — the member number is derived from this, so it stays stable. */
+  email: string;
   name: string;
   category: string;
   standing: "Active" | "Lapsed" | "Pending";
@@ -114,9 +130,8 @@ export default function DigitalIdGenerator({
   member: VerifiedMember;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { name, category, standing } = member;
+  const { email, name, category, standing } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
-  const [qr, setQr] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
 
   // The photo is the one input the roster cannot supply, so it is remembered
@@ -134,7 +149,7 @@ export default function DigitalIdGenerator({
   }, []);
 
   const displayName = name.trim();
-  const memberId = useMemo(() => idFromName(name), [name]);
+  const memberId = useMemo(() => idFromEmail(email), [email]);
   const issued = new Date().toLocaleDateString("en-PH", {
     day: "numeric",
     month: "long",
@@ -152,34 +167,10 @@ export default function DigitalIdGenerator({
     };
   }, []);
 
-  // Rebuild the QR whenever the encoded details change.
-  useEffect(() => {
-    let cancelled = false;
-    const qrText = [
-      "PMAFI DIGITAL MEMBER ID",
-      `Name: ${displayName}`,
-      `ID: ${memberId}`,
-      `Category: ${category} Member`,
-      `Status: ${standing}`,
-      `Issued: ${issued}`,
-      `Verify: ${SITE_URL}/membership`,
-    ].join("\n");
-    QRCode.toDataURL(qrText, {
-      margin: 1,
-      width: 400,
-      color: { dark: NAVY, light: "#ffffff" },
-    })
-      .then(loadImage)
-      .then((img) => !cancelled && setQr(img))
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [displayName, memberId, category, issued]);
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
-    if (!canvas || !seal || !qr) return;
+    if (!canvas || !seal) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -292,24 +283,17 @@ export default function DigitalIdGenerator({
     ctx.font = "500 18px system-ui, sans-serif";
     ctx.fillText(issued, tx, py + 268);
 
-    // QR (bottom-right on a white plate)
-    const qrSize = 132;
-    const qrX = CARD_W - 48 - qrSize;
-    const qrY = CARD_H - 48 - qrSize;
-    ctx.fillStyle = "#ffffff";
-    roundRect(ctx, qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 12);
-    ctx.fill();
-    ctx.drawImage(qr, qrX, qrY, qrSize, qrSize);
-
-    // Footer note
+    // Footer note. No "scan to verify" claim: there is nothing to scan, and
+    // nothing on the site could verify it yet. Scan-to-verify needs a lookup
+    // endpoint and persisted cards — Phase 3, Module A.
     ctx.fillStyle = "rgba(255,255,255,0.4)";
     ctx.font = "500 12px system-ui, sans-serif";
     ctx.fillText(
-      `Scan to view membership details · ${SITE_HOST}/membership`,
+      `Issued by the Philippine Military Academy Foundation · ${SITE_HOST}`,
       48,
       CARD_H - 40
     );
-  }, [seal, qr, photo, displayName, category, memberId, issued]);
+  }, [seal, photo, displayName, category, memberId, issued, standing]);
 
   useEffect(() => {
     draw();

@@ -38,6 +38,7 @@ export default function IdGate() {
     return (
       <DigitalIdGenerator
         member={{
+          email: state.email,
           name: state.name,
           category: state.category,
           standing: state.standing,
