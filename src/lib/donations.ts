@@ -88,17 +88,48 @@ function normalizeStatus(value: string): DonationStatus {
   }
 }
 
+/** Google Sheets counts days from 1899-12-30; serial 1 is 1900-01-01. */
+const SHEETS_EPOCH_MS = Date.UTC(1899, 11, 30);
+/** Serial 1 is 1900-01-01 and 100000 is about 2173 — anything outside is not a date. */
+const MAX_SHEETS_SERIAL = 100_000;
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
 /**
  * Sheet dates arrive as whatever the cell is formatted as. Normalize to ISO so
  * the UI can format consistently, but keep the raw text when it can't be parsed
  * rather than showing "Invalid Date".
+ *
+ * Two traps here, both of which showed a donor the wrong date:
+ *
+ *   - `readRange` requests UNFORMATTED_VALUE, so a cell actually formatted as a
+ *     date comes back as a **serial number**, not text. `new Date("46096")`
+ *     does not fail — it parses as the year 46096.
+ *   - `new Date("March 15, 2026")` is local midnight, so `toISOString()` rolls
+ *     it back a day in any positive-offset timezone. In Manila a gift dated the
+ *     15th displayed as the 14th.
  */
 function normalizeDate(value: string): string {
   const raw = value.trim();
   if (!raw) return "";
+
+  // Already ISO — trust it, and never round-trip it through UTC.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+
+  // A bare number is a Sheets date serial, not a year.
+  if (/^\d+(\.\d+)?$/.test(raw)) {
+    const serial = Number(raw);
+    if (serial > 0 && serial < MAX_SHEETS_SERIAL) {
+      const d = new Date(SHEETS_EPOCH_MS + Math.floor(serial) * 86_400_000);
+      return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
+    }
+    return raw;
+  }
+
   const parsed = new Date(raw);
   if (Number.isNaN(parsed.getTime())) return raw;
-  return parsed.toISOString().slice(0, 10);
+  // Local components, not toISOString() — see the note above.
+  return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`;
 }
 
 /** "₱10,000", "10,000.00" and "10000" all mean the same thing to staff. */
