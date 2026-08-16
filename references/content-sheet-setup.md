@@ -132,6 +132,70 @@ column A is spelled exactly right, with no extra spaces.
 
 ---
 
+## The "Fund Updates" tab — what a donation achieved
+
+This lives in the **same spreadsheet** as the Content tab, on its own tab named
+**`Fund Updates`**, and it drives two places:
+
+- **`/donate/impact`** — the public feed of what each fund has accomplished.
+- **`/donate/status`** — a donor who looks up their gifts now sees the recent
+  updates for **the funds they personally gave to**, right under their giving
+  summary. That is the answer to *"what is my donation doing?"*, delivered to
+  the person who paid for it rather than left on a page they have to find.
+
+### Columns
+
+| Column | Header | Required | Notes |
+|---|---|---|---|
+| A | `Fund` | **yes** | Must match the fund name used in the donation log, e.g. `Professorial Chair Fund`. Capitalisation and spacing don't have to match exactly. |
+| B | `Title` | **yes** | A short headline — *"Two chairs awarded for AY 2026"* |
+| C | `Message` | no | A few sentences. This is where the substance goes. |
+| D | `Date` | no | Any readable date. Newest updates appear first. |
+| E | `Image URL` | no | A **Google Drive share link**. Other hosts are ignored — see below. |
+| F | `Published` | **yes** | `Yes` to show it. Anything else keeps it hidden. |
+
+### A row needs a Fund AND a Title to appear
+
+This is the single most common reason an update doesn't show. A row with a fund
+name and `Published = Yes` but **no title** is skipped — there is nothing to
+display. Starting 2026-08, the server log says so explicitly:
+
+```
+[fund-updates] Row 4 is marked Published but has no Title (column B) — not shown.
+```
+
+An **unpublished** incomplete row stays silent, because that is a draft rather
+than a mistake.
+
+### Images
+
+Upload the photo to Google Drive, set it to *"Anyone with the link can view"*,
+and paste the share link. The site converts it automatically. A link from
+anywhere else (Facebook, Dropbox, a website) is **dropped** rather than shown —
+the page cannot load it, and passing it through used to take the whole page
+down.
+
+### Write for the donor, not the file
+
+The point of an update is that somebody who gave money reads it and knows what
+happened. *"Your gift helped fund the Chair in Mathematics, held by Prof. Reyes,
+who taught 240 cadets this year"* does far more than *"Q2 disbursement
+completed"*. Specifics and photographs are what carry it.
+
+**Nothing here is ever invented by the website.** An empty tab produces an
+honest empty state — publishing a fabricated account of what a donation achieved
+would be far worse than showing nothing.
+
+### What this tab cannot do
+
+It holds words and pictures, not figures. There is no column for a fund's
+balance, its returns, or how much it has grown, and the site will not calculate
+any of that. Publishing financial performance needs audited numbers from PMAFI's
+finance side and a decision about what may be stated — a separate conversation,
+not a spreadsheet column.
+
+---
+
 ## What this does not cover
 
 Page text across About, Programs, Donate and the Contact FAQ, along with the

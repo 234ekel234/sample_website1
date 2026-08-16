@@ -35,15 +35,31 @@ const FUND_UPDATES_RANGE = "Fund Updates!A2:F";
 /** Parse sheet rows into updates. Exported for testing. */
 export function parseFundUpdates(rows: unknown[][]): FundUpdate[] {
   const updates: FundUpdate[] = [];
-  for (const row of rows) {
+  for (const [i, row] of rows.entries()) {
     const fund = String(row[0] ?? "").trim();
     const title = String(row[1] ?? "").trim();
     const message = String(row[2] ?? "").trim();
     const published = String(row[5] ?? "").trim().toLowerCase();
+    const isPublished = published === "yes" || published === "true";
 
     // A row without a fund or a title cannot be grouped or read.
-    if (!fund || !title) continue;
-    if (published !== "yes" && published !== "true") continue;
+    //
+    // Say so when it was MARKED PUBLISHED. Staff who fill in a fund name, tick
+    // Published, and see nothing appear have no way to tell whether the sheet
+    // is wired up at all — the row is simply swallowed. An unpublished row is
+    // a draft and stays silent; a published one that cannot render is a
+    // mistake somebody is waiting on.
+    if (!fund || !title) {
+      if (isPublished) {
+        console.warn(
+          `[fund-updates] Row ${i + 2} is marked Published but has no ` +
+            `${!fund ? "Fund (column A)" : "Title (column B)"} — not shown. ` +
+            "Every published row needs at least a fund and a title."
+        );
+      }
+      continue;
+    }
+    if (!isPublished) continue;
 
     updates.push({
       fund,

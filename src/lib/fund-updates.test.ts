@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { parseFundUpdates, groupByFund } from "@/lib/fund-updates";
 
 /** Fund | Title | Message | Date | Image URL | Published */
@@ -94,6 +94,25 @@ describe("parseFundUpdates", () => {
       row("F", "a", "2026-01-01", "Yes", "https://lh3.googleusercontent.com/d/ABC123"),
     ]);
     expect(out[0].image).toBe("https://lh3.googleusercontent.com/d/ABC123");
+  });
+
+  it("says so when a PUBLISHED row cannot be rendered", () => {
+    // Staff who tick Published and see nothing appear have no way to tell
+    // whether the sheet is wired up at all. The row is skipped either way;
+    // the point is that somebody is told why.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    parseFundUpdates([row("Endowment", "", "2026-01-01", "Yes")]);
+    expect(warn).toHaveBeenCalledOnce();
+    expect(String(warn.mock.calls[0][0])).toMatch(/Title \(column B\)/);
+    warn.mockRestore();
+  });
+
+  it("stays quiet about an unpublished incomplete row", () => {
+    // That is a draft, not a mistake.
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+    parseFundUpdates([row("Endowment", "", "2026-01-01", "No")]);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 
   it("returns nothing for an empty sheet rather than inventing an update", () => {

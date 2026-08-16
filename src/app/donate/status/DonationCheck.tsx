@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { checkGivingAction, type GivingCheckState } from "./actions";
 import type { DonationStatus } from "@/lib/donations";
+import Image from "next/image";
 import {
   Search,
   Hash,
@@ -13,6 +14,7 @@ import {
   Receipt,
   Sparkles,
   Landmark,
+  ArrowRight,
 } from "lucide-react";
 
 const initialState: GivingCheckState = { status: "idle" };
@@ -175,6 +177,68 @@ export default function DonationCheck() {
               );
             })}
           </ul>
+
+          {/* What the money did, for the funds this donor actually gave to.
+              Rendered only when there is something real to show: an empty Fund
+              Updates tab must leave no trace here, because a heading over
+              nothing reads as a broken promise on the one page where a donor
+              came to be reassured. */}
+          {Object.keys(state.fundUpdates).length > 0 && (
+            <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-5">
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
+                What your giving has been doing
+              </p>
+              <div className="mt-4 space-y-5">
+                {Object.entries(state.fundUpdates).map(([fund, updates]) => (
+                  <div key={fund}>
+                    <p className="flex items-center gap-2 text-sm font-bold text-[#1B2A4A]">
+                      <Landmark className="h-4 w-4 shrink-0 text-[#C8A951]" />
+                      {fund}
+                    </p>
+                    <ul className="mt-2 space-y-3 border-l border-slate-200 pl-4">
+                      {updates.map((u) => (
+                        <li key={`${u.title}-${u.date}`} className="flex gap-3">
+                          {u.image && (
+                            <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-slate-200">
+                              <Image
+                                src={u.image}
+                                alt=""
+                                fill
+                                className="object-cover"
+                                sizes="64px"
+                              />
+                            </div>
+                          )}
+                          <div className="min-w-0">
+                            {u.date && (
+                              <p className="text-[11px] font-semibold uppercase tracking-widest text-slate-500">
+                                {formatDate(u.date)}
+                              </p>
+                            )}
+                            <p className="text-sm font-semibold text-[#1B2A4A]">
+                              {u.title}
+                            </p>
+                            {u.message && (
+                              <p className="mt-0.5 text-sm leading-relaxed text-slate-600">
+                                {u.message}
+                              </p>
+                            )}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <Link
+                href="/donate/impact"
+                className="group mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"
+              >
+                See everything these funds have achieved
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+            </div>
+          )}
 
           <p className="mt-4 text-xs text-slate-500">
             Recorded donations only. If you gave very recently it may not appear

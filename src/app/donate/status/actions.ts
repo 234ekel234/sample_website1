@@ -5,6 +5,7 @@ import {
   getGivingByEmail,
   type DonationRecord,
 } from "@/lib/donations";
+import { getFundUpdates, type FundUpdate } from "@/lib/fund-updates";
 import { sendGivingSummary } from "@/lib/giving-email";
 import { rateLimit } from "@/lib/rate-limit";
 
@@ -17,6 +18,17 @@ export type GivingCheckState =
       donorName: string;
       donations: DonationRecord[];
       total: number;
+      /**
+       * Recent updates for the funds this donor actually gave to, keyed by
+       * fund name. The status page could always say WHERE a gift was
+       * designated; it could never say what that fund then did, so the answer
+       * to "what is my donation doing" sat on a page the donor had to go and
+       * find. This carries it back to them.
+       *
+       * Public content — the same updates render at /donate/impact for
+       * anybody — so putting it in this payload reveals nothing.
+       */
+      fundUpdates: Record<string, FundUpdate[]>;
     };
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -72,7 +84,42 @@ export async function checkGivingAction(
     donorName: history.donorName,
     donations: history.donations,
     total: history.total,
+    fundUpdates: await updatesForFunds(history.donations),
   };
+}
+
+/** How many updates per fund to carry back. Enough to show the fund is alive,
+ *  few enough that the giving summary stays the point of the page. */
+const UPDATES_PER_FUND = 2;
+
+/**
+ * The most recent updates for each fund in this donor's history.
+ *
+ * Never allowed to fail the lookup: a donor came to see their gifts, and an
+ * unreachable or empty Fund Updates tab must cost them nothing. getFundUpdates
+ * already swallows its own errors and returns [], and this returns {} — both
+ * render as simply no updates section.
+ */
+async function updatesForFunds(
+  donations: DonationRecord[]
+): Promise<Record<string, FundUpdate[]>> {
+  const funds = [...new Set(donations.map((d) => d.fund.trim()).filter(Boolean))];
+  if (funds.length === 0) return {};
+
+  const all = await getFundUpdates();
+  if (all.length === 0) return {};
+
+  const byFund: Record<string, FundUpdate[]> = {};
+  for (const fund of funds) {
+    // Staff type the fund name twice — once in the donation log, once on the
+    // update — so match forgivingly rather than demanding they agree exactly.
+    const needle = fund.toLowerCase();
+    const mine = all
+      .filter((u) => u.fund.trim().toLowerCase() === needle)
+      .slice(0, UPDATES_PER_FUND);
+    if (mine.length > 0) byFund[fund] = mine;
+  }
+  return byFund;
 }
 
 // ---------------------------------------------------------------------------
