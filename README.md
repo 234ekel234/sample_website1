@@ -183,6 +183,58 @@ See `references/membership-setup-todo.md` for setup and the admin runbook.
 
 ---
 
+## Donations
+
+**Give → report it → PMAFI verifies → look it up.** Nothing is automated; each
+handover is a person, and the docs say so where it matters.
+
+1. Donor reads the dues and account details on `/donate` and sends the gift
+2. They report it on the **donation form** — name, email, amount, date, fund.
+   No file upload, so **no Google account is needed**: a donor is often a
+   one-time visitor, and a sign-in wall costs gifts outright
+3. Staff match the report against the bank or GCash statement
+4. Staff add a row to the **`Donations`** tab and mint a reference with
+   **PMAFI → Generate reference**, then email the acknowledgment
+   (`references/donation-acknowledgment-email.md`)
+5. The donor looks it up at `/donate/status` with their **email + reference**
+
+### Two donation tabs, one private spreadsheet
+
+| Tab | What it holds | Read by the site? |
+|---|---|---|
+| `Donation Reports` | What donors *said* they sent. Unverified. The working queue | No |
+| `Donations` | What PMAFI *verified*. One row per gift, with a reference | **Yes** |
+
+### Why a reference, and why random
+
+Membership reveals a standing; giving reveals amounts, dates and designations.
+An email alone is guessable, so the lookup needs both. The code must be **random**
+— a running number can be counted through by anyone who knows an address — which
+is why the sheet mints it rather than trusting anyone to remember. Codes omit
+`I`, `L`, `O`, `0`, `1`, because they get read aloud over the phone.
+
+Once email + reference match one row, the donor sees **every** gift under that
+address, plus recent updates for the funds they gave to.
+
+Every failed lookup returns one identical message — distinguishing "no such
+reference" from "wrong email" would turn the page into a way to test whether an
+address has ever donated.
+
+### Also on `/donate`
+
+**Give Directly** — for gifts needing a conversation rather than a transfer
+form: establishing a chair or endowment, giving in kind, cheques, a class
+giving together. Works today; it needs no payment details.
+
+Fund names have one canonical list (`src/lib/funds.ts`): Professorial Chair
+Fund, Endowment Fund, General Fund. The name is typed into two sheets by hand
+and the site joins on it, so both are read through `canonicalFund()`.
+
+The emailed-summary lookup is **hidden** until `RESEND_API_KEY` is set — without
+it every submission errors, and a donor reads that as the gift having been lost.
+
+---
+
 ## Pending Items (awaiting PMAFI)
 
 | # | Item | Where it's used |

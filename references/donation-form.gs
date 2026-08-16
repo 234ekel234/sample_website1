@@ -35,6 +35,10 @@
  *   4. Click "Run" (▶). Approve the permission prompt the first time.
  *   5. Open "Execution log" — it prints the EDIT link and the public link.
  *   6. Link its responses to a sheet: in the form, Responses → the Sheets icon.
+ *      Point it at the PRIVATE spreadsheet and rename the tab it creates to
+ *      **Donation Reports**. Google names it "Form Responses N", which is
+ *      positional and gets reassigned when a form is recreated — the same trap
+ *      that once had the membership check pointed at the wrong tab.
  *   7. Put the public link in the content sheet under the key `form.donation`.
  *      The donate page then shows "Tell us about your gift" instead of asking
  *      the donor to write an email. Leave it blank and the page keeps the

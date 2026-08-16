@@ -40,6 +40,23 @@ Optional: `DONATIONS_SHEET_RANGE` overrides the default `Donations!A2:G`.
 
 ---
 
+## The two donation tabs are not the same thing
+
+The private spreadsheet holds both, and mixing them up is the easy mistake:
+
+| Tab | What it is | Read by the site? |
+|---|---|---|
+| **`Donation Reports`** | What donors *said* they sent, straight from the donation form. Unverified. Your working queue. | **No** |
+| **`Donations`** | What PMAFI has *verified* and recorded. One row per confirmed gift, with a reference. | **Yes** |
+
+A gift moves from the first to the second by hand: match the report against the
+bank or GCash statement, then add a row here with a generated reference. Nothing
+copies itself, and a donor sees nothing until the row exists in `Donations`.
+
+`Donation Reports` is also where a donor's optional message, dedication, and
+"may we name you publicly" answer live — they are not copied across, so check
+there before acknowledging a gift publicly.
+
 ## Part 2 — Staff guide (for PMAFI)
 
 One row per donation. Add a row once a gift has been **verified** — a donor sees
