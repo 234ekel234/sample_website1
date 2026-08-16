@@ -329,12 +329,16 @@ export default async function MembershipPage() {
               How to Join
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
+            {/* The heading carries the ordering, because that is the one thing
+                a returning visitor can get wrong. "Applying Is Simple" said
+                nothing and sat above a lede that inverted what most people
+                expect of a membership: here the dues come first. */}
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-              Applying Is Simple
+              {payFirst ? "Pay First, Then Apply" : "Apply First, Pay Later"}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
               {payFirst
-                ? "Settle your dues, then apply with your receipt attached — one submission, and nothing to wait on before you can send it."
+                ? "Settle your dues, then apply with your receipt attached. One submission, and no invoice to wait for."
                 : "Apply online and we'll guide you through confirmation and payment — no need to pay before we've confirmed your details."}
             </p>
           </div>
