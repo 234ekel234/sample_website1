@@ -26,7 +26,7 @@
 //
 // The dues values are free text, so staff control the wording as well as the
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
-// They gate the pay-first join flow: see canPayFirst() below.
+// They gate whether the figures are PRINTED: see hasPaymentDetails() below.
 //
 // `chairman.body` holds the whole message; separate paragraphs with a blank
 // line. Everything else is a single line of plain text.
@@ -72,17 +72,19 @@ export interface SiteContent {
 }
 
 /**
- * Whether the site may tell an applicant to pay before applying.
+ * Whether the site may PRINT the dues and account details.
  *
- * Both halves are required and neither can be guessed: an amount without a
- * destination, or a destination without an amount, is worse than saying nothing
- * — it invites someone to send money into the void or to ask staff what to pay,
- * which is the manual round-trip the pay-first flow exists to remove.
+ * This no longer gates the join flow — that is pay-first regardless, because
+ * the ordering is PMAFI's decision and the application form already states it.
+ * A site that disagreed with the form would be worse than one missing figures.
  *
- * Until this returns true the join flow falls back to apply-first ("we'll send
- * you an invoice"), which is correct and needs no payment details.
+ * What it still gates is publishing numbers. Both halves are required and
+ * neither can be guessed: an amount without a destination, or a destination
+ * without an amount, invites someone to send money into the void. When this is
+ * false the page tells applicants to ask for the figures instead of inventing
+ * them, which keeps the same flow honest with less information.
  */
-export function canPayFirst(content: SiteContent): boolean {
+export function hasPaymentDetails(content: SiteContent): boolean {
   const hasDues = Boolean(
     content.dues.regular || content.dues.associate || content.dues.affiliate
   );
@@ -131,7 +133,8 @@ const FALLBACK: SiteContent = {
     gcashNumber: "",
   },
   // Unset until PMAFI confirms the figures. While these are blank the join
-  // flow stays apply-first — see canPayFirst above.
+  // flow is unchanged — the page just asks applicants to request the amounts
+  // rather than printing them. See hasPaymentDetails above.
   dues: {
     regular: "",
     associate: "",

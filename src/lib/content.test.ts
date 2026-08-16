@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
-import { canPayFirst, type SiteContent } from "@/lib/content";
+import { hasPaymentDetails, type SiteContent } from "@/lib/content";
 
-// canPayFirst decides whether the site tells a visitor to send money before
+// hasPaymentDetails decides whether the site tells a visitor to send money before
 // PMAFI has confirmed anything. Getting it wrong in the permissive direction
 // publishes a half-complete instruction — an amount with no destination, or a
 // destination with no amount — so every partial combination is pinned here.
@@ -29,43 +29,43 @@ const BANK = { bankName: "Test Bank", bankAccountNumber: "1234" };
 const GCASH = { gcashName: "PMAFI", gcashNumber: "0917" };
 const DUES = { regular: "P2,000 / year", associate: "", affiliate: "" };
 
-describe("canPayFirst", () => {
+describe("hasPaymentDetails", () => {
   it("is false on a site with nothing configured", () => {
-    expect(canPayFirst(EMPTY)).toBe(false);
+    expect(hasPaymentDetails(EMPTY)).toBe(false);
   });
 
   it("needs a destination as well as an amount", () => {
     // An amount alone tells someone to pay, without saying where.
-    expect(canPayFirst({ ...EMPTY, dues: DUES })).toBe(false);
+    expect(hasPaymentDetails({ ...EMPTY, dues: DUES })).toBe(false);
   });
 
   it("needs an amount as well as a destination", () => {
     // A destination alone invites someone to guess what to send.
-    expect(canPayFirst(withPayment(BANK))).toBe(false);
-    expect(canPayFirst(withPayment(GCASH))).toBe(false);
+    expect(hasPaymentDetails(withPayment(BANK))).toBe(false);
+    expect(hasPaymentDetails(withPayment(GCASH))).toBe(false);
   });
 
   it("accepts either channel once dues are set", () => {
-    expect(canPayFirst({ ...withPayment(BANK), dues: DUES })).toBe(true);
-    expect(canPayFirst({ ...withPayment(GCASH), dues: DUES })).toBe(true);
+    expect(hasPaymentDetails({ ...withPayment(BANK), dues: DUES })).toBe(true);
+    expect(hasPaymentDetails({ ...withPayment(GCASH), dues: DUES })).toBe(true);
   });
 
   it("rejects a half-filled bank block", () => {
     // A bank name with no account number is not somewhere money can be sent.
     expect(
-      canPayFirst({ ...withPayment({ bankName: "Test Bank" }), dues: DUES })
+      hasPaymentDetails({ ...withPayment({ bankName: "Test Bank" }), dues: DUES })
     ).toBe(false);
     expect(
-      canPayFirst({ ...withPayment({ bankAccountNumber: "1234" }), dues: DUES })
+      hasPaymentDetails({ ...withPayment({ bankAccountNumber: "1234" }), dues: DUES })
     ).toBe(false);
   });
 
   it("rejects a half-filled GCash block", () => {
     expect(
-      canPayFirst({ ...withPayment({ gcashName: "PMAFI" }), dues: DUES })
+      hasPaymentDetails({ ...withPayment({ gcashName: "PMAFI" }), dues: DUES })
     ).toBe(false);
     expect(
-      canPayFirst({ ...withPayment({ gcashNumber: "0917" }), dues: DUES })
+      hasPaymentDetails({ ...withPayment({ gcashNumber: "0917" }), dues: DUES })
     ).toBe(false);
   });
 
@@ -73,7 +73,7 @@ describe("canPayFirst", () => {
     // PMAFI may confirm one tier before the others; that is enough to publish.
     for (const tier of ["regular", "associate", "affiliate"] as const) {
       expect(
-        canPayFirst({
+        hasPaymentDetails({
           ...withPayment(BANK),
           dues: { ...EMPTY.dues, [tier]: "P2,000" },
         })

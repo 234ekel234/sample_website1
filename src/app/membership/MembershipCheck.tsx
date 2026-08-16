@@ -21,20 +21,11 @@ type Mode = "email" | "name";
 
 export default function MembershipCheck({
   applyHref,
-  payFirst,
   contactEmail,
 }: {
   applyHref: string;
   /** From the content sheet, so a changed inbox is not stranded in this file. */
   contactEmail: string;
-  /**
-   * Which join flow is live. A Pending record means opposite things under each:
-   * pay-first, they have already paid and are waiting on verification;
-   * apply-first, they are waiting on an invoice and have paid nothing. Telling
-   * someone who has paid that an invoice is coming reads as their money going
-   * missing, so this must follow the flow the page is actually showing.
-   */
-  payFirst: boolean;
 }) {
   const [state, action, pending] = useActionState(
     lookupMembershipAction,
@@ -151,37 +142,31 @@ export default function MembershipCheck({
             <p className="font-semibold text-sky-900">
               We&apos;ve received your application, {state.name.split(" ")[0]}.
             </p>
-            {payFirst ? (
-              // The second line must hold for all three receipt routes, because
-              // the roster records the standing, not how the applicant said they
-              // would send their proof. Telling everyone "nothing further to
-              // send" would strand the two thirds who still owe us a receipt —
-              // and they are the ones whose application actually stalls.
-              <>
-                <p className="mt-1 text-sm text-sky-800">
-                  Your payment is <strong>being verified</strong>. Our team is
-                  checking your receipt and confirming your membership category
-                  — your membership activates as soon as that is done.
-                </p>
-                <p className="mt-2 text-sm text-sky-800">
-                  If you haven&apos;t sent your receipt yet, email it to{" "}
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="font-medium underline underline-offset-2"
-                  >
-                    {contactEmail}
-                  </a>{" "}
-                  — we can&apos;t confirm your payment without it.
-                </p>
-              </>
-            ) : (
-              <p className="mt-1 text-sm text-sky-800">
-                Your membership is <strong>pending payment</strong>. Our team
-                will confirm your category and email you an invoice with payment
-                instructions. Your membership activates once your payment is
-                received.
-              </p>
-            )}
+            {/* Pending now means one thing only: they have paid and we are
+                checking the receipt. The invoice wording that used to live here
+                belonged to the apply-first flow and would read, to someone who
+                has already sent money, as their payment having gone missing.
+
+                The second line must hold for all three receipt routes, because
+                the roster records a standing, not how the applicant said they
+                would send their proof. "Nothing further to send" would strand
+                the two thirds who still owe us one — and they are precisely the
+                people whose application is stalled. */}
+            <p className="mt-1 text-sm text-sky-800">
+              Your payment is <strong>being verified</strong>. Our team is
+              checking your receipt and confirming your membership category —
+              your membership activates as soon as that is done.
+            </p>
+            <p className="mt-2 text-sm text-sky-800">
+              If you haven&apos;t sent your receipt yet, email it to{" "}
+              <a
+                href={`mailto:${contactEmail}`}
+                className="font-medium underline underline-offset-2"
+              >
+                {contactEmail}
+              </a>{" "}
+              — we can&apos;t confirm your payment without it.
+            </p>
           </div>
         </div>
       )}
@@ -190,12 +175,13 @@ export default function MembershipCheck({
         <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
             <UserPlus className="h-5 w-5 text-[#C8A951]" />
-            We couldn&apos;t find a membership under that email.
+            We couldn&apos;t find a membership under that{" "}
+            {mode === "email" ? "email" : "name"}.
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            You may not be registered yet, or your records may use a different
-            email. You can apply for membership below — or contact us if you
-            believe this is an error.
+            {mode === "email"
+              ? "You may not be registered yet, or your records may use a different email — try looking yourself up by name instead."
+              : "You may not be registered yet, or PMAFI may hold your name differently. Try your email address instead, or contact us if you believe this is an error."}
           </p>
           <a
             href={applyHref}

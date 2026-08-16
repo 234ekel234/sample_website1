@@ -16,7 +16,7 @@ import {
 import MembershipCheck from "./MembershipCheck";
 import DuesPayment from "./DuesPayment";
 import PageHero from "@/components/ui/PageHero";
-import { getContent, canPayFirst } from "@/lib/content";
+import { getContent, hasPaymentDetails } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Membership | PMAFI",
@@ -90,21 +90,23 @@ const benefits = [
 /**
  * The join flow, in the order the applicant actually experiences it.
  *
- * PAY_FIRST is the intended flow: the applicant settles their dues, then
- * applies with the receipt attached, so one submission carries everything staff
- * need and nobody waits on a manual invoice.
+ * PAY-FIRST IS NOW THE ONLY FLOW. The ordering is PMAFI's decision, not
+ * something the site derives from whether a figure happens to be filled in, and
+ * the application form already tells applicants to pay before they apply. A
+ * page that disagreed with the form it links to would be worse than one missing
+ * a number — an applicant reading "no need to pay yet" here and "settle your
+ * dues first" there does not know which to believe.
  *
- * APPLY_FIRST is the fallback, and it is not a lesser version — it is the only
- * honest flow while the dues figures and payment channel are unconfirmed. You
- * cannot tell someone to pay on their own without telling them how much and
- * where. The page picks between them on canPayFirst(), so filling in the
- * content sheet is what switches the site over; no deploy is involved.
+ * What still varies is whether we can PRINT the figures. When the content sheet
+ * has none, step one sends the applicant to ask rather than inventing an amount
+ * or an account number. Same flow, less information, still honest.
  */
-const payFirstSteps = (contactEmail: string) => [
+const joinSteps = (contactEmail: string, detailsPublished: boolean) => [
   {
     title: "Pay your membership dues",
-    description:
-      "Settle the dues for your category through the bank or GCash details above, and keep the receipt.",
+    description: detailsPublished
+      ? "Settle the dues for your category using the bank or GCash details above, and keep the receipt."
+      : `Email us at ${contactEmail} for the dues for your category and where to send them. Settle the amount, and keep the receipt.`,
   },
   {
     // The sign-in requirement is stated here, before the visitor clicks away to
@@ -127,40 +129,11 @@ const payFirstSteps = (contactEmail: string) => [
   },
 ];
 
-const APPLY_FIRST_STEPS = [
-  {
-    title: "Submit the application form",
-    description:
-      "Complete the online membership application with your details and preferred membership category.",
-  },
-  {
-    title: "We review your application",
-    description:
-      "Our team verifies your eligibility and confirms the appropriate membership category for you.",
-  },
-  {
-    title: "Receive your invoice",
-    description:
-      "We send you the membership dues and payment instructions for your confirmed category.",
-  },
-  {
-    title: "Pay & send proof",
-    description:
-      "Settle the dues through the provided channel and send back your proof of payment.",
-  },
-  {
-    title: "Welcome to PMAFI",
-    description:
-      "Once your payment is confirmed, we formally welcome you as a member of the Foundation.",
-  },
-];
-
 export default async function MembershipPage() {
   const content = await getContent();
-  const payFirst = canPayFirst(content);
-  const steps = payFirst
-    ? payFirstSteps(content.contact.email)
-    : APPLY_FIRST_STEPS;
+  // Gates the figures, not the flow — see joinSteps above.
+  const detailsPublished = hasPaymentDetails(content);
+  const steps = joinSteps(content.contact.email, detailsPublished);
 
   return (
     <main>
@@ -213,7 +186,6 @@ export default async function MembershipPage() {
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
             <MembershipCheck
               applyHref={APPLICATION_FORM_URL}
-              payFirst={payFirst}
               contactEmail={content.contact.email}
             />
           </div>
@@ -334,16 +306,15 @@ export default async function MembershipPage() {
                 nothing and sat above a lede that inverted what most people
                 expect of a membership: here the dues come first. */}
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-              {payFirst ? "Pay First, Then Apply" : "Apply First, Pay Later"}
+              Pay First, Then Apply
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              {payFirst
-                ? "Settle your dues, then apply with your receipt attached. One submission, and no invoice to wait for."
-                : "Apply online and we'll guide you through confirmation and payment — no need to pay before we've confirmed your details."}
+              Settle your dues, then apply with your receipt attached. One
+              submission, and no invoice to wait for.
             </p>
           </div>
 
-          {payFirst && (
+          {detailsPublished && (
             <DuesPayment payment={content.payment} dues={content.dues} />
           )}
 
@@ -379,8 +350,7 @@ export default async function MembershipPage() {
             {/* Said at the click, not only in step 2 above. This is the button
                 someone presses after skimming, and the form answers with a
                 Google sign-in wall rather than an explanation. */}
-            {payFirst && (
-              <p className="mx-auto mt-3 max-w-md text-xs text-slate-500">
+            <p className="mx-auto mt-3 max-w-md text-xs text-slate-500">
                 The form opens in Google and asks you to sign in. No Google
                 account? Email us at{" "}
                 <a
@@ -389,9 +359,8 @@ export default async function MembershipPage() {
                 >
                   {content.contact.email}
                 </a>{" "}
-                and we&apos;ll take your application that way.
-              </p>
-            )}
+              and we&apos;ll take your application that way.
+            </p>
             <p className="mt-4 text-sm text-slate-500">
               Have questions first?{" "}
               <Link

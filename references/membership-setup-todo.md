@@ -72,12 +72,17 @@ The intended flow is now **pay-first**: the applicant settles their dues, then
 applies with the receipt attached, so one submission carries everything staff
 need and nobody waits on a manual invoice.
 
-**The site already supports both flows and switches itself.**
-`canPayFirst()` in `src/lib/content.ts` returns true only when the content sheet
+**Pay-first is the only flow the site shows.** The ordering is PMAFI's
+decision, not something derived from whether a figure happens to be filled in —
+and the application form already tells applicants to pay first. A page
+disagreeing with the form it links to is worse than a page missing a number.
+
+What the content sheet still controls is whether the **figures are printed**.
+`hasPaymentDetails()` in `src/lib/content.ts` returns true only when the sheet
 has (a) at least one dues figure AND (b) a usable payment channel. Until then
-`/membership` keeps showing the old apply-first steps, which is the only honest
-thing to show — you cannot tell someone to pay on their own without telling them
-how much and where. Filling in the content sheet flips the site over; no deploy.
+step one of the join flow tells applicants to email PMAFI for the amount and
+account details rather than inventing either. Same flow, less information,
+still honest. Filling in the sheet publishes the figures; no deploy.
 
 Content-sheet keys to fill (Content tab, `Key` / `Value`):
 

@@ -92,8 +92,7 @@ function normalizeStanding(value: string): MemberRecord["standing"] {
   // pay-first flow writes — the applicant has paid and staff are checking the
   // receipt. "Pending Payment" is the older apply-first label, and rows
   // carrying it predate the change, so dropping it would silently demote real
-  // applicants to Lapsed. The site shows one Pending state either way; only
-  // the wording on /membership differs, driven by canPayFirst().
+  // applicants to Lapsed. The site shows one Pending state for both.
   if (v === "pending verification" || v === "pending payment" || v === "pending") {
     return "Pending";
   }

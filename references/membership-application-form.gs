@@ -8,12 +8,13 @@
  *   staff verify the receipt → membership goes Active.
  *
  * That is the reverse of the older apply-first flow, where PMAFI invoiced
- * after reviewing. The website mirrors whichever flow is live, driven by
- * canPayFirst() in src/lib/content.ts — it only shows pay-first instructions
- * once the dues figures AND a payment channel are filled into the content
- * sheet. FILL THE CONTENT SHEET IN BEFORE PUBLISHING THIS FORM: the form sends
- * applicants to the website to read the amounts, and until the sheet has them
- * that page shows no figures at all.
+ * after reviewing. The website shows this same pay-first flow unconditionally,
+ * so the two always agree.
+ *
+ * FILL THE CONTENT SHEET IN: the form sends applicants to the website to read
+ * the dues and account details, and until the sheet has them that page asks
+ * them to email PMAFI for the figures instead. Nothing breaks, but every
+ * applicant costs a round-trip until those cells are filled.
  *
  * HOW TO RUN (≈1 minute):
  *   1. Sign in to the pmafi.web@gmail.com Google account.

@@ -5,7 +5,7 @@ import type { SiteContent } from "@/lib/content";
  * Dues and where to send them — the half of the pay-first flow that cannot be
  * invented.
  *
- * Rendered ONLY when canPayFirst() is true. The page never calls this with
+ * Rendered ONLY when hasPaymentDetails() is true. The page never calls this with
  * blank values, but every field is still guarded individually: a sheet with a
  * bank name and no account number must show the bank block with one line
  * missing, not a row reading "Account number:" followed by nothing.
