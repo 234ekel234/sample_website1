@@ -5,7 +5,7 @@ export default defineConfig({
   resolve: {
     // Mirror the "@/*" alias from tsconfig so tests import modules the same way
     // the app does.
-    alias: { "@": path.resolve(__dirname, "src") },
+    alias: { "@": path.resolve(import.meta.dirname, "src") },
   },
   test: {
     environment: "node",

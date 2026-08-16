@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Word/Office temp lock files
 ~$*
+
+# rendered email previews (npm run preview:email)
+/.preview
