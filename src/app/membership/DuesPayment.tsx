@@ -32,7 +32,15 @@ export default function DuesPayment({
   const hasGcash = payment.gcashName && payment.gcashNumber;
 
   return (
-    <div className="mt-10 overflow-hidden rounded-2xl border border-[#C8A951]/30 bg-[#0a1628]">
+    <div
+      // Load-bearing: the membership application form links applicants straight
+      // here (…/membership#dues) instead of restating the figures, so this page
+      // stays the single place dues and account numbers are published. Renaming
+      // this anchor breaks that link silently — the page still loads, it just
+      // stops scrolling to the numbers the applicant was sent to read.
+      id="dues"
+      className="mt-10 scroll-mt-24 overflow-hidden rounded-2xl border border-[#C8A951]/30 bg-[#0a1628]"
+    >
       <div className="border-b border-white/10 px-7 py-5">
         <p className="flex items-center gap-2 font-bold text-white">
           <Receipt className="h-5 w-5 text-[#C8A951]" />

@@ -11,20 +11,20 @@
  * after reviewing. The website mirrors whichever flow is live, driven by
  * canPayFirst() in src/lib/content.ts — it only shows pay-first instructions
  * once the dues figures AND a payment channel are filled into the content
- * sheet. Publish this form's pay-first wording at the same time you fill
- * those in, or applicants will be told to pay an amount the site cannot show.
+ * sheet. FILL THE CONTENT SHEET IN BEFORE PUBLISHING THIS FORM: the form sends
+ * applicants to the website to read the amounts, and until the sheet has them
+ * that page shows no figures at all.
  *
  * HOW TO RUN (≈1 minute):
  *   1. Sign in to the pmafi.web@gmail.com Google account.
  *   2. Go to  https://script.google.com  → "New project".
  *   3. Delete the sample code, paste THIS whole file in.
- *   4. Set DUES_* and PAYMENT_* below to the confirmed figures.
- *   5. Click "Run" (▶). Approve the permission prompt the first time
+ *   4. Click "Run" (▶). Approve the permission prompt the first time
  *      (it only edits Forms it creates).
- *   6. Open "Execution log" — it prints the form's EDIT link and the
+ *   5. Open "Execution log" — it prints the form's EDIT link and the
  *      public (viewform) link. Use the public link on the website.
  *
- * ⚠ STEP 7 IS MANUAL AND THE FORM DOES NOT WORK WITHOUT IT.
+ * ⚠ STEP 6 IS MANUAL AND THE FORM DOES NOT WORK WITHOUT IT.
  *   Apps Script CANNOT create a file-upload question — there is no
  *   addFileUploadItem(), and setRequireLogin() is deprecated. After running
  *   this, open the form in the Forms editor and add the receipt question by
@@ -44,32 +44,19 @@
  * don't need to re-run this. Re-running creates a brand-new form.
  */
 
-// ── CONFIRMED FIGURES — fill these in before running ─────────────────────────
-// Leave any as '' and the form simply omits that line rather than printing a
-// blank. Same rule as the website: never invent a figure or an account number.
-var DUES_REGULAR   = '';   // e.g. 'PHP 2,000 per year'
-var DUES_ASSOCIATE = '';
-var DUES_AFFILIATE = '';
-var PAYMENT_BANK   = '';   // e.g. 'BDO — PMAFI Inc. — 1234 5678 9012'
-var PAYMENT_GCASH  = '';   // e.g. 'GCash — PMAFI — 0917 123 4567'
-
-/** Build the "what to pay and where" block, omitting anything unconfirmed. */
-function paymentInstructions_() {
-  var lines = [];
-  if (DUES_REGULAR)   lines.push('  • Regular Member:   ' + DUES_REGULAR);
-  if (DUES_ASSOCIATE) lines.push('  • Associate Member: ' + DUES_ASSOCIATE);
-  if (DUES_AFFILIATE) lines.push('  • Affiliate Member: ' + DUES_AFFILIATE);
-  var dues = lines.length ? 'Membership dues:\n' + lines.join('\n') + '\n\n' : '';
-
-  var channels = [];
-  if (PAYMENT_BANK)  channels.push('  • ' + PAYMENT_BANK);
-  if (PAYMENT_GCASH) channels.push('  • ' + PAYMENT_GCASH);
-  var where = channels.length
-    ? 'Pay to:\n' + channels.join('\n') + '\n\n'
-    : '';
-
-  return dues + where;
-}
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+// THE FORM DELIBERATELY DOES NOT STATE THE DUES OR THE ACCOUNT NUMBERS.
+//
+// Those live in one place only: the content sheet, which the website reads and
+// renders at the link below. Staff change a figure in the sheet and the site is
+// correct within a minute, with no deploy and nothing to re-run here.
+//
+// If this form ALSO printed the amounts, the two would drift the first time
+// dues changed — and the applicant would pay what the form said. A payment
+// dispute caused by a stale copy is far worse than asking someone to follow a
+// link they arrived through anyway, since the Apply button sits on that very
+// page, directly beneath the figures.
+var PAYMENT_DETAILS_URL = 'https://www.pmafi.org/membership#dues';
 
 function createPmafiMembershipForm() {
   var form = FormApp.create('PMAFI Membership Application');
@@ -80,7 +67,8 @@ function createPmafiMembershipForm() {
     'BEFORE YOU START: please settle your membership dues and have your ' +
     'receipt ready — you will be asked to attach it at the end of this form. ' +
     'Applying and paying in one go means there is no invoice to wait for.\n\n' +
-    paymentInstructions_() +
+    'The dues for each category, and the bank and GCash details to pay them ' +
+    'to, are on our website:\n' + PAYMENT_DETAILS_URL + '\n\n' +
     'Your membership is finalized once our team has verified your payment.\n\n' +
     'Fields marked with an asterisk (*) are required.'
   );
@@ -212,7 +200,8 @@ function createPmafiMembershipForm() {
       'your deposit slip, bank transfer confirmation, or GCash receipt is ' +
       "enough — we just need to see the amount, the date, and who it came " +
       'from.\n\n' +
-      paymentInstructions_() +
+      'Not paid yet? The dues and the account details are at:\n' +
+      PAYMENT_DETAILS_URL + '\n\n' +
       "If you have already paid but cannot attach the receipt here, submit " +
       'this form anyway and email the receipt to pmafi.web@gmail.com — your ' +
       'application will not be lost.'

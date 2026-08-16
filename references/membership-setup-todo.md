@@ -97,8 +97,19 @@ A partial payment block is rejected on purpose — a bank name with no account
 number, or an amount with no destination, keeps the flow closed. See
 `src/lib/content.test.ts`.
 
+**DECIDED: the form does not restate the figures.** It links to
+`https://www.pmafi.org/membership#dues` instead, so the content sheet is the
+single place dues and account numbers are published. If the form printed them
+too, the two would drift the first time dues changed — and the applicant would
+pay what the form said. The link costs nothing: the Apply button already sits on
+that page, directly beneath the figures.
+
+Consequence: **fill the content sheet in BEFORE publishing the form.** Until it
+has values, the site shows no figures, so the form would be sending applicants
+to a page that cannot tell them what to pay.
+
 **Still to do on the form** (`references/membership-application-form.gs`):
-1. Fill the `DUES_*` / `PAYMENT_*` constants and re-run to generate the form.
+1. Run the generator to create the form.
 2. **Add the "Proof of payment" file-upload question BY HAND.** Apps Script has
    no `addFileUploadItem()` and `setRequireLogin()` is deprecated, so this step
    cannot be scripted. Full instructions are in that file's header.
@@ -112,6 +123,45 @@ email the receipt to `pmafi.web@gmail.com` instead, so nobody is locked out.
 
 **Still to confirm with PMAFI:** the dues amounts per category and the bank /
 GCash details. These are the only things blocking the flow.
+
+## Admin runbook — verifying a payment
+
+This is the one step in the flow that is a person, not a script. Until an admin
+does it, the applicant sees "your payment is being verified" on the website.
+
+1. **Applicant pays**, then submits the form with their receipt attached.
+2. **Auto-add files them** in the members roster as `Pending Verification`, with
+   Name / Email / Category / PMA Class / Member Since filled in. This is
+   automatic and immediate — the applicant can already see themselves on
+   `/membership`.
+3. **Admin opens the form's Responses** (or the linked responses sheet). The
+   receipt is attached there, and the uploaded file lands in Drive under the
+   `pmafi.web@gmail.com` account. The roster does NOT hold the receipt — a
+   payment document should not sit in a sheet staff pass around.
+4. **Match and check.** The email address is the key linking the response to the
+   roster row. Confirm the amount matches the dues for the category they chose,
+   and that the date and payer name are legible.
+5. **Confirm the category.** The auto-add script maps "Not sure — please advise"
+   (and anything unrecognised) to **Affiliate**, the broadest tier. Correct
+   column C if the applicant belongs in another category.
+6. **Flip column D to `Active`.** That is what "verified" means to the site —
+   there is no separate Verified status, because nothing would behave
+   differently. The website reflects the change within 60 seconds.
+7. **If the payment is short, missing, or unreadable:** leave the row as
+   `Pending Verification` and contact the applicant. Do not set Active. The
+   status they see is honest in the meantime, and nothing is lost.
+
+Statuses and what the site shows:
+
+| Column D | Member sees on /membership |
+|---|---|
+| `Active` | green — active member |
+| `Pending Verification` | sky — payment being verified |
+| `Pending Payment` | sky — same (older apply-first label, still valid) |
+| `Lapsed`, blank, or anything else | amber — lapsed, please get in touch |
+
+That last row is deliberate: an unrecognised value fails safe to Lapsed rather
+than granting standing the roster never gave.
 
 ## Files involved
 - `src/lib/members.ts` — member lookup (Google Sheets read; Active/Lapsed/Pending)
