@@ -129,20 +129,80 @@ email the receipt to `pmafi.web@gmail.com` instead, so nobody is locked out.
 **Still to confirm with PMAFI:** the dues amounts per category and the bank /
 GCash details. These are the only things blocking the flow.
 
+## The site reads the FORM RESPONSES sheet
+
+There is no separate members roster and no auto-add script any more. The form's
+linked responses sheet **is** the roster: every applicant row is created by the
+form, and staff add one column of their own.
+
+**Setup (once):**
+1. In the responses sheet, add a column named **`Status`** to the right of the
+   form's own columns. Leave it blank for new rows.
+2. Set `MEMBERS_SHEET_ID` to that spreadsheet's ID (locally in `.env.local` and
+   in Vercel).
+3. If the responses tab is not named `Form Responses 1`, set
+   `MEMBERS_SHEET_RANGE` to `<tab name>!A1:Z`. Note it starts at **row 1** —
+   the header row is data here, not decoration.
+
+**Columns are located by HEADER TEXT, never by position.** A responses sheet's
+layout belongs to the form, so adding or reordering a question shifts every
+column after it. Headers matched, case-insensitive substring:
+
+| Looks for | Typical header |
+|---|---|
+| `full name` / `name` | Full name |
+| `email` | Email Address *and* Email address — see below |
+| `category` | Which membership category are you applying for? |
+| `pma class` | PMA Class / Batch (and year graduated) |
+| `status` | Status *(you add this)* |
+| `timestamp` | Timestamp |
+
+**Two email columns is normal.** The form asks for one, and Google adds its own
+because the file-upload question forces sign-in. They can differ — someone types
+their everyday address and signs in with another. A lookup matches **either**, so
+neither is a wrong answer.
+
+**Only those columns are read.** Phone numbers, addresses, free-text answers and
+receipt links are never extracted, so they cannot reach the browser.
+
+### Behaviour that differs from a hand-kept roster
+
+- **Blank Status means Pending, not Lapsed.** Every row exists because somebody
+  applied and says they paid; staff simply have not reached it. Telling a new
+  applicant their membership "lapsed" would be wrong. Pending grants nothing.
+- **An unrecognised category becomes Affiliate**, the broadest tier, rather than
+  the row being dropped — a dropped row means the applicant cannot check their
+  own status. It is provisional until staff confirm it.
+- **Re-submissions collapse to one member, and the best standing wins.** A
+  member who is Active and applies again gets a second row with a blank status;
+  taking the newest row would silently demote them to Pending. Ties break toward
+  the newer row.
+- **Anyone who never used the form does not exist.** There is no way to add a
+  legacy member by hand except by adding a row to the responses sheet, which
+  Google may reorder. This is the accepted cost of using one sheet.
+
+### Consequences to be aware of
+
+- Reordering or renaming a form question is safe **as long as** the headers
+  still contain the words above. Rename "Full name" to something without "name"
+  in it and lookups stop working — the site reports a service error rather than
+  telling every member they are not registered, but it is still broken.
+- Deleting a response deletes the member.
+- `references/membership-autoadd.gs` and the roster generator in
+  `references/members-sheet.gs` are **no longer used**. They are kept only for
+  reference if the separate-roster design is ever revived.
+
 ## Admin runbook — verifying a payment
 
 This is the one step in the flow that is a person, not a script. Until an admin
 does it, the applicant sees "your payment is being verified" on the website.
 
 1. **Applicant pays**, then submits the form with their receipt attached.
-2. **Auto-add files them** in the members roster as `Pending Verification`, with
-   Name / Email / Category / PMA Class / Member Since filled in. This is
-   automatic and immediate — the applicant can already see themselves on
-   `/membership`.
-3. **Admin opens the form's Responses** (or the linked responses sheet). The
-   receipt is attached there, and the uploaded file lands in Drive under the
-   `pmafi.web@gmail.com` account. The roster does NOT hold the receipt — a
-   payment document should not sit in a sheet staff pass around.
+2. **The row appears in the responses sheet** the moment they submit, with a
+   blank Status — which the site reads as Pending. The applicant can already see
+   themselves on `/membership`. Nothing needs to run.
+3. **Admin opens the same sheet.** The receipt is a link in that row, and the
+   uploaded file lands in Drive under the `pmafi.web@gmail.com` account.
 
    **The upload is optional, so check "How are you sending your receipt?" to
    see which queue this applicant is in.** Work them in this order:
@@ -160,10 +220,10 @@ does it, the applicant sees "your payment is being verified" on the website.
 4. **Match and check.** The email address is the key linking the response to the
    roster row. Confirm the amount matches the dues for the category they chose,
    and that the date and payer name are legible.
-5. **Confirm the category.** The auto-add script maps "Not sure — please advise"
-   (and anything unrecognised) to **Affiliate**, the broadest tier. Correct
-   column C if the applicant belongs in another category.
-6. **Flip column D to `Active`.** That is what "verified" means to the site —
+5. **Confirm the category.** "Not sure — please advise" and anything
+   unrecognised reads as **Affiliate**, the broadest tier. If they belong
+   elsewhere, correct their answer in the category column.
+6. **Set the `Status` column to `Active`.** That is what "verified" means —
    there is no separate Verified status, because nothing would behave
    differently. The website reflects the change within 60 seconds.
 7. **If the payment is short, missing, unreadable, or the receipt has not
@@ -174,15 +234,16 @@ does it, the applicant sees "your payment is being verified" on the website.
 
 Statuses and what the site shows:
 
-| Column D | Member sees on /membership |
+| `Status` column | Member sees on /membership |
 |---|---|
 | `Active` | green — active member |
-| `Pending Verification` | sky — payment being verified |
-| `Pending Payment` | sky — same (older apply-first label, still valid) |
-| `Lapsed`, blank, or anything else | amber — lapsed, please get in touch |
+| *blank* | sky — payment being verified |
+| `Pending Verification` / `Pending Payment` / `Pending` | sky — same |
+| `Lapsed` or anything else | amber — lapsed, please get in touch |
 
-That last row is deliberate: an unrecognised value fails safe to Lapsed rather
-than granting standing the roster never gave.
+Blank meaning Pending is the one rule that inverts from a hand-kept roster, and
+it is deliberate: a row exists only because somebody applied. Anything staff
+type that is not recognised still fails safe to Lapsed, granting nothing.
 
 ## Files involved
 - `src/lib/members.ts` — member lookup (Google Sheets read; Active/Lapsed/Pending)

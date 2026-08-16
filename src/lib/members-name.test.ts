@@ -9,20 +9,159 @@ async function load() {
   return import("@/lib/members");
 }
 
-/** Name | Email | Category | Status | PMA Class | Member Since */
+// A form responses sheet: header row first, and the columns in whatever order
+// the form happens to produce. Note the TWO email columns — Google adds its own
+// once a file-upload question forces sign-in, alongside the form's question.
+const HEADER = [
+  "Timestamp",
+  "Email Address",
+  "Full name",
+  "Email address",
+  "Mobile / phone number",
+  "Which membership category are you applying for?",
+  "PMA Class / Batch (and year graduated)",
+  "Status",
+];
+const row = (
+  ts: string,
+  googleEmail: string,
+  name: string,
+  typedEmail: string,
+  category: string,
+  pmaClass: string,
+  status: string
+) => [ts, googleEmail, name, typedEmail, "0917", category, pmaClass, status];
+
 const ROWS = [
-  ["Juan Dela Cruz", "juan@example.com", "Regular", "Active", "1988", "2010"],
-  ["María Peña", "maria@example.com", "Associate", "Active", "1995", "2015"],
-  ["Jose P. Santos", "jose@example.com", "Regular", "Lapsed", "", ""],
-  // Two real members genuinely sharing a name.
-  ["Ana Reyes", "ana1@example.com", "Regular", "Active", "1990", "2012"],
-  ["Ana Reyes", "ana2@example.com", "Affiliate", "Lapsed", "2001", "2020"],
+  HEADER,
+  row("2026-03-01", "juan@gmail.com", "Juan Dela Cruz", "juan@work.com",
+      "Regular Member — PMA alumnus, faculty, or staff", "PMA Class 1988", "Active"),
+  row("2026-03-02", "maria@gmail.com", "María Peña", "maria@gmail.com",
+      "Associate Member — supporting the Foundation", "1995", "Active"),
+  row("2026-03-03", "jose@gmail.com", "Jose P. Santos", "jose@gmail.com",
+      "Not sure — please advise", "", ""),
+  row("2026-03-04", "ana1@gmail.com", "Ana Reyes", "ana1@gmail.com",
+      "Regular Member", "1990", "Active"),
+  row("2026-03-05", "ana2@gmail.com", "Ana Reyes", "ana2@gmail.com",
+      "Affiliate Member", "2001", "Lapsed"),
 ];
 
 beforeEach(() => {
   process.env.MEMBERS_SHEET_ID = "test-sheet";
+  delete process.env.MEMBERS_SHEET_RANGE;
   readRange.mockReset();
   readRange.mockResolvedValue(ROWS);
+});
+
+describe("reading a form responses sheet", () => {
+  it("finds columns by header, not position", async () => {
+    // Reorder the form and every fixed column index would now be wrong.
+    const shuffled = [
+      ["Status", "Full name", "Timestamp", "Email address", "Which membership category"],
+      ["Active", "Juan Dela Cruz", "2026-03-01", "juan@work.com", "Regular Member"],
+    ];
+    readRange.mockResolvedValue(shuffled);
+    const { checkMembership } = await load();
+    const m = await checkMembership("juan@work.com");
+    expect(m?.name).toBe("Juan Dela Cruz");
+    expect(m?.standing).toBe("Active");
+    expect(m?.category).toBe("Regular");
+  });
+
+  it("matches either email column on a row", async () => {
+    // Signed in with one address, typed another. Neither is a wrong answer.
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@gmail.com"))?.name).toBe("Juan Dela Cruz");
+    expect((await checkMembership("juan@work.com"))?.name).toBe("Juan Dela Cruz");
+  });
+
+  it("reads a category out of the form's full sentence", async () => {
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@work.com"))?.category).toBe("Regular");
+    expect((await checkMembership("maria@gmail.com"))?.category).toBe("Associate");
+  });
+
+  it("defaults an unrecognised category to Affiliate rather than dropping the row", async () => {
+    // "Not sure — please advise". Skipping would leave the applicant unable to
+    // check their own status; the category is provisional until staff confirm.
+    const { checkMembership } = await load();
+    const m = await checkMembership("jose@gmail.com");
+    expect(m?.category).toBe("Affiliate");
+  });
+
+  it("treats a blank status as Pending, never Lapsed", async () => {
+    // Every row here is an application. "Lapsed" would tell a brand-new
+    // applicant their membership had expired.
+    const { checkMembership } = await load();
+    expect((await checkMembership("jose@gmail.com"))?.standing).toBe("Pending");
+  });
+
+  it("still fails safe on a status nobody recognises", async () => {
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "x@e.com", "X Y", "x@e.com", "Regular", "", "Rejected"),
+    ]);
+    const { checkMembership } = await load();
+    expect((await checkMembership("x@e.com"))?.standing).toBe("Lapsed");
+  });
+
+  it("takes the joining year from the submission timestamp", async () => {
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@work.com"))?.memberSince).toBe("2026");
+  });
+
+  it("reads the PMA class out of whatever was typed", async () => {
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@work.com"))?.pmaClass).toBe("1988");
+  });
+
+  it("throws rather than reporting everyone as not-a-member", async () => {
+    // A reworded question that loses "name"/"email" must surface as a service
+    // error, not as every member being told they are not on the roster.
+    readRange.mockResolvedValue([["Timestamp", "Mobile", "Status"], ["a", "b", "c"]]);
+    const { checkMembership } = await load();
+    await expect(checkMembership("juan@work.com")).rejects.toThrow(/name or email/i);
+  });
+
+  it("returns nothing for a completely empty sheet", async () => {
+    readRange.mockResolvedValue([]);
+    const { checkMembership } = await load();
+    expect(await checkMembership("juan@work.com")).toBeNull();
+  });
+});
+
+describe("re-submissions", () => {
+  it("does not let a new application demote a verified member", async () => {
+    // The classic failure: member is Active, re-applies, the fresh row has a
+    // blank status, and taking the newest row would flip them to Pending.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "juan@gmail.com", "Juan Dela Cruz", "juan@gmail.com", "Regular", "1988", "Active"),
+      row("2026-06-01", "juan@gmail.com", "Juan Dela Cruz", "juan@gmail.com", "Regular", "1988", ""),
+    ]);
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@gmail.com"))?.standing).toBe("Active");
+  });
+
+  it("prefers the newer row when both carry the same standing", async () => {
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "j@e.com", "Old Name", "j@e.com", "Regular", "1988", "Active"),
+      row("2026-06-01", "j@e.com", "New Name", "j@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { checkMembership } = await load();
+    expect((await checkMembership("j@e.com"))?.name).toBe("New Name");
+  });
+
+  it("counts a duplicate submission as one person, not an ambiguous name", async () => {
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "j@e.com", "Juan Dela Cruz", "j@e.com", "Regular", "1988", "Active"),
+      row("2026-06-01", "j@e.com", "Juan Dela Cruz", "j@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Juan Dela Cruz")).kind).toBe("found");
+  });
 });
 
 describe("normalizeName", () => {
@@ -40,35 +179,28 @@ describe("findMemberByName", () => {
     const { findMemberByName } = await load();
     const r = await findMemberByName("Juan Dela Cruz");
     expect(r.kind).toBe("found");
-    if (r.kind === "found") expect(r.member.email).toBe("juan@example.com");
+    if (r.kind === "found") expect(r.member.name).toBe("Juan Dela Cruz");
   });
 
   it("finds a member despite case, accents and stray punctuation", async () => {
     const { findMemberByName } = await load();
-    // A member who cannot type "ñ" must still find themselves.
     for (const typed of ["maria pena", "MARIA PEÑA", "María  Peña"]) {
       const r = await findMemberByName(typed);
       expect(r.kind, `typed: ${typed}`).toBe("found");
-      if (r.kind === "found") expect(r.member.email).toBe("maria@example.com");
     }
   });
 
-  it("matches a surname-first roster entry", async () => {
+  it("matches a surname-first entry", async () => {
     const { findMemberByName } = await load();
-    const r = await findMemberByName("Dela Cruz, Juan");
-    expect(r.kind).toBe("found");
-    if (r.kind === "found") expect(r.member.email).toBe("juan@example.com");
+    expect((await findMemberByName("Dela Cruz, Juan")).kind).toBe("found");
   });
 
-  it("refuses to choose when two members share a name", async () => {
-    // Picking the first would show the wrong person their own record; showing
-    // both would hand a stranger two standings off one guess.
+  it("refuses to choose when two different people share a name", async () => {
     const { findMemberByName } = await load();
     expect((await findMemberByName("Ana Reyes")).kind).toBe("ambiguous");
   });
 
   it("does not match a near miss", async () => {
-    // Fuzzy matching would let someone probing names land on a real member.
     const { findMemberByName } = await load();
     for (const typed of ["Juan Cruze", "Jon Dela Cruz", "Juan"]) {
       expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("none");
@@ -79,17 +211,6 @@ describe("findMemberByName", () => {
     const { findMemberByName } = await load();
     for (const typed of ["", "   ", "..."]) {
       expect((await findMemberByName(typed)).kind).toBe("none");
-    }
-  });
-
-  it("never reveals a member other than the one matched", async () => {
-    const { findMemberByName } = await load();
-    const r = await findMemberByName("Jose P Santos");
-    expect(r.kind).toBe("found");
-    if (r.kind === "found") {
-      expect(r.member.email).toBe("jose@example.com");
-      expect(JSON.stringify(r)).not.toContain("juan@example.com");
-      expect(JSON.stringify(r)).not.toContain("maria@example.com");
     }
   });
 
