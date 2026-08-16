@@ -4,28 +4,37 @@ import { useInView } from "framer-motion";
 import { useRef } from "react";
 import Link from "next/link";
 import { HandCoins, BookOpen, Landmark, Users, ArrowRight } from "lucide-react";
+import { findFund } from "@/lib/funds";
 
-// Giving options. The professorial chair (₱250k) and endowment (₱100k) minimums
-// come from the PMAFI brochure; confirm current figures with PMAFI before launch.
+// Giving options.
+//
+// The minimums come from src/lib/funds.ts, which is also what the donation log
+// and the Fund Updates tab are read through — so the figure a donor is quoted
+// here and the fund name their gift is later filed under cannot drift apart.
+// Both originate in the PMAFI brochure; confirm current figures before launch.
+//
+// "General Donation" is the ACT; the fund it lands in is "General Fund", and
+// the description says so — that is the name a donor will see on their gift at
+// /donate/status, so it should not be a surprise.
 const ways = [
   {
     icon: HandCoins,
     title: "General Donation",
     amount: "Any amount",
     description:
-      "An unrestricted donation that PMAFI directs where it's needed most — faculty development, facilities, scholarships, and cadet programs.",
+      "An unrestricted donation that PMAFI directs where it's needed most — faculty development, facilities, scholarships, and cadet programs. Recorded against the General Fund.",
   },
   {
     icon: BookOpen,
     title: "Professorial Chair Fund",
-    amount: "From ₱250,000",
+    amount: `From ${findFund("Professorial Chair Fund")!.minimum}`,
     description:
       "Establish a chair in your name or your class's honor. The principal is preserved — only the earnings fund the grant, so your donation gives in perpetuity.",
   },
   {
     icon: Landmark,
     title: "Endowment Fund",
-    amount: "From ₱100,000",
+    amount: `From ${findFund("Endowment Fund")!.minimum}`,
     description:
       "Create a lasting endowment whose principal is never spent. The annual earnings sustain PMA programs and academic excellence year after year.",
   },

@@ -154,6 +154,27 @@ This lives in the **same spreadsheet** as the Content tab, on its own tab named
 | E | `Image URL` | no | A **Google Drive share link**. Other hosts are ignored — see below. |
 | F | `Published` | **yes** | `Yes` to show it. Anything else keeps it hidden. |
 
+### The three fund names — use these exactly
+
+The Fund column must match what the donation log uses, or a donor who looks up
+their gift will be shown nothing. There are three:
+
+| Fund | Minimum | From |
+|---|---|---|
+| `Professorial Chair Fund` | ₱250,000 | PMAFI brochure |
+| `Endowment Fund` | ₱100,000 | PMAFI brochure |
+| `General Fund` | — | Undesignated gifts. The donate page calls the *act* "General Donation"; the fund it lands in is General Fund |
+
+Common short forms are understood — "Endowment", "Professorial Chair",
+"General Donation", "unrestricted" all resolve to the right fund, and case and
+spacing don't matter. Anything else is kept exactly as typed, so a fund PMAFI
+opens later still works as long as **both** sheets spell it the same way.
+
+**"Facilities & Modernization" is not a fund.** It is a programme area described
+on /programs and the home page. The brochure has never offered it as something a
+donor may designate to, so it is not in the list — gifts toward facilities are
+General Fund gifts.
+
 ### A row needs a Fund AND a Title to appear
 
 This is the single most common reason an update doesn't show. A row with a fund

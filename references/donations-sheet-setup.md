@@ -38,7 +38,13 @@ nothing until it is logged.
 - **Donor name** — used to greet them ("Thank you, Juan").
 - **Date** — the date of the gift.
 - **Amount** — pesos. `10000`, `10,000` and `₱10,000` all work.
-- **Fund** — what it was designated for, e.g. *Professorial Chair Fund*. Leave
+- **Fund** — what it was designated for. Use one of the three canonical names —
+  `Professorial Chair Fund`, `Endowment Fund`, `General Fund` — because the site
+  joins a donor's gift to that fund's updates by matching this against the Fund
+  Updates tab. Short forms ("Endowment", "General Donation") and any casing are
+  understood; anything else is kept as typed and only matches if the updates tab
+  spells it identically. "Facilities & Modernization" is a programme area, not a
+  fund. Leave
   blank for a general gift.
 - **Status** — one of **Received**, **Acknowledged**, **Receipt issued**,
   **Allocated**. Anything blank or unrecognized shows as *Received*, which is

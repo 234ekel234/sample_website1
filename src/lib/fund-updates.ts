@@ -18,6 +18,7 @@
 import { readRange } from "@/lib/sheets";
 import { toDisplayImageUrl } from "@/lib/sheet-image";
 import { normalizeSheetDate, byNewestDate } from "@/lib/sheet-date";
+import { canonicalFund } from "@/lib/funds";
 
 export interface FundUpdate {
   /** Which fund this update belongs to, e.g. "Professorial Chair Fund". */
@@ -62,7 +63,9 @@ export function parseFundUpdates(rows: unknown[][]): FundUpdate[] {
     if (!isPublished) continue;
 
     updates.push({
-      fund,
+      // Same canonical list the donation log is read through, so the two sides
+      // of the join cannot drift apart. See src/lib/funds.ts.
+      fund: canonicalFund(fund),
       title,
       message,
       date: normalizeSheetDate(String(row[3] ?? "")),

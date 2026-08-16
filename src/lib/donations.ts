@@ -35,6 +35,7 @@
 
 import { readRange } from "@/lib/sheets";
 import { normalizeSheetDate, byNewestDate } from "@/lib/sheet-date";
+import { canonicalFund } from "@/lib/funds";
 
 /** Where a gift has reached in PMAFI's process. Mirrors PHASE-3-SCOPE.md. */
 export type DonationStatus =
@@ -119,7 +120,9 @@ async function loadDonations(): Promise<DonationRecord[]> {
       donorName: String(row[2] ?? "").trim(),
       date: normalizeSheetDate(String(row[3] ?? "")),
       amount,
-      fund: String(row[5] ?? "").trim(),
+      // Canonicalised so a gift logged as "general donation" still joins to
+      // updates filed under "General Fund". See src/lib/funds.ts.
+      fund: canonicalFund(String(row[5] ?? "")),
       status: normalizeStatus(String(row[6] ?? "")),
     });
   }

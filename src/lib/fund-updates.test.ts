@@ -126,13 +126,31 @@ describe("groupByFund", () => {
   it("groups updates under their fund, preserving first-seen order", () => {
     const groups = groupByFund(
       parseFundUpdates([
-        row("Endowment", "e1", "2026-05-01"),
-        row("Chair Fund", "c1", "2026-06-01"),
-        row("Endowment", "e2", "2026-04-01"),
+        row("Endowment Fund", "e1", "2026-05-01"),
+        row("Professorial Chair Fund", "c1", "2026-06-01"),
+        row("Endowment Fund", "e2", "2026-04-01"),
       ])
     );
-    expect(groups.map(([fund]) => fund)).toEqual(["Chair Fund", "Endowment"]);
+    expect(groups.map(([fund]) => fund)).toEqual([
+      "Professorial Chair Fund",
+      "Endowment Fund",
+    ]);
     expect(groups[1][1].map((u) => u.title)).toEqual(["e1", "e2"]);
+  });
+
+  it("groups variant spellings of one fund together", () => {
+    // Rows are canonicalised on read (src/lib/funds.ts), so a staff member
+    // writing "Endowment" on one update and "Endowment Fund" on the next does
+    // not split the fund into two headings a donor has to reconcile.
+    const groups = groupByFund(
+      parseFundUpdates([
+        row("Endowment", "first", "2026-05-01"),
+        row("  endowment fund ", "second", "2026-04-01"),
+      ])
+    );
+    expect(groups).toHaveLength(1);
+    expect(groups[0][0]).toBe("Endowment Fund");
+    expect(groups[0][1].map((u) => u.title)).toEqual(["first", "second"]);
   });
 
   it("returns nothing when there are no updates", () => {
