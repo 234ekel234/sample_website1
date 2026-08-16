@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, type CSSProperties } from "react";
+import { useSyncExternalStore, type CSSProperties } from "react";
 import { motion, type Variants } from "framer-motion";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -31,12 +31,19 @@ const EMBERS = Array.from({ length: 26 }, (_, i) => ({
   drift: (rand(i, 6) - 0.5) * 70,
 }));
 
+// "Has hydration finished?" as an external store: the server snapshot is false
+// and the client snapshot is true, so React flips it once after hydrating.
+// Nothing ever changes, hence the no-op subscribe — it must be module-level so
+// its identity is stable, or React resubscribes on every render.
+const neverChanges = () => () => {};
+const onClient = () => true;
+const onServer = () => false;
+
 export default function Hero() {
   // Render embers only after mount. Their positions derive from Math.sin, which
   // differs subtly between the Node server and the browser, so server-rendering
   // them causes a hydration mismatch. They're decorative, so client-only is fine.
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(neverChanges, onClient, onServer);
 
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a1628]">

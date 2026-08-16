@@ -1,13 +1,5 @@
 import { describe, it, expect } from "vitest";
-import fs from "node:fs";
-
-// normalizeYear is module-private; lift it out rather than exporting a helper
-// only tests would use.
-const src = fs.readFileSync("src/lib/members.ts", "utf8");
-const body = src.match(/function normalizeYear[\s\S]*?\n}/)![0];
-const normalizeYear: (v: string) => string = eval(
-  "(" + body.replace(/^function normalizeYear/, "function").replace(/: string/g, "") + ")"
-);
+import { normalizeYear } from "@/lib/members";
 
 describe("normalizeYear — PMA class / member since", () => {
   it("accepts a bare four-digit year", () => {

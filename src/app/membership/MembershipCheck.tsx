@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
-  checkMembershipAction,
-  type MembershipCheckState,
+  lookupMembershipAction,
+  type MembershipLookupState,
 } from "./actions";
 import {
   Search,
@@ -12,29 +12,80 @@ import {
   Clock,
   UserPlus,
   ArrowRight,
+  Users,
 } from "lucide-react";
 
-const initialState: MembershipCheckState = { status: "idle" };
+const initialState: MembershipLookupState = { status: "idle" };
 
-export default function MembershipCheck({ applyHref }: { applyHref: string }) {
+type Mode = "email" | "name";
+
+export default function MembershipCheck({
+  applyHref,
+  contactEmail,
+}: {
+  applyHref: string;
+  /** From the content sheet, so a changed inbox is not stranded in this file. */
+  contactEmail: string;
+}) {
   const [state, action, pending] = useActionState(
-    checkMembershipAction,
+    lookupMembershipAction,
     initialState
   );
+  // Email leads because it is unique — a name can be shared, and the lookup has
+  // to refuse rather than guess when it is. Name is offered because the most
+  // common reason a real member gets "not found" is having registered under
+  // their other address.
+  const [mode, setMode] = useState<Mode>("email");
 
   return (
     <div>
+      <div
+        role="radiogroup"
+        aria-label="Look up by"
+        className="mb-3 inline-flex rounded-lg border border-slate-300 bg-white p-1"
+      >
+        {(["email", "name"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            role="radio"
+            aria-checked={mode === m}
+            onClick={() => setMode(m)}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+              mode === m
+                ? "bg-[#1B2A4A] text-white"
+                : "text-slate-600 hover:text-[#1B2A4A]"
+            }`}
+          >
+            {m === "email" ? "By email" : "By name"}
+          </button>
+        ))}
+      </div>
+
       <form action={action} className="flex flex-col gap-3 sm:flex-row">
+        <input type="hidden" name="mode" value={mode} />
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="email"
-            name="email"
-            required
-            aria-label="Your email address"
-            placeholder="you@example.com"
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
-          />
+          {mode === "email" ? (
+            <input
+              type="email"
+              name="email"
+              required
+              aria-label="Your email address"
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+            />
+          ) : (
+            <input
+              type="text"
+              name="name"
+              required
+              autoComplete="name"
+              aria-label="Your full name"
+              placeholder="Juan Dela Cruz"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+            />
+          )}
         </div>
         <button
           type="submit"
@@ -44,6 +95,13 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
           {pending ? "Checking…" : "Check my status"}
         </button>
       </form>
+
+      {mode === "name" && state.status === "idle" && (
+        <p className="mt-2 text-xs text-slate-500">
+          Enter your name as PMAFI has it on record — accents, punctuation and
+          word order don&apos;t matter.
+        </p>
+      )}
 
       {/* Result */}
       {state.status === "found" && state.standing === "Active" && (
@@ -84,11 +142,30 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
             <p className="font-semibold text-sky-900">
               We&apos;ve received your application, {state.name.split(" ")[0]}.
             </p>
+            {/* Pending now means one thing only: they have paid and we are
+                checking the receipt. The invoice wording that used to live here
+                belonged to the apply-first flow and would read, to someone who
+                has already sent money, as their payment having gone missing.
+
+                The second line must hold for all three receipt routes, because
+                the roster records a standing, not how the applicant said they
+                would send their proof. "Nothing further to send" would strand
+                the two thirds who still owe us one — and they are precisely the
+                people whose application is stalled. */}
             <p className="mt-1 text-sm text-sky-800">
-              Your membership is <strong>pending payment</strong>. Our team will
-              confirm your category and email you an invoice with payment
-              instructions. Your membership activates once your payment is
-              received.
+              Your payment is <strong>being verified</strong>. Our team is
+              checking your receipt and confirming your membership category —
+              your membership activates as soon as that is done.
+            </p>
+            <p className="mt-2 text-sm text-sky-800">
+              If you haven&apos;t sent your receipt yet, email it to{" "}
+              <a
+                href={`mailto:${contactEmail}`}
+                className="font-medium underline underline-offset-2"
+              >
+                {contactEmail}
+              </a>{" "}
+              — we can&apos;t confirm your payment without it.
             </p>
           </div>
         </div>
@@ -98,12 +175,13 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
         <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
             <UserPlus className="h-5 w-5 text-[#C8A951]" />
-            We couldn&apos;t find a membership under that email.
+            We couldn&apos;t find a membership under that{" "}
+            {mode === "email" ? "email" : "name"}.
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            You may not be registered yet, or your records may use a different
-            email. You can apply for membership below — or contact us if you
-            believe this is an error.
+            {mode === "email"
+              ? "You may not be registered yet, or your records may use a different email — try looking yourself up by name instead."
+              : "You may not be registered yet, or PMAFI may hold your name differently. Try your email address instead, or contact us if you believe this is an error."}
           </p>
           <a
             href={applyHref}
@@ -114,6 +192,20 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
             Apply for Membership
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
+        </div>
+      )}
+
+      {state.status === "ambiguous" && (
+        <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
+            <Users className="h-5 w-5 text-[#C8A951]" />
+            More than one member shares that name.
+          </p>
+          <p className="mt-1 text-sm text-slate-600">
+            We can&apos;t tell which record is yours, and we won&apos;t guess.
+            Please check using the email address on your membership instead —
+            switch to <strong>By email</strong> above.
+          </p>
         </div>
       )}
 

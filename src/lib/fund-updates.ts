@@ -16,6 +16,8 @@
 //   A: Fund   B: Title   C: Message   D: Date   E: Image URL   F: Published (Yes/No)
 
 import { readRange } from "@/lib/sheets";
+import { toDisplayImageUrl } from "@/lib/sheet-image";
+import { normalizeSheetDate, byNewestDate } from "@/lib/sheet-date";
 
 export interface FundUpdate {
   /** Which fund this update belongs to, e.g. "Professorial Chair Fund". */
@@ -29,41 +31,6 @@ export interface FundUpdate {
 }
 
 const FUND_UPDATES_RANGE = "Fund Updates!A2:F";
-
-/** Google Sheets counts days from 1899-12-30; serial 1 is 1900-01-01. */
-const SHEETS_EPOCH_MS = Date.UTC(1899, 11, 30);
-const MAX_SHEETS_SERIAL = 100_000;
-const pad = (n: number) => String(n).padStart(2, "0");
-
-/**
- * Same two traps as the donations sheet: `readRange` requests UNFORMATTED_VALUE
- * so a date cell arrives as a serial number, and `toISOString()` on a locally
- * parsed date rolls it back a day in any positive-offset timezone.
- */
-function normalizeDate(value: string): string {
-  const raw = value.trim();
-  if (!raw) return "";
-  if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
-  if (/^\d+(\.\d+)?$/.test(raw)) {
-    const serial = Number(raw);
-    if (serial > 0 && serial < MAX_SHEETS_SERIAL) {
-      const d = new Date(SHEETS_EPOCH_MS + Math.floor(serial) * 86_400_000);
-      return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;
-    }
-    return raw;
-  }
-  const parsed = new Date(raw);
-  if (Number.isNaN(parsed.getTime())) return raw;
-  return `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`;
-}
-
-/** Convert a Google Drive share URL to one next/image can load. */
-function toDriveImageUrl(raw: string): string {
-  if (!raw) return "";
-  const fileId =
-    raw.match(/\/file\/d\/([^/?#]+)/)?.[1] ?? raw.match(/[?&]id=([^&]+)/)?.[1];
-  return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : raw;
-}
 
 /** Parse sheet rows into updates. Exported for testing. */
 export function parseFundUpdates(rows: unknown[][]): FundUpdate[] {
@@ -82,18 +49,14 @@ export function parseFundUpdates(rows: unknown[][]): FundUpdate[] {
       fund,
       title,
       message,
-      date: normalizeDate(String(row[3] ?? "")),
-      image: toDriveImageUrl(String(row[4] ?? "").trim()),
+      date: normalizeSheetDate(String(row[3] ?? "")),
+      image: toDisplayImageUrl(String(row[4] ?? "")),
     });
   }
 
   // Newest first; an unparseable date sorts to the bottom rather than jumping
   // the queue on a string comparison.
-  const isIso = (u: FundUpdate) => /^\d{4}-\d{2}-\d{2}$/.test(u.date);
-  return updates.sort((a, b) => {
-    if (isIso(a) !== isIso(b)) return isIso(a) ? -1 : 1;
-    return b.date.localeCompare(a.date);
-  });
+  return updates.sort(byNewestDate);
 }
 
 /** Updates grouped by fund, in the order the funds first appear. */

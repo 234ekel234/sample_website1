@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { buttonVariants } from "@/components/ui/button";
@@ -43,25 +43,51 @@ const links: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
+// Whether the page has scrolled far enough for the bar to go solid, read as an
+// external store rather than mirrored into state by an effect.
+//
+// That is not just style. The previous version started at `false` and only ever
+// updated on a scroll EVENT, so any load that begins already scrolled — a
+// reload restoring position, or a deep link to /about#board — left the bar
+// transparent until the visitor happened to scroll. Transparent means white
+// nav text, which over a white section is invisible. Reading the real value on
+// hydration fixes it.
+const SOLID_AFTER_PX = 20;
+
+const subscribeToScroll = (onStoreChange: () => void) => {
+  window.addEventListener("scroll", onStoreChange, { passive: true });
+  return () => window.removeEventListener("scroll", onStoreChange);
+};
+const getScrolled = () => window.scrollY > SOLID_AFTER_PX;
+/** The server has no scroll position; the bar starts transparent over the hero. */
+const getServerScrolled = () => false;
+
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
+  const scrolled = useSyncExternalStore(
+    subscribeToScroll,
+    getScrolled,
+    getServerScrolled
+  );
   const [open, setOpen] = useState(false);
   /** Label of the desktop dropdown currently open, or null. */
   const [menu, setMenu] = useState<string | null>(null);
   const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
 
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
-
-  // Navigating anywhere closes whatever is open.
-  useEffect(() => {
+  // Navigating anywhere closes whatever is open. Most links already close their
+  // own panel; this catches the ones that cannot — the logo, and browser
+  // back/forward, which changes the route without any click of ours.
+  //
+  // Adjusted during render against the previous pathname rather than in an
+  // effect: an effect would paint the new page with the old menu still open,
+  // then close it in a second pass. React re-runs this component immediately
+  // and renders nothing in between.
+  const [renderedPath, setRenderedPath] = useState(pathname);
+  if (pathname !== renderedPath) {
+    setRenderedPath(pathname);
     setMenu(null);
     setOpen(false);
-  }, [pathname]);
+  }
 
   // Escape closes the dropdown; a click outside dismisses it. Both matter for
   // keyboard users, who can otherwise be left with an open panel they cannot
@@ -212,7 +238,10 @@ export default function Navbar() {
               <li key={href}>
                 {children ? (
                   <>
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">
+                    {/* slate-500, not 400: this sits on white, where 400 is
+                        2.56:1 and fails AA. It escaped the Lighthouse run only
+                        because the audit never opens the mobile menu. */}
+                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
                       {label}
                     </p>
                     <ul className="mt-2 flex flex-col gap-3 border-l border-slate-200 pl-4">

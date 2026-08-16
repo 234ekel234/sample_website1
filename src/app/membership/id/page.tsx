@@ -7,7 +7,7 @@ import PageHero from "@/components/ui/PageHero";
 export const metadata: Metadata = {
   title: "Digital Member ID | PMAFI",
   description:
-    "Create your personalized Philippine Military Academy Foundation, Inc. digital member ID — add your details and photo, then download it as an image.",
+    "Confirm your PMAFI membership, add a photo, and download your digital member ID — generated from the Philippine Military Academy Foundation's own records.",
 };
 
 export default function DigitalIdPage() {

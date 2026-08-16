@@ -2,6 +2,22 @@ import { SITE_URL } from "@/lib/site";
 import type { SiteContent } from "@/lib/content";
 
 /**
+ * Serialize for embedding in a `<script>` element.
+ *
+ * A script element is raw text: the HTML parser does not decode entities inside
+ * it, it just scans for the literal characters `</script`. `JSON.stringify` does
+ * not escape `<`, so an address of `</script><script>alert(1)</script>` in the
+ * content sheet would close this tag and execute — on every page, since this
+ * component renders in the root layout.
+ *
+ * `<` is the same character to a JSON parser and invisible to the HTML one,
+ * so Google reads identical structured data and the breakout is impossible.
+ */
+function toJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/**
  * JSON-LD structured data for richer Google results (Organization + WebSite).
  *
  * Address, email, phone and social profiles come from the content sheet, the
@@ -73,8 +89,9 @@ export default function StructuredData({
   return (
     <script
       type="application/ld+json"
-      // JSON.stringify output is safe to inject; no user input is involved.
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      // Every value here comes from the staff-editable content sheet, so this
+      // must be escaped for the script context — see toJsonLd above.
+      dangerouslySetInnerHTML={{ __html: toJsonLd(data) }}
     />
   );
 }

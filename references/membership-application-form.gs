@@ -3,6 +3,19 @@
  * --------------------------------------------------------------
  * This builds the whole membership application form automatically.
  *
+ * FLOW THIS FORM IMPLEMENTS (pay-first):
+ *   applicant pays their dues → applies here with the receipt attached →
+ *   staff verify the receipt → membership goes Active.
+ *
+ * That is the reverse of the older apply-first flow, where PMAFI invoiced
+ * after reviewing. The website shows this same pay-first flow unconditionally,
+ * so the two always agree.
+ *
+ * FILL THE CONTENT SHEET IN: the form sends applicants to the website to read
+ * the dues and account details, and until the sheet has them that page asks
+ * them to email PMAFI for the figures instead. Nothing breaks, but every
+ * applicant costs a round-trip until those cells are filled.
+ *
  * HOW TO RUN (≈1 minute):
  *   1. Sign in to the pmafi.web@gmail.com Google account.
  *   2. Go to  https://script.google.com  → "New project".
@@ -12,9 +25,52 @@
  *   5. Open "Execution log" — it prints the form's EDIT link and the
  *      public (viewform) link. Use the public link on the website.
  *
+ * ⚠ STEP 6 IS MANUAL AND THE FORM DOES NOT WORK WITHOUT IT.
+ *   Apps Script CANNOT create a file-upload question — there is no
+ *   addFileUploadItem(), and setRequireLogin() is deprecated. After running
+ *   this, open the form in the Forms editor and add the receipt question by
+ *   hand:
+ *     • Add question → change the type to "File upload"
+ *     • Title:    Proof of payment
+ *     • Help:     A screenshot or photo of your deposit slip, bank transfer
+ *                 confirmation, or GCash receipt. We cannot verify your
+ *                 membership without it — but if you don't have it to hand
+ *                 right now, submit anyway and choose the option below.
+ *     • Allow:    Image, PDF   •   Max files: 1   •   Max size: 10 MB
+ *     • Required: NO  ← deliberate, see below
+ *     • Place it in the "Payment" section, immediately BEFORE the
+ *       "How are you sending your receipt?" question this script creates.
+ *
+ *   WHY THE UPLOAD IS NOT REQUIRED. The applicant has ALREADY PAID by the time
+ *   they reach this page. Requiring the file means someone who paid over a bank
+ *   counter, holding a paper slip and no scanner, cannot submit at all — so
+ *   PMAFI ends up with their money and no record they ever applied. Optional
+ *   means they land in the roster as Pending Verification and an admin chases a
+ *   receipt. An email exchange is a far cheaper failure than a silent one.
+ *
+ *   Making it optional costs nothing in friction either: Google forces
+ *   respondents to sign in as soon as a file-upload question EXISTS, required
+ *   or not. The required "How are you sending your receipt?" question below is
+ *   what stops the upload being skipped out of laziness — skipping becomes a
+ *   deliberate choice, and it tells the admin which bucket the applicant is in.
+ *
  * To change the form later, edit it normally in Google Forms — you
  * don't need to re-run this. Re-running creates a brand-new form.
  */
+
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+// THE FORM DELIBERATELY DOES NOT STATE THE DUES OR THE ACCOUNT NUMBERS.
+//
+// Those live in one place only: the content sheet, which the website reads and
+// renders at the link below. Staff change a figure in the sheet and the site is
+// correct within a minute, with no deploy and nothing to re-run here.
+//
+// If this form ALSO printed the amounts, the two would drift the first time
+// dues changed — and the applicant would pay what the form said. A payment
+// dispute caused by a stale copy is far worse than asking someone to follow a
+// link they arrived through anyway, since the Apply button sits on that very
+// page, directly beneath the figures.
+var PAYMENT_DETAILS_URL = 'https://www.pmafi.org/membership#dues';
 
 function createPmafiMembershipForm() {
   var form = FormApp.create('PMAFI Membership Application');
@@ -22,16 +78,18 @@ function createPmafiMembershipForm() {
   form.setDescription(
     'Thank you for your interest in joining the Philippine Military Academy ' +
     'Foundation, Inc. (PMAFI).\n\n' +
-    'Please complete this form to apply. Applying does NOT require payment ' +
-    'yet — once we receive your application, our team will verify your ' +
-    'details, confirm your membership category, and send you an invoice with ' +
-    'payment instructions. Your membership is finalized only after your ' +
-    'payment is confirmed.\n\n' +
+    'BEFORE YOU START: please settle your membership dues and have your ' +
+    'receipt ready — you will be asked to attach it at the end of this form. ' +
+    'Applying and paying in one go means there is no invoice to wait for.\n\n' +
+    'The dues for each category, and the bank and GCash details to pay them ' +
+    'to, are on our website:\n' + PAYMENT_DETAILS_URL + '\n\n' +
+    'Your membership is finalized once our team has verified your payment.\n\n' +
     'Fields marked with an asterisk (*) are required.'
   );
 
-  // Keep the form open to applicants without a Google account.
-  form.setCollectEmail(false);
+  // File uploads require a signed-in Google account, so collecting the email
+  // is free at that point and gives staff a reliable reply-to.
+  form.setCollectEmail(true);
   form.setLimitOneResponsePerUser(false);
   form.setProgressBar(true);
 
@@ -146,20 +204,75 @@ function createPmafiMembershipForm() {
     .setChoiceValues(['Email', 'Phone call', 'Text / SMS', 'Any of the above'])
     .setRequired(true);
 
+  // ---- Section 5: Payment ----
+  // Order matters: the details below are quick text fields, and the upload
+  // comes last, because people abandon an upload far more readily than a text
+  // box. Anything asked after it risks being lost with them.
+  form.addPageBreakItem()
+    .setTitle('Payment')
+    .setHelpText(
+      'Attach your proof of payment below. A clear screenshot or photo of ' +
+      'your deposit slip, bank transfer confirmation, or GCash receipt is ' +
+      "enough — we just need to see the amount, the date, and who it came " +
+      'from.\n\n' +
+      'Not paid yet? The dues and the account details are at:\n' +
+      PAYMENT_DETAILS_URL + '\n\n' +
+      "If you have already paid but cannot attach the receipt here, submit " +
+      'this form anyway and tell us below — your application will not be lost.'
+    );
+
+  form.addTextItem()
+    .setTitle('Date paid')
+    .setHelpText('e.g., 15 March 2026. This helps us match your payment.')
+    .setRequired(true);
+
+  form.addTextItem()
+    .setTitle('Amount paid')
+    .setRequired(true);
+
+  form.addMultipleChoiceItem()
+    .setTitle('How did you pay?')
+    .setChoiceValues(['Bank transfer / deposit', 'GCash'])
+    .showOtherOption(true)
+    .setRequired(true);
+
+  form.addTextItem()
+    .setTitle('Reference / transaction number')
+    .setHelpText('From your receipt, if it shows one. Leave blank if not.');
+
+  // ⚠ THE "Proof of payment" FILE UPLOAD GOES HERE — added by hand, and NOT
+  // required. See the manual step in this file's header for why.
+
+  // The counterweight to an optional upload: skipping becomes a deliberate
+  // choice rather than an oversight, and the answer tells the admin which
+  // queue this applicant belongs in. The third option exists for the person
+  // who paid at a bank counter and has a paper slip and no scanner — without
+  // it they simply disappear, having already parted with their money.
+  form.addMultipleChoiceItem()
+    .setTitle('How are you sending your receipt?')
+    .setChoiceValues([
+      'Attached above',
+      'I will email it to pmafi.web@gmail.com',
+      'I need help — please contact me'
+    ])
+    .setRequired(true);
+
   form.addCheckboxItem()
     .setTitle('Acknowledgment')
     .setChoiceValues([
-      'I confirm the information above is accurate, and I understand that ' +
-        'membership is finalized only after PMAFI confirms my category and ' +
-        'my dues payment is received.'
+      'I confirm the information above is accurate, that I have paid my ' +
+        'membership dues, and that my membership is finalized only once ' +
+        'PMAFI has verified my payment and confirmed my category.'
     ])
     .setRequired(true);
 
   form.setConfirmationMessage(
     "Thank you for applying to PMAFI! We've received your application and " +
-    "will review it shortly. You'll hear from us by email or phone with your " +
-    'membership category and payment instructions. Welcome — we\'re glad you ' +
-    'want to be part of the mission.'
+    'your proof of payment. Our team will verify it and confirm your ' +
+    'membership category — there is nothing further you need to send.\n\n' +
+    'You can check your status any time at www.pmafi.org/membership using ' +
+    'the email address on this form. Welcome — we\'re glad you want to be ' +
+    'part of the mission.'
   );
 
   // Print the links to the execution log.

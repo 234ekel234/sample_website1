@@ -22,6 +22,11 @@
 //   payment.bank.name     payment.bank.account_name
 //   payment.bank.account_number
 //   payment.gcash.name    payment.gcash.number
+//   dues.regular          dues.associate        dues.affiliate
+//
+// The dues values are free text, so staff control the wording as well as the
+// figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
+// They gate whether the figures are PRINTED: see hasPaymentDetails() below.
 //
 // `chairman.body` holds the whole message; separate paragraphs with a blank
 // line. Everything else is a single line of plain text.
@@ -58,6 +63,38 @@ export interface SiteContent {
     gcashName: string;
     gcashNumber: string;
   };
+  /** Membership dues per category. Empty until PMAFI confirms the figures. */
+  dues: {
+    regular: string;
+    associate: string;
+    affiliate: string;
+  };
+}
+
+/**
+ * Whether the site may PRINT the dues and account details.
+ *
+ * This no longer gates the join flow — that is pay-first regardless, because
+ * the ordering is PMAFI's decision and the application form already states it.
+ * A site that disagreed with the form would be worse than one missing figures.
+ *
+ * What it still gates is publishing numbers. Both halves are required and
+ * neither can be guessed: an amount without a destination, or a destination
+ * without an amount, invites someone to send money into the void. When this is
+ * false the page tells applicants to ask for the figures instead of inventing
+ * them, which keeps the same flow honest with less information.
+ */
+export function hasPaymentDetails(content: SiteContent): boolean {
+  const hasDues = Boolean(
+    content.dues.regular || content.dues.associate || content.dues.affiliate
+  );
+  const hasBank = Boolean(
+    content.payment.bankName && content.payment.bankAccountNumber
+  );
+  const hasGcash = Boolean(
+    content.payment.gcashName && content.payment.gcashNumber
+  );
+  return hasDues && (hasBank || hasGcash);
 }
 
 const CONTENT_RANGE = "Content!A2:B";
@@ -94,6 +131,14 @@ const FALLBACK: SiteContent = {
     bankAccountNumber: "",
     gcashName: "",
     gcashNumber: "",
+  },
+  // Unset until PMAFI confirms the figures. While these are blank the join
+  // flow is unchanged — the page just asks applicants to request the amounts
+  // rather than printing them. See hasPaymentDetails above.
+  dues: {
+    regular: "",
+    associate: "",
+    affiliate: "",
   },
 };
 
@@ -156,6 +201,11 @@ export async function getContent(): Promise<SiteContent> {
       ),
       gcashName: pick(map, "payment.gcash.name", FALLBACK.payment.gcashName),
       gcashNumber: pick(map, "payment.gcash.number", FALLBACK.payment.gcashNumber),
+    },
+    dues: {
+      regular: pick(map, "dues.regular", FALLBACK.dues.regular),
+      associate: pick(map, "dues.associate", FALLBACK.dues.associate),
+      affiliate: pick(map, "dues.affiliate", FALLBACK.dues.affiliate),
     },
   };
 }

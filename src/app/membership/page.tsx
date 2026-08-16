@@ -14,7 +14,9 @@ import {
   IdCard,
 } from "lucide-react";
 import MembershipCheck from "./MembershipCheck";
+import DuesPayment from "./DuesPayment";
 import PageHero from "@/components/ui/PageHero";
+import { getContent, hasPaymentDetails } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Membership | PMAFI",
@@ -85,35 +87,54 @@ const benefits = [
   },
 ];
 
-const steps = [
+/**
+ * The join flow, in the order the applicant actually experiences it.
+ *
+ * PAY-FIRST IS NOW THE ONLY FLOW. The ordering is PMAFI's decision, not
+ * something the site derives from whether a figure happens to be filled in, and
+ * the application form already tells applicants to pay before they apply. A
+ * page that disagreed with the form it links to would be worse than one missing
+ * a number — an applicant reading "no need to pay yet" here and "settle your
+ * dues first" there does not know which to believe.
+ *
+ * What still varies is whether we can PRINT the figures. When the content sheet
+ * has none, step one sends the applicant to ask rather than inventing an amount
+ * or an account number. Same flow, less information, still honest.
+ */
+const joinSteps = (contactEmail: string, detailsPublished: boolean) => [
   {
-    title: "Submit the application form",
-    description:
-      "Complete the online membership application with your details and preferred membership category.",
+    title: "Pay your membership dues",
+    description: detailsPublished
+      ? "Settle the dues for your category using the bank or GCash details above, and keep the receipt."
+      : `Email us at ${contactEmail} for the dues for your category and where to send them. Settle the amount, and keep the receipt.`,
   },
   {
-    title: "We review your application",
-    description:
-      "Our team verifies your eligibility and confirms the appropriate membership category for you.",
+    // The sign-in requirement is stated here, before the visitor clicks away to
+    // a form they may not be able to open. Google gates the WHOLE form behind
+    // an account once it carries a file-upload question — not just the upload —
+    // so an applicant without one is stopped at the door. Someone who has
+    // already paid must never hit a dead end, hence the email route.
+    title: "Apply, attaching your receipt",
+    description: `Complete the online application with your details and category, and attach your proof of payment. The form is hosted on Google and asks you to sign in to a Google account. If you can't, or your receipt is on paper, email us at ${contactEmail} instead and we'll take your application that way.`,
   },
   {
-    title: "Receive your invoice",
+    title: "We verify your payment",
     description:
-      "We send you the membership dues and payment instructions for your confirmed category.",
-  },
-  {
-    title: "Pay & send proof",
-    description:
-      "Settle the dues through the provided channel and send back your proof of payment.",
+      "Our team checks your receipt against your application and confirms the membership category that fits you. You'll show as pending on this page in the meantime, so you can see your application arrived.",
   },
   {
     title: "Welcome to PMAFI",
     description:
-      "Once your payment is confirmed, we formally welcome you as a member of the Foundation.",
+      "Once your payment is verified, your membership goes active — check this page any time to see it change, and collect your digital member ID.",
   },
 ];
 
-export default function MembershipPage() {
+export default async function MembershipPage() {
+  const content = await getContent();
+  // Gates the figures, not the flow — see joinSteps above.
+  const detailsPublished = hasPaymentDetails(content);
+  const steps = joinSteps(content.contact.email, detailsPublished);
+
   return (
     <main>
       {/* Hero */}
@@ -157,13 +178,16 @@ export default function MembershipPage() {
               Check Your Membership Status
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Enter the email address associated with your membership to confirm
-              whether you&apos;re currently registered.
+              Look yourself up by the email address on your membership, or by
+              your name if you&apos;re not sure which address PMAFI has on file.
             </p>
           </div>
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <MembershipCheck applyHref={APPLICATION_FORM_URL} />
+            <MembershipCheck
+              applyHref={APPLICATION_FORM_URL}
+              contactEmail={content.contact.email}
+            />
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
@@ -277,16 +301,24 @@ export default function MembershipPage() {
               How to Join
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
+            {/* The heading carries the ordering, because that is the one thing
+                a returning visitor can get wrong. "Applying Is Simple" said
+                nothing and sat above a lede that inverted what most people
+                expect of a membership: here the dues come first. */}
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-              Applying Is Simple
+              Pay First, Then Apply
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Apply online and we&apos;ll guide you through confirmation and
-              payment — no need to pay before we&apos;ve confirmed your details.
+              Settle your dues, then apply with your receipt attached. One
+              submission, and no invoice to wait for.
             </p>
           </div>
 
-          <ol className="space-y-6">
+          {detailsPublished && (
+            <DuesPayment payment={content.payment} dues={content.dues} />
+          )}
+
+          <ol className="mt-10 space-y-6">
             {steps.map(({ title, description }, i) => (
               <li key={title} className="flex gap-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1B2A4A] text-sm font-bold text-[#C8A951]">
@@ -315,6 +347,20 @@ export default function MembershipPage() {
               Apply for Membership
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </a>
+            {/* Said at the click, not only in step 2 above. This is the button
+                someone presses after skimming, and the form answers with a
+                Google sign-in wall rather than an explanation. */}
+            <p className="mx-auto mt-3 max-w-md text-xs text-slate-500">
+                The form opens in Google and asks you to sign in. No Google
+                account? Email us at{" "}
+                <a
+                  href={`mailto:${content.contact.email}`}
+                  className="font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"
+                >
+                  {content.contact.email}
+                </a>{" "}
+              and we&apos;ll take your application that way.
+            </p>
             <p className="mt-4 text-sm text-slate-500">
               Have questions first?{" "}
               <Link
