@@ -43,8 +43,8 @@ Full list with priorities: `references/pmafi-information-request.md`.
 - Phone number — hidden pending confirmation
 - Social media URLs — hidden pending confirmation
 - BIR donee institution status — pending confirmation
-- `CONTENT_SHEET_ID` is set **locally** (verified reading 13 content keys and 15 FAQ rows) but **not in Vercel**, so production still serves built-in fallbacks while local looks correct
-- `MEMBERS_SHEET_ID` in Vercel still points at the retired standalone roster — it must be changed to the membership form's responses spreadsheet or the production status check will fail
+- Vercel Production has `MEMBERS_SHEET_ID`, `CONTENT_SHEET_ID`, `NEWS_SHEET_ID`, both service-account vars and `NEXT_PUBLIC_GA_ID` set (verified via `vercel env ls`). `MEMBERS_SHEET_RANGE` is deliberately **unset**, so production uses the current default `Form Responses 1!A1:Z` — do not add it unless the responses tab is renamed, or it will pin production to a stale range
+- `DONATIONS_SHEET_ID` and `RESEND_API_KEY` are not set in Vercel, so `/donate/status` cannot look anything up or email a summary in production
 
 ## References
 
