@@ -257,6 +257,11 @@ it every submission errors, and a donor reads that as the gift having been lost.
 
 ---
 
+## Status
+
+**`STATUS.md`** is the source of truth for what works, what is waiting on
+content from PMAFI, and the current configuration.
+
 ## References
 
 Internal working documents are in the `references/` folder:
