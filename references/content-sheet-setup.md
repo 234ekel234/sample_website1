@@ -100,6 +100,22 @@ nothing to publish and nothing to deploy.
 | `payment.gcash.name` | GCash account name |
 | `payment.gcash.number` | GCash number |
 
+### Giving directly (the `finance.*` keys)
+
+`/donate` carries a **Give Directly** section for gifts that need a conversation
+rather than a transfer — establishing a professorial chair or an endowment,
+giving in kind, a cheque, a transfer from abroad, or a class giving together.
+
+| Key | Effect |
+|---|---|
+| `finance.email` | The address shown. **Blank falls back to `contact.email`**, so the section always works — a major-gift enquiry reaching the ordinary inbox beats the option being hidden. |
+| `finance.phone` | Shown as a phone link. Blank hides it entirely; the site never invents a number, and a wrong one here is worse than none. |
+| `finance.name` | An optional aside such as *"Ask for the Treasurer"*. Blank omits it. |
+
+This section deliberately promises an **official receipt** and nothing about tax
+deductibility, because PMAFI's BIR donee institution status is still
+unconfirmed. Do not add that claim to these values.
+
 ### The Donate page
 
 Bank details only appear once **both** `payment.bank.name` and

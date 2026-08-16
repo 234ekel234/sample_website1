@@ -23,6 +23,7 @@
 //   payment.bank.account_number
 //   payment.gcash.name    payment.gcash.number
 //   dues.regular          dues.associate        dues.affiliate
+//   finance.email         finance.phone         finance.name
 //
 // The dues values are free text, so staff control the wording as well as the
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
@@ -68,6 +69,21 @@ export interface SiteContent {
     regular: string;
     associate: string;
     affiliate: string;
+  };
+  /**
+   * Who a donor reaches to arrange a gift directly rather than sending it
+   * themselves — establishing a chair or an endowment, giving in kind, a
+   * cheque, anything needing paperwork or a conversation.
+   *
+   * `email` falls back to the general contact address, because a major gift
+   * enquiry reaching the Foundation's ordinary inbox is a far better outcome
+   * than the option being hidden. Phone and name are shown only when supplied.
+   */
+  finance: {
+    email: string;
+    phone: string;
+    /** e.g. "Ask for the Treasurer". Omitted when blank. */
+    name: string;
   };
 }
 
@@ -140,6 +156,13 @@ const FALLBACK: SiteContent = {
     associate: "",
     affiliate: "",
   },
+  // No dedicated finance contact has been supplied. The donate page falls back
+  // to contact.email rather than hiding the option — see SiteContent above.
+  finance: {
+    email: "",
+    phone: "",
+    name: "",
+  },
 };
 
 function pick(map: Map<string, string>, key: string, fallback: string): string {
@@ -206,6 +229,11 @@ export async function getContent(): Promise<SiteContent> {
       regular: pick(map, "dues.regular", FALLBACK.dues.regular),
       associate: pick(map, "dues.associate", FALLBACK.dues.associate),
       affiliate: pick(map, "dues.affiliate", FALLBACK.dues.affiliate),
+    },
+    finance: {
+      email: pick(map, "finance.email", FALLBACK.finance.email),
+      phone: pick(map, "finance.phone", FALLBACK.finance.phone),
+      name: pick(map, "finance.name", FALLBACK.finance.name),
     },
   };
 }

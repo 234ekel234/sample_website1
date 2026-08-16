@@ -43,7 +43,8 @@ Full list with priorities: `references/pmafi-information-request.md`.
 - News & announcements (home page) — sample items, awaiting real events
 - Phone number — hidden pending confirmation
 - Social media URLs — hidden pending confirmation
-- BIR donee institution status — pending confirmation
+- BIR donee institution status — pending confirmation. **No page may claim tax deductibility until it is**; `/donate` says "coming soon" and the FAQ defers to the donor's own accountant
+- Finance-team contact (`finance.email` / `finance.phone` / `finance.name`) for the Give Directly section on `/donate` — falls back to `contact.email`, so the section works without it, but a major-gift enquiry currently lands in the general inbox
 - Vercel Production has `MEMBERS_SHEET_ID`, `CONTENT_SHEET_ID`, `NEWS_SHEET_ID`, both service-account vars and `NEXT_PUBLIC_GA_ID` set (verified via `vercel env ls`). `MEMBERS_SHEET_RANGE` is deliberately **unset**, so production uses the current default `Form Responses 1!A1:Z` — do not add it unless the responses tab is renamed, or it will pin production to a stale range
 - `DONATIONS_SHEET_ID` and `RESEND_API_KEY` are not set in Vercel, so `/donate/status` cannot look anything up or email a summary in production
 

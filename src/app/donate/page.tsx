@@ -3,6 +3,7 @@ import DonateHero from "@/components/sections/donate/DonateHero";
 import WaysToGive from "@/components/sections/donate/WaysToGive";
 import GivingPromise from "@/components/sections/donate/GivingPromise";
 import HowToDonate from "@/components/sections/donate/HowToDonate";
+import DirectGiving from "@/components/sections/donate/DirectGiving";
 import OrderCTA from "@/components/sections/OrderCTA";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
@@ -22,6 +23,7 @@ export default function DonatePage() {
       <WaysToGive />
       <GivingPromise />
       <HowToDonate />
+      <DirectGiving />
 
       {/* Existing donors: look up a donation already made. */}
       <section className="bg-slate-50 py-16">

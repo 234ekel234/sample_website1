@@ -18,6 +18,7 @@ const EMPTY: SiteContent = {
     gcashNumber: "",
   },
   dues: { regular: "", associate: "", affiliate: "" },
+  finance: { email: "", phone: "", name: "" },
 };
 
 const withPayment = (p: Partial<SiteContent["payment"]>): SiteContent => ({
