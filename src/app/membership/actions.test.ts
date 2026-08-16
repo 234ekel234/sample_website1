@@ -64,6 +64,24 @@ describe("lookupMembershipAction — name path", () => {
     expect(JSON.stringify(state)).not.toContain("@");
   });
 
+  it("returns nothing the status check does not display", async () => {
+    // The payload reaches the browser in full. A PMA class and joining year are
+    // never rendered here, and together they are identity-fingerprint material,
+    // so a name must not buy them.
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    const { lookupMembershipAction } = await load();
+    const state = await lookupMembershipAction(
+      { status: "idle" },
+      nameForm("Juan Dela Cruz")
+    );
+    if (state.status !== "found") throw new Error("expected found");
+    expect(state.pmaClass).toBe("");
+    expect(state.memberSince).toBe("");
+    const payload = JSON.stringify(state);
+    expect(payload).not.toContain("1988");
+    expect(payload).not.toContain("2010");
+  });
+
   it("still returns the standing the member came for", async () => {
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
     const { lookupMembershipAction } = await load();

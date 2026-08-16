@@ -148,7 +148,13 @@ export async function lookupMembershipAction(
     name: m.name,
     category: m.category,
     standing: m.standing,
-    pmaClass: m.pmaClass,
-    memberSince: m.memberSince,
+    // Blank for the same reason as the email above, and it is worth stating
+    // twice: this payload reaches the browser in full. The status check
+    // renders only the name, category and standing. A PMA class and a joining
+    // year add nothing on screen and everything to an identity fingerprint —
+    // exactly the material that makes "hello, I'm calling from PMAFI, I see
+    // you're Class of 1988" convincing. Return what is shown, nothing more.
+    pmaClass: "",
+    memberSince: "",
   };
 }
