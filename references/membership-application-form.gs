@@ -32,13 +32,26 @@
  *     • Add question → change the type to "File upload"
  *     • Title:    Proof of payment
  *     • Help:     A screenshot or photo of your deposit slip, bank transfer
- *                 confirmation, or GCash receipt.
+ *                 confirmation, or GCash receipt. We cannot verify your
+ *                 membership without it — but if you don't have it to hand
+ *                 right now, submit anyway and choose the option below.
  *     • Allow:    Image, PDF   •   Max files: 1   •   Max size: 10 MB
- *     • Required: yes
- *     • Place it in the "Payment" section this script creates (last section).
- *   Google will warn that respondents must sign in to a Google account to
- *   upload. That is unavoidable for file uploads and is the tradeoff accepted
- *   when this flow was chosen — see the note in membership-setup-todo.md.
+ *     • Required: NO  ← deliberate, see below
+ *     • Place it in the "Payment" section, immediately BEFORE the
+ *       "How are you sending your receipt?" question this script creates.
+ *
+ *   WHY THE UPLOAD IS NOT REQUIRED. The applicant has ALREADY PAID by the time
+ *   they reach this page. Requiring the file means someone who paid over a bank
+ *   counter, holding a paper slip and no scanner, cannot submit at all — so
+ *   PMAFI ends up with their money and no record they ever applied. Optional
+ *   means they land in the roster as Pending Verification and an admin chases a
+ *   receipt. An email exchange is a far cheaper failure than a silent one.
+ *
+ *   Making it optional costs nothing in friction either: Google forces
+ *   respondents to sign in as soon as a file-upload question EXISTS, required
+ *   or not. The required "How are you sending your receipt?" question below is
+ *   what stops the upload being skipped out of laziness — skipping becomes a
+ *   deliberate choice, and it tells the admin which bucket the applicant is in.
  *
  * To change the form later, edit it normally in Google Forms — you
  * don't need to re-run this. Re-running creates a brand-new form.
@@ -191,8 +204,9 @@ function createPmafiMembershipForm() {
     .setRequired(true);
 
   // ---- Section 5: Payment ----
-  // The file-upload question goes HERE and must be added by hand — see the
-  // manual step in this file's header. Everything below is scriptable.
+  // Order matters: the details below are quick text fields, and the upload
+  // comes last, because people abandon an upload far more readily than a text
+  // box. Anything asked after it risks being lost with them.
   form.addPageBreakItem()
     .setTitle('Payment')
     .setHelpText(
@@ -203,8 +217,7 @@ function createPmafiMembershipForm() {
       'Not paid yet? The dues and the account details are at:\n' +
       PAYMENT_DETAILS_URL + '\n\n' +
       "If you have already paid but cannot attach the receipt here, submit " +
-      'this form anyway and email the receipt to pmafi.web@gmail.com — your ' +
-      'application will not be lost.'
+      'this form anyway and tell us below — your application will not be lost.'
     );
 
   form.addTextItem()
@@ -225,6 +238,23 @@ function createPmafiMembershipForm() {
   form.addTextItem()
     .setTitle('Reference / transaction number')
     .setHelpText('From your receipt, if it shows one. Leave blank if not.');
+
+  // ⚠ THE "Proof of payment" FILE UPLOAD GOES HERE — added by hand, and NOT
+  // required. See the manual step in this file's header for why.
+
+  // The counterweight to an optional upload: skipping becomes a deliberate
+  // choice rather than an oversight, and the answer tells the admin which
+  // queue this applicant belongs in. The third option exists for the person
+  // who paid at a bank counter and has a paper slip and no scanner — without
+  // it they simply disappear, having already parted with their money.
+  form.addMultipleChoiceItem()
+    .setTitle('How are you sending your receipt?')
+    .setChoiceValues([
+      'Attached above',
+      'I will email it to pmafi.web@gmail.com',
+      'I need help — please contact me'
+    ])
+    .setRequired(true);
 
   form.addCheckboxItem()
     .setTitle('Acknowledgment')

@@ -138,6 +138,20 @@ does it, the applicant sees "your payment is being verified" on the website.
    receipt is attached there, and the uploaded file lands in Drive under the
    `pmafi.web@gmail.com` account. The roster does NOT hold the receipt — a
    payment document should not sit in a sheet staff pass around.
+
+   **The upload is optional, so check "How are you sending your receipt?" to
+   see which queue this applicant is in.** Work them in this order:
+
+   | Answer | What to do |
+   |---|---|
+   | *Attached above* | Verify and clear it — nothing to chase |
+   | *I will email it to pmafi.web@gmail.com* | Check the inbox; chase if it has not arrived in a few days |
+   | *I need help — please contact me* | Reach out directly. They likely paid over a counter and have a paper slip |
+
+   The upload is deliberately not required: the applicant has **already paid**
+   by the time they reach that page, so blocking submission on a file they may
+   not have digitised leaves PMAFI holding their money with no record they ever
+   applied. An email exchange is a far cheaper failure than a silent one.
 4. **Match and check.** The email address is the key linking the response to the
    roster row. Confirm the amount matches the dues for the category they chose,
    and that the date and payer name are legible.
@@ -147,9 +161,11 @@ does it, the applicant sees "your payment is being verified" on the website.
 6. **Flip column D to `Active`.** That is what "verified" means to the site —
    there is no separate Verified status, because nothing would behave
    differently. The website reflects the change within 60 seconds.
-7. **If the payment is short, missing, or unreadable:** leave the row as
-   `Pending Verification` and contact the applicant. Do not set Active. The
-   status they see is honest in the meantime, and nothing is lost.
+7. **If the payment is short, missing, unreadable, or the receipt has not
+   arrived yet:** leave the row as `Pending Verification` and contact the
+   applicant. Do not set Active. All three receipt queues above sit in this
+   same state until resolved, which stays accurate — the applicant sees
+   "your payment is being verified" throughout, and nothing is lost.
 
 Statuses and what the site shows:
 
