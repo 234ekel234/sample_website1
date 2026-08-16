@@ -52,8 +52,12 @@ function requireEnv(name: string): string {
  * Pull a four-digit year out of whatever staff typed — "1988", "Class 1988",
  * "PMA '88" all mean the same thing. Anything without a plausible year is
  * dropped rather than printed raw onto a member's card.
+ *
+ * Exported for testing, following parseFundUpdates in fund-updates.ts. The test
+ * previously regex-matched this function out of the source file and eval'd it,
+ * which broke on any rename or reformat.
  */
-function normalizeYear(value: string): string {
+export function normalizeYear(value: string): string {
   const raw = value.trim();
   if (!raw) return "";
   const full = raw.match(/\b(19|20)\d{2}\b/);
