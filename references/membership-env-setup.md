@@ -1,8 +1,12 @@
 # Membership lookup — environment & service-account setup
 
-The `/membership` status check reads the private members Google Sheet on the
-server using a **Google service account** (sheet shared only with that account —
-nothing public). `src/lib/members.ts` performs the read.
+The `/membership` status check reads the membership form's **linked responses
+spreadsheet** on the server using a **Google service account** (shared only with
+that account — nothing public). `src/lib/members.ts` performs the read.
+
+There is no separate members roster. Every row in the responses sheet is an
+application; staff add one column of their own, `Status`, and set it to `Active`
+once they have verified the applicant's receipt.
 
 ## Environment variables
 
@@ -12,10 +16,10 @@ these are never committed.)
 
 | Variable | Required | What it is |
 |---|---|---|
-| `MEMBERS_SHEET_ID` | yes | The spreadsheet ID — the long string in the sheet URL between `/d/` and `/edit`. |
+| `MEMBERS_SHEET_ID` | yes | The **form's responses spreadsheet** ID — the long string in its URL between `/d/` and `/edit`. Not a separate roster. |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | yes | The service account address, e.g. `pmafi-members@your-project.iam.gserviceaccount.com`. |
 | `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | yes | The `private_key` value from the service-account JSON key file. Keep the `-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n`. Literal `\n` escapes are fine — the code converts them. |
-| `MEMBERS_SHEET_RANGE` | no | Defaults to `Members!A2:D`. Only change if you rename the tab or columns move. |
+| `MEMBERS_SHEET_RANGE` | no | Defaults to `Form Responses 1!A1:Z`. Set it only if the responses tab is named something else. Note it starts at **row 1** — the header row is what the column mapping reads, not decoration. |
 
 Example `.env.local` (do **not** commit):
 
@@ -40,11 +44,29 @@ GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEv...\n-----
 4. **Make a key**: open the service account → **Keys** → Add key → Create new
    key → **JSON**. A `.json` file downloads — it contains `client_email` and
    `private_key`. Put those into the two env vars above.
-5. **Share the members sheet with the service account**: open the
-   *PMAFI Members (private roster)* sheet → **Share** → paste the service
+5. **Share the responses spreadsheet with the service account**: open the
+   membership form's linked responses sheet → **Share** → paste the service
    account email → give it **Viewer** → Send. (No public sharing — this is the
    whole point.)
-6. **Set the env vars** locally and in Vercel, then redeploy.
+6. **Add a `Status` column** to the right of the form's own columns. Leave it
+   blank for new rows; the site reads blank as Pending.
+7. **Set the env vars** locally and in Vercel, then redeploy.
+
+## Columns are found by header text
+
+The site never reads a fixed column position — a responses sheet's layout
+belongs to the form, so adding or reordering a question shifts everything after
+it. It matches these words in the header row, case-insensitively:
+
+`name` · `email` · `category` · `pma class` · `status` · `timestamp`
+
+Rename a question so its header no longer contains the matched word and lookups
+break. If the name or email column cannot be found at all the read throws, so
+the page reports a service error rather than telling every member they are not
+registered.
+
+Two email columns is normal and both are matched: the form asks for one, and
+Google adds its own when a file-upload question forces respondents to sign in.
 
 ## Notes
 

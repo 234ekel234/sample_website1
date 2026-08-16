@@ -36,13 +36,15 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 Full list with priorities: `references/pmafi-information-request.md`.
 
-- **Bank / GCash payment details — the donate page cannot accept a gift without these.** Highest-value gap on the site
+- **Bank / GCash payment details — the donate page cannot accept a gift without these, and `/membership` cannot publish where to send dues.** Highest-value gap on the site
+- **Membership dues per category** (`dues.regular` / `dues.associate` / `dues.affiliate`) — until these and a payment channel are set, the join flow asks applicants to email for the figures instead of printing them (`hasPaymentDetails()` in `content.ts`)
 - Chairman's message (home page) — fabricated, awaiting real text
 - News & announcements (home page) — sample items, awaiting real events
 - Phone number — hidden pending confirmation
 - Social media URLs — hidden pending confirmation
 - BIR donee institution status — pending confirmation
-- `CONTENT_SHEET_ID` is unset, so all of Phase 2 runs on built-in fallbacks and staff edits have no effect
+- `CONTENT_SHEET_ID` is set **locally** (verified reading 13 content keys and 15 FAQ rows) but **not in Vercel**, so production still serves built-in fallbacks while local looks correct
+- `MEMBERS_SHEET_ID` in Vercel still points at the retired standalone roster — it must be changed to the membership form's responses spreadsheet or the production status check will fail
 
 ## References
 

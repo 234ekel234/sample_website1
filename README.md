@@ -11,12 +11,18 @@ Live site: **https://www.pmafi.org**
 | Page | Route | Description |
 |---|---|---|
 | Home | `/` | Hero, foundation pillars, programs overview, Chairman's message, news, CTA |
-| About | `/about` | PMAFI story, mission, vision, and core values |
+| About | `/about` | PMAFI story, mission, vision, core values, and the Board of Trustees |
 | Programs | `/programs` | Four strategic program areas with detail |
-| Board of Trustees | `/board` | 2025–2026 Board with roles and credentials |
-| Membership | `/membership` | Apply online + private member status check |
+| Membership | `/membership` | Apply online + private status check by email **or name** |
+| Digital Member ID | `/membership/id` | Gated card generator — verified members only |
 | Donate | `/donate` | Ways to give, payment channels, how-to steps |
+| Fund Updates | `/donate/impact` | What each fund has accomplished |
+| My Donations | `/donate/status` | Private giving lookup (email + reference) |
 | Contact | `/contact` | Contact details, expectations, FAQ |
+
+The Board of Trustees is a **section of `/about`** (`#board`), not its own page.
+`/board` 308-redirects there — the old route was indexed, so it redirects rather
+than 404s.
 
 ---
 
@@ -30,8 +36,9 @@ Live site: **https://www.pmafi.org**
 | UI Components | shadcn/ui + Base UI |
 | Animations | Framer Motion 12 |
 | Hosting | Vercel (free tier) |
-| Member roster | Google Sheets API (server-side only) |
-| Membership form | Google Forms |
+| Membership data | Google Sheets API (server-side only) |
+| Membership form | Google Forms (its responses sheet **is** the roster) |
+| Transactional email | Resend (donor giving summaries) |
 
 ---
 
@@ -42,37 +49,35 @@ src/
 ├── app/
 │   ├── layout.tsx              # Root layout (Navbar, Footer, FloatingChat)
 │   ├── page.tsx                # Home page
-│   ├── about/page.tsx
-│   ├── board/page.tsx
+│   ├── about/page.tsx          # Includes the Board of Trustees (#board)
 │   ├── contact/page.tsx
-│   ├── donate/page.tsx
+│   ├── programs/page.tsx
+│   ├── donate/
+│   │   ├── page.tsx
+│   │   ├── impact/page.tsx     # Fund updates feed
+│   │   └── status/             # Giving lookup + emailed summary
 │   ├── membership/
 │   │   ├── page.tsx            # Membership page
-│   │   ├── MembershipCheck.tsx # Email status-check widget
-│   │   └── actions.ts          # Server action: Google Sheets lookup
-│   ├── programs/page.tsx
+│   │   ├── MembershipCheck.tsx # Status check — by email or name
+│   │   ├── DuesPayment.tsx     # Dues + account details (content sheet)
+│   │   ├── actions.ts          # Server actions: two, deliberately
+│   │   └── id/                 # Digital member ID, gated by IdGate
 │   ├── sitemap.ts
 │   └── robots.ts
 ├── components/
-│   ├── Navbar.tsx
-│   ├── Footer.tsx
-│   ├── FloatingChat.tsx
-│   ├── LogoMark.tsx
+│   ├── Navbar.tsx  Footer.tsx  FloatingChat.tsx  LogoMark.tsx
+│   ├── StructuredData.tsx  Analytics.tsx
 │   ├── sections/               # One folder per page, one file per section
-│   │   ├── Hero.tsx
-│   │   ├── Stats.tsx
-│   │   ├── Services.tsx
-│   │   ├── ChairmansMessage.tsx
-│   │   ├── News.tsx
-│   │   ├── OrderCTA.tsx
-│   │   ├── about/
-│   │   ├── board/
-│   │   ├── contact/
-│   │   ├── donate/
-│   │   └── proposal/
-│   └── ui/                     # shadcn/ui primitives
+│   │   ├── Hero.tsx  Stats.tsx  Services.tsx  News.tsx  …
+│   │   └── about/  contact/  donate/
+│   └── ui/                     # shadcn/ui primitives + PageHero
 └── lib/
-    ├── members.ts              # Google Sheets member lookup (server-only)
+    ├── sheets.ts               # Shared Google Sheets reader (service account)
+    ├── members.ts              # Membership lookup (server-only)
+    ├── donations.ts            # Giving lookup (server-only)
+    ├── content.ts  faq.ts  news.ts  fund-updates.ts
+    ├── sheet-date.ts  sheet-image.ts   # Shared sheet-cell parsers
+    ├── rate-limit.ts  giving-email.ts  site.ts
     └── utils.ts
 ```
 
@@ -82,16 +87,27 @@ src/
 
 Required in `.env.local` (and in Vercel → Settings → Environment Variables for production):
 
-```env
-MEMBERS_SHEET_ID=                  # Google Sheet ID of the private member roster
-GOOGLE_SERVICE_ACCOUNT_EMAIL=      # Service account email with Viewer access to the sheet
-GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY= # Service account private key (include the full PEM block)
+Everything is optional to get the site running — each feature falls back to
+built-in content when its variables are missing, so `npm run dev` works on a
+fresh clone. What you set decides which features read live data.
 
-# Optional — defaults to Sheet1!A2:D if not set
-MEMBERS_SHEET_RANGE=Sheet1!A2:D
+```env
+GOOGLE_SERVICE_ACCOUNT_EMAIL=       # Required by every sheet-backed feature
+GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY= # Full PEM block; literal \n escapes are fine
+
+MEMBERS_SHEET_ID=                   # The membership FORM'S RESPONSES spreadsheet
+CONTENT_SHEET_ID=                   # Staff-editable copy, FAQ, fund updates
+NEWS_SHEET_ID=                      # Home page news
+DONATIONS_SHEET_ID=                 # Giving log (falls back to MEMBERS_SHEET_ID)
+RESEND_API_KEY=                     # Emailed donor giving summaries
+
+# Optional — defaults to "Form Responses 1!A1:Z". Starts at row 1: the header
+# row is what the column mapping reads.
+MEMBERS_SHEET_RANGE=
 ```
 
-See `references/membership-env-setup.md` for step-by-step setup instructions.
+`.env.example` documents all ten with what breaks when each is unset. See
+`references/membership-env-setup.md` for credential setup.
 
 ---
 
@@ -127,17 +143,43 @@ npm run build   # verify the build passes locally first
 
 ## Membership System
 
-The membership feature is fully live:
+**Pay first, apply with the receipt attached, then an admin verifies it.**
 
-1. Visitor submits the [Google Form application](https://docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform)
-2. An Apps Script auto-adds them to the roster as **Pending Payment**
-3. PMAFI staff confirm the category, send an invoice, receive payment, and mark them **Active**
-4. Member can check their status privately at `/membership` — the full roster never reaches the browser
+1. Applicant reads the dues and account details on `/membership` and pays
+2. They submit the [Google Form application](https://docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform) with their proof of payment attached
+3. The row appears immediately in the form's responses sheet with a blank
+   `Status`, which the site reads as **Pending** — nothing needs to run
+4. An admin checks the receipt, confirms the category, and sets `Status` to
+   **Active**. The site reflects it within 60 seconds
 
-Member roster columns (Google Sheet): `Name | Email | Category | Status`  
-Valid statuses: `Active` · `Lapsed` · `Pending Payment`
+### The responses sheet is the roster
 
-See `references/membership-setup-todo.md` for full setup details and the Apps Script trigger install steps.
+There is no separate members sheet and no auto-add script. Staff add one column
+of their own, `Status`, and the form supplies the rest.
+
+- **Columns are located by header text, never by position.** A responses
+  sheet's layout belongs to the form, so adding a question shifts everything
+  after it. Headers matched: `name`, `email`, `category`, `pma class`,
+  `status`, `timestamp`.
+- **Blank `Status` means Pending, not Lapsed.** Every row exists because
+  somebody applied; telling them their membership lapsed would be wrong.
+- **Re-submissions collapse to one member, best standing wins** — re-applying
+  can never demote someone already Active.
+- Only the mapped columns are read. Phone numbers, addresses and receipt links
+  stay in the sheet.
+
+Statuses: `Active` · *blank* or `Pending Verification` → Pending · anything
+else → `Lapsed` (fail-safe — it never grants standing).
+
+### Two lookups, deliberately separate
+
+`/membership` accepts an **email or a name**. `/membership/id`, which mints a
+card bearing the Foundation's seal, accepts an **email only** — names are
+public, so allowing one to mint a card would make the credential forgeable by
+anyone who can read. They are separate server actions so the ID path has no
+name branch to reach.
+
+See `references/membership-setup-todo.md` for setup and the admin runbook.
 
 ---
 
@@ -154,8 +196,8 @@ See `references/membership-setup-todo.md` for full setup details and the Apps Sc
 | 7 | Bank transfer details (bank, account name, number) | Donate page |
 | 8 | GCash / e-wallet number | Donate page |
 | 9 | BIR donee institution confirmation | Donate page |
-| 10 | Membership dues per category (Regular / Associate / Affiliate) | Membership page |
-| 11 | Who issues invoices and how | Membership page |
+| 10 | **Membership dues per category** (Regular / Associate / Affiliate) — the join flow asks applicants to email for the figures until these land | Membership page |
+| 11 | ~~Who issues invoices and how~~ — obsolete, the flow no longer invoices | — |
 | 12 | Chairman's actual message | Home page |
 | 13 | Real news / upcoming events | Home page |
 | 14 | High-res board member photos (if available) | Board page |
