@@ -100,26 +100,30 @@ const benefits = [
  * where. The page picks between them on canPayFirst(), so filling in the
  * content sheet is what switches the site over; no deploy is involved.
  */
-const PAY_FIRST_STEPS = [
+const payFirstSteps = (contactEmail: string) => [
   {
     title: "Pay your membership dues",
     description:
       "Settle the dues for your category through the bank or GCash details above, and keep the receipt.",
   },
   {
+    // The sign-in requirement is stated here, before the visitor clicks away to
+    // a form they may not be able to open. Google gates the WHOLE form behind
+    // an account once it carries a file-upload question — not just the upload —
+    // so an applicant without one is stopped at the door. Someone who has
+    // already paid must never hit a dead end, hence the email route.
     title: "Apply, attaching your receipt",
-    description:
-      "Complete the online application with your details and category, and attach your proof of payment. The upload needs a Google sign-in — if that's awkward, or your receipt is on paper, submit the form anyway and say so; we'll follow up.",
+    description: `Complete the online application with your details and category, and attach your proof of payment. The form is hosted on Google and asks you to sign in to a Google account. If you can't, or your receipt is on paper, email us at ${contactEmail} instead and we'll take your application that way.`,
   },
   {
     title: "We verify your payment",
     description:
-      "Our team checks your receipt and confirms the membership category that fits you. You'll show as pending on this page in the meantime, so you can see your application arrived.",
+      "Our team checks your receipt against your application and confirms the membership category that fits you. You'll show as pending on this page in the meantime, so you can see your application arrived.",
   },
   {
     title: "Welcome to PMAFI",
     description:
-      "Once your payment is verified, your membership goes active and we formally welcome you to the Foundation.",
+      "Once your payment is verified, your membership goes active — check this page any time to see it change, and collect your digital member ID.",
   },
 ];
 
@@ -154,7 +158,9 @@ const APPLY_FIRST_STEPS = [
 export default async function MembershipPage() {
   const content = await getContent();
   const payFirst = canPayFirst(content);
-  const steps = payFirst ? PAY_FIRST_STEPS : APPLY_FIRST_STEPS;
+  const steps = payFirst
+    ? payFirstSteps(content.contact.email)
+    : APPLY_FIRST_STEPS;
 
   return (
     <main>
@@ -366,6 +372,22 @@ export default async function MembershipPage() {
               Apply for Membership
               <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
             </a>
+            {/* Said at the click, not only in step 2 above. This is the button
+                someone presses after skimming, and the form answers with a
+                Google sign-in wall rather than an explanation. */}
+            {payFirst && (
+              <p className="mx-auto mt-3 max-w-md text-xs text-slate-500">
+                The form opens in Google and asks you to sign in. No Google
+                account? Email us at{" "}
+                <a
+                  href={`mailto:${content.contact.email}`}
+                  className="font-medium text-[#1B2A4A] underline decoration-[#C8A951]/50 underline-offset-2 transition-colors hover:text-[#C8A951]"
+                >
+                  {content.contact.email}
+                </a>{" "}
+                and we&apos;ll take your application that way.
+              </p>
+            )}
             <p className="mt-4 text-sm text-slate-500">
               Have questions first?{" "}
               <Link
