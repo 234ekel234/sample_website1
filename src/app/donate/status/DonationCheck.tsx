@@ -80,7 +80,7 @@ export default function DonationCheck() {
               required
               aria-label="Your email address"
               placeholder="you@example.com"
-              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
             />
           </div>
           <div className="relative flex-1">
@@ -93,7 +93,7 @@ export default function DonationCheck() {
               spellCheck={false}
               aria-label="Reference number from your acknowledgment"
               placeholder="PMAFI-2026-K7QX3M"
-              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm uppercase text-slate-900 outline-none transition-colors placeholder:normal-case placeholder:text-slate-400 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm uppercase text-slate-900 outline-none transition-colors placeholder:normal-case placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
             />
           </div>
         </div>

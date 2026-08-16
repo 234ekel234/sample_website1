@@ -33,7 +33,7 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
             required
             aria-label="Your email address"
             placeholder="you@example.com"
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
           />
         </div>
         <button

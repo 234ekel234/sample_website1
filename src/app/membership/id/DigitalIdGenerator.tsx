@@ -2,15 +2,22 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Upload, Download, IdCard } from "lucide-react";
-import { SITE_URL, SITE_HOST } from "@/lib/site";
+import { SITE_HOST } from "@/lib/site";
 
 /**
- * Standalone digital member ID generator.
+ * Digital member ID generator.
  *
- * Everything happens in the browser: the details are typed in, the photo is
- * composited onto a <canvas>, and the result downloads as a pixel-exact PNG.
- * Nothing is uploaded or stored. (For production this would be gated behind the
- * membership verification in ../actions.ts so IDs can't be freely minted.)
+ * Rendered only by IdGate, after the membership check has matched a roster
+ * record — every detail on the card comes from that record, so the card cannot
+ * assert a membership the Foundation's own records do not grant. The photo is
+ * the one thing the visitor supplies.
+ *
+ * Composited onto a <canvas> and downloaded as a pixel-exact PNG. Nothing is
+ * uploaded: the photo is cached in localStorage (this browser only) so a
+ * returning member need not re-upload it, and "Forget my photo" clears it.
+ *
+ * Still unbuilt: scan-to-verify, which would need photos persisted server-side
+ * plus an id-lookup endpoint (Phase 3, Module A).
  */
 
 // ISO ID-1 ("credit card") proportions, rendered at 2x for crisp exports.
@@ -21,9 +28,6 @@ const SCALE = 2;
 const NAVY = "#0a1628";
 const NAVY_2 = "#1B2A4A";
 const GOLD = "#C8A951";
-
-const CATEGORIES = ["Regular", "Associate", "Affiliate"] as const;
-type Category = (typeof CATEGORIES)[number];
 
 /** localStorage key for the member's own photo. Browser-local, never uploaded. */
 const PHOTO_CACHE_KEY = "pmafi:id-photo";
@@ -352,7 +356,11 @@ export default function DigitalIdGenerator({
     setPhoto(null);
   };
 
-  const canDownload = name.trim().length > 0 && photo !== null;
+  // The photo is the only thing that can be missing: every other field comes
+  // from the roster, and loadMembers drops rows without a name. Checking the
+  // name here too would guard an unreachable case while making the message
+  // below ("add a photo") wrong in the one case it fired.
+  const canDownload = photo !== null;
   const download = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -363,7 +371,10 @@ export default function DigitalIdGenerator({
       a.href = url;
       a.download = `PMAFI-Member-ID-${memberId}.png`;
       a.click();
-      URL.revokeObjectURL(url);
+      // Revoking in the same task can cancel the download before the browser
+      // has finished reading the blob — Firefox in particular. Hold the URL
+      // briefly instead; it is one image, and the page drops it either way.
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
     }, "image/png");
   };
 
@@ -444,7 +455,7 @@ export default function DigitalIdGenerator({
         </button>
         {!canDownload && (
           <p className="mt-2 text-center text-xs text-slate-500">
-            Enter a name and add a photo to download.
+            Add a photo to download your ID.
           </p>
         )}
         <p className="mt-4 text-xs text-slate-500">
