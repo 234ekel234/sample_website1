@@ -103,7 +103,7 @@ const benefits = [
  */
 const joinSteps = (contactEmail: string, detailsPublished: boolean) => [
   {
-    title: "Pay your membership dues",
+    title: "Settle your membership dues",
     description: detailsPublished
       ? "Settle the dues for your category using the bank or GCash details above, and keep the receipt."
       : `Email us at ${contactEmail} for the dues for your category and where to send them. Settle the amount, and keep the receipt.`,
@@ -301,16 +301,18 @@ export default async function MembershipPage() {
               How to Join
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
-            {/* The heading carries the ordering, because that is the one thing
-                a returning visitor can get wrong. "Applying Is Simple" said
-                nothing and sat above a lede that inverted what most people
-                expect of a membership: here the dues come first. */}
+            {/* The ordering still has to be clear — dues before application is
+                what a returning visitor gets wrong — but it belongs in the
+                lede, not the heading. "Pay First, Then Apply" led with the
+                Foundation collecting rather than the member joining, which
+                reads as greedy for what is in fact a convenience: everything
+                travels together so nobody waits on an invoice. */}
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
-              Pay First, Then Apply
+              Everything in One Application
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Settle your dues, then apply with your receipt attached. One
-              submission, and no invoice to wait for.
+              Settle your dues, then apply with your receipt attached. It all
+              arrives together, so there&apos;s no invoice to wait for.
             </p>
           </div>
 
