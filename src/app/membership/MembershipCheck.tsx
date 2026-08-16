@@ -1,9 +1,9 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import {
-  checkMembershipAction,
-  type MembershipCheckState,
+  lookupMembershipAction,
+  type MembershipLookupState,
 } from "./actions";
 import {
   Search,
@@ -12,9 +12,12 @@ import {
   Clock,
   UserPlus,
   ArrowRight,
+  Users,
 } from "lucide-react";
 
-const initialState: MembershipCheckState = { status: "idle" };
+const initialState: MembershipLookupState = { status: "idle" };
+
+type Mode = "email" | "name";
 
 export default function MembershipCheck({
   applyHref,
@@ -31,23 +34,64 @@ export default function MembershipCheck({
   payFirst: boolean;
 }) {
   const [state, action, pending] = useActionState(
-    checkMembershipAction,
+    lookupMembershipAction,
     initialState
   );
+  // Email leads because it is unique — a name can be shared, and the lookup has
+  // to refuse rather than guess when it is. Name is offered because the most
+  // common reason a real member gets "not found" is having registered under
+  // their other address.
+  const [mode, setMode] = useState<Mode>("email");
 
   return (
     <div>
+      <div
+        role="radiogroup"
+        aria-label="Look up by"
+        className="mb-3 inline-flex rounded-lg border border-slate-300 bg-white p-1"
+      >
+        {(["email", "name"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            role="radio"
+            aria-checked={mode === m}
+            onClick={() => setMode(m)}
+            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+              mode === m
+                ? "bg-[#1B2A4A] text-white"
+                : "text-slate-600 hover:text-[#1B2A4A]"
+            }`}
+          >
+            {m === "email" ? "By email" : "By name"}
+          </button>
+        ))}
+      </div>
+
       <form action={action} className="flex flex-col gap-3 sm:flex-row">
+        <input type="hidden" name="mode" value={mode} />
         <div className="relative flex-1">
           <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
-            type="email"
-            name="email"
-            required
-            aria-label="Your email address"
-            placeholder="you@example.com"
-            className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
-          />
+          {mode === "email" ? (
+            <input
+              type="email"
+              name="email"
+              required
+              aria-label="Your email address"
+              placeholder="you@example.com"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+            />
+          ) : (
+            <input
+              type="text"
+              name="name"
+              required
+              autoComplete="name"
+              aria-label="Your full name"
+              placeholder="Juan Dela Cruz"
+              className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-10 pr-4 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30"
+            />
+          )}
         </div>
         <button
           type="submit"
@@ -57,6 +101,13 @@ export default function MembershipCheck({
           {pending ? "Checking…" : "Check my status"}
         </button>
       </form>
+
+      {mode === "name" && state.status === "idle" && (
+        <p className="mt-2 text-xs text-slate-500">
+          Enter your name as PMAFI has it on record — accents, punctuation and
+          word order don&apos;t matter.
+        </p>
+      )}
 
       {/* Result */}
       {state.status === "found" && state.standing === "Active" && (
@@ -136,6 +187,20 @@ export default function MembershipCheck({
             Apply for Membership
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </a>
+        </div>
+      )}
+
+      {state.status === "ambiguous" && (
+        <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
+            <Users className="h-5 w-5 text-[#C8A951]" />
+            More than one member shares that name.
+          </p>
+          <p className="mt-1 text-sm text-slate-600">
+            We can&apos;t tell which record is yours, and we won&apos;t guess.
+            Please check using the email address on your membership instead —
+            switch to <strong>By email</strong> above.
+          </p>
         </div>
       )}
 
