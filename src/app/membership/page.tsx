@@ -109,12 +109,12 @@ const PAY_FIRST_STEPS = [
   {
     title: "Apply, attaching your receipt",
     description:
-      "Complete the online application with your details and category, and attach your proof of payment to the form.",
+      "Complete the online application with your details and category, and attach your proof of payment. The upload needs a Google sign-in — if that's awkward, or your receipt is on paper, submit the form anyway and say so; we'll follow up.",
   },
   {
     title: "We verify your payment",
     description:
-      "Our team confirms your receipt and the membership category that fits you. You can check your status on this page at any point.",
+      "Our team checks your receipt and confirms the membership category that fits you. You'll show as pending on this page in the meantime, so you can see your application arrived.",
   },
   {
     title: "Welcome to PMAFI",
@@ -199,8 +199,8 @@ export default async function MembershipPage() {
               Check Your Membership Status
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Enter the email address associated with your membership to confirm
-              whether you&apos;re currently registered.
+              Look yourself up by the email address on your membership, or by
+              your name if you&apos;re not sure which address PMAFI has on file.
             </p>
           </div>
 
@@ -208,6 +208,7 @@ export default async function MembershipPage() {
             <MembershipCheck
               applyHref={APPLICATION_FORM_URL}
               payFirst={payFirst}
+              contactEmail={content.contact.email}
             />
           </div>
 

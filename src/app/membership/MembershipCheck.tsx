@@ -22,8 +22,11 @@ type Mode = "email" | "name";
 export default function MembershipCheck({
   applyHref,
   payFirst,
+  contactEmail,
 }: {
   applyHref: string;
+  /** From the content sheet, so a changed inbox is not stranded in this file. */
+  contactEmail: string;
   /**
    * Which join flow is live. A Pending record means opposite things under each:
    * pay-first, they have already paid and are waiting on verification;
@@ -149,12 +152,28 @@ export default function MembershipCheck({
               We&apos;ve received your application, {state.name.split(" ")[0]}.
             </p>
             {payFirst ? (
-              <p className="mt-1 text-sm text-sky-800">
-                Your payment is <strong>being verified</strong>. Our team is
-                checking your receipt and confirming your membership category.
-                Your membership activates as soon as that is done — there is
-                nothing further for you to send.
-              </p>
+              // The second line must hold for all three receipt routes, because
+              // the roster records the standing, not how the applicant said they
+              // would send their proof. Telling everyone "nothing further to
+              // send" would strand the two thirds who still owe us a receipt —
+              // and they are the ones whose application actually stalls.
+              <>
+                <p className="mt-1 text-sm text-sky-800">
+                  Your payment is <strong>being verified</strong>. Our team is
+                  checking your receipt and confirming your membership category
+                  — your membership activates as soon as that is done.
+                </p>
+                <p className="mt-2 text-sm text-sky-800">
+                  If you haven&apos;t sent your receipt yet, email it to{" "}
+                  <a
+                    href={`mailto:${contactEmail}`}
+                    className="font-medium underline underline-offset-2"
+                  >
+                    {contactEmail}
+                  </a>{" "}
+                  — we can&apos;t confirm your payment without it.
+                </p>
+              </>
             ) : (
               <p className="mt-1 text-sm text-sky-800">
                 Your membership is <strong>pending payment</strong>. Our team

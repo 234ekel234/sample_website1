@@ -94,7 +94,8 @@ export default function DuesPayment({
 
       <p className="border-t border-white/10 px-7 py-4 text-xs text-slate-400">
         Keep your proof of payment — a screenshot or photo of the receipt is
-        enough. You will be asked to attach it on the application form.
+        enough. You&apos;ll be asked to attach it on the application form, and
+        if you can&apos;t, you can send it to us afterwards instead.
       </p>
     </div>
   );
