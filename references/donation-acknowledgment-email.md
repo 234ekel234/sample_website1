@@ -123,5 +123,10 @@ address is what opens their giving history.
 
 There is also a second lookup on `/donate/status` that needs only an email and
 sends the summary to that inbox instead of showing it on screen, which is the
-proper answer to a lost code. **It is not working yet** — it needs
-`RESEND_API_KEY` set (see `.env.example`). Until then, handle these by hand.
+proper answer to a lost code. **It is switched off** — the page hides it while
+`RESEND_API_KEY` is unset, because without a key every submission returns a
+service error, and a donor reads that as the Foundation having lost their gift.
+
+Setting the key in Vercel brings the option back on its own; no code change is
+needed. Until then, handle a lost reference by hand: check the request comes
+from the address on the row, then read the code back from the sheet.

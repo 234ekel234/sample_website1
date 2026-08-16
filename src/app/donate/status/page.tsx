@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Look up a donation to the Philippine Military Academy Foundation using your email address and the reference from your acknowledgment.",
 };
 
-const notes = [
+const notes = (canEmail: boolean) => [
   {
     icon: Mail,
     title: "Where to find your reference",
@@ -28,11 +28,28 @@ const notes = [
     icon: ShieldCheck,
     title: "Why it works this way",
     description:
-      "An email alone would let anyone look up someone else's donations, so we send the summary to that address instead. A reference code proves the record is yours and lets us show it here.",
+      canEmail
+        ? "An email alone would let anyone look up someone else's donations, so we send the summary to that address instead. A reference code proves the record is yours and lets us show it here."
+        : "An email alone would let anyone look up someone else's donations. The reference code from your acknowledgment is what proves the record is yours, so we ask for both.",
   },
 ];
 
+/**
+ * Whether the emailed-summary route can actually work.
+ *
+ * Without a Resend key that path returns a service error every single time,
+ * and a control that always fails is worse than one that is not offered — the
+ * donor concludes the Foundation has lost their gift rather than that a key is
+ * missing. Read at request time on the server, so setting RESEND_API_KEY brings
+ * the option back on its own with no code change.
+ */
+function emailSummaryAvailable(): boolean {
+  return Boolean(process.env.RESEND_API_KEY);
+}
+
 export default function GivingStatusPage() {
+  const canEmail = emailSummaryAvailable();
+
   return (
     <main>
       {/* Hero */}
@@ -59,37 +76,49 @@ export default function GivingStatusPage() {
               Find Your Donation Record
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Have your summary sent to your inbox, or if you have the reference
-              code from your acknowledgment, see it here straight away.
+              {canEmail
+                ? "Have your summary sent to your inbox, or if you have the reference code from your acknowledgment, see it here straight away."
+                : "Enter the email address you gave under, along with the reference code from your acknowledgment."}
             </p>
           </div>
 
           {/* Path A — no reference needed; the summary goes to the inbox.
               This is the route the proposal describes, and the safer of the
-              two: nothing is rendered for an unverified visitor. */}
-          <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
-              Option 1 — have it emailed
-            </p>
-            <h3 className="mt-1 mb-4 text-lg font-bold text-[#1B2A4A]">
-              Send my summary to my email
-            </h3>
-            <EmailSummary />
-          </div>
+              two: nothing is rendered for an unverified visitor. Hidden until
+              RESEND_API_KEY exists, because without it every submission
+              reports a service error. */}
+          {canEmail && (
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
+                Option 1 — have it emailed
+              </p>
+              <h3 className="mt-1 mb-4 text-lg font-bold text-[#1B2A4A]">
+                Send my summary to my email
+              </h3>
+              <EmailSummary />
+            </div>
+          )}
 
           {/* Path B — for donors holding a reference code, shown on screen. */}
-          <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
-              Option 2 — have your reference code?
-            </p>
+          <div
+            className={`${canEmail ? "mt-5" : "mt-8"} rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8`}
+          >
+            {/* Numbered only while there are two of them. "Option 2" standing
+                alone would have a donor hunting for the option that isn't
+                there. */}
+            {canEmail && (
+              <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
+                Option 2 — have your reference code?
+              </p>
+            )}
             <h3 className="mt-1 mb-4 text-lg font-bold text-[#1B2A4A]">
-              See it here now
+              {canEmail ? "See it here now" : "Look up your donations"}
             </h3>
             <DonationCheck />
           </div>
 
           <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {notes.map(({ icon: Icon, title, description }) => (
+            {notes(canEmail).map(({ icon: Icon, title, description }) => (
               <div
                 key={title}
                 className="rounded-2xl border border-slate-200/80 bg-white p-5"
