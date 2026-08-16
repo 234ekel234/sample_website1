@@ -14,8 +14,10 @@
 //
 // Sheet columns (row 1 = headers, data starts at row 2):
 //   A: Title  B: Excerpt  C: Category  D: Date  E: Link  F: Published (Yes/No)
+//   G: Image URL (optional — a Google Drive share link)
 
 import { readRange } from "@/lib/sheets";
+import { toDisplayImageUrl } from "@/lib/sheet-image";
 
 export interface NewsItem {
   title: string;
@@ -27,19 +29,6 @@ export interface NewsItem {
 }
 
 const NEWS_RANGE = "News!A2:G";
-
-// Convert any Google Drive share URL to a direct image URL that next/image can load.
-// Accepts:  https://drive.google.com/file/d/{ID}/view?...
-//           https://drive.google.com/open?id={ID}
-//           https://drive.google.com/uc?id={ID}&export=view
-// Returns:  https://lh3.googleusercontent.com/d/{ID}  (or the original if not Drive)
-function toDriveImageUrl(raw: string): string {
-  if (!raw) return "";
-  const fileId =
-    raw.match(/\/file\/d\/([^/?#]+)/)?.[1] ??
-    raw.match(/[?&]id=([^&]+)/)?.[1];
-  return fileId ? `https://lh3.googleusercontent.com/d/${fileId}` : raw;
-}
 
 const FALLBACK: NewsItem[] = [
   {
@@ -87,7 +76,7 @@ export async function getNews(): Promise<NewsItem[]> {
       if (!title || !excerpt) continue;
       if (published !== "yes" && published !== "true") continue;
 
-      const image = toDriveImageUrl(String(row[6] ?? "").trim());
+      const image = toDisplayImageUrl(String(row[6] ?? ""));
       items.push({ title, excerpt, category, date, link, image });
     }
 

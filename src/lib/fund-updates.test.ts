@@ -75,13 +75,25 @@ describe("parseFundUpdates", () => {
     expect(out[0].image).toBe("https://lh3.googleusercontent.com/d/ABC123");
   });
 
-  it("leaves a non-Drive image URL alone and tolerates none", () => {
-    const [withUrl, without] = parseFundUpdates([
-      row("F", "a", "2026-01-02", "Yes", "https://example.com/photo.jpg"),
-      row("F", "b", "2026-01-01", "Yes", ""),
+  it("drops an image URL next/image is not configured to load", () => {
+    // next/image THROWS on a host missing from remotePatterns, and it throws
+    // during render — so passing this through would 500 the whole page rather
+    // than show a broken image. An update without its photo still reads.
+    const [unsupported, notAUrl, none] = parseFundUpdates([
+      row("F", "a", "2026-01-03", "Yes", "https://example.com/photo.jpg"),
+      row("F", "b", "2026-01-02", "Yes", "photo.jpg"),
+      row("F", "c", "2026-01-01", "Yes", ""),
     ]);
-    expect(withUrl.image).toBe("https://example.com/photo.jpg");
-    expect(without.image).toBe("");
+    expect(unsupported.image).toBe("");
+    expect(notAUrl.image).toBe("");
+    expect(none.image).toBe("");
+  });
+
+  it("keeps a URL already on the configured image host", () => {
+    const out = parseFundUpdates([
+      row("F", "a", "2026-01-01", "Yes", "https://lh3.googleusercontent.com/d/ABC123"),
+    ]);
+    expect(out[0].image).toBe("https://lh3.googleusercontent.com/d/ABC123");
   });
 
   it("returns nothing for an empty sheet rather than inventing an update", () => {
