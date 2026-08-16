@@ -32,6 +32,11 @@
  *   Add a row for a gift once it has been verified. Click the Reference cell,
  *   then **PMAFI → Generate reference for selected cells**. Never type one by
  *   hand, and never copy the row above and edit the digits.
+ *
+ *   THEN EMAIL THE DONOR THE REFERENCE. Nothing here is automated — the code is
+ *   minted in this sheet and reaches the donor only because somebody sends it.
+ *   Until that happens the gift is invisible to the person who made it.
+ *   Template: references/donation-acknowledgment-email.md
  */
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────

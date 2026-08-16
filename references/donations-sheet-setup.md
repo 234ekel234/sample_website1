@@ -88,6 +88,18 @@ Two things never to do:
   sequences without meaning to.
 - **Never copy the row above and edit the digits.** That is a sequence.
 
+### After you add the row — send the acknowledgment
+
+The reference is minted here and reaches the donor **only because somebody
+emails it**. Nothing is automated. Until that email goes out, the donor cannot
+look up their own giving at all, and the gift you just logged is invisible to
+the person who made it.
+
+Template, with the checks to run first and the wording never to use:
+**`references/donation-acknowledgment-email.md`**
+
+Then set Status to `Acknowledged`, so the donor sees that it happened.
+
 ### What donors see
 
 Once the email and reference match, the donor sees **every gift recorded under

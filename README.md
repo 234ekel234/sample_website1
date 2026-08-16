@@ -212,6 +212,8 @@ Internal working documents are in the `references/` folder:
 | File | Contents |
 |---|---|
 | `membership-setup-todo.md` | Full membership feature setup checklist |
+| `donations-sheet-setup.md` | Donations log setup + staff guide |
+| `donation-acknowledgment-email.md` | What to send a donor once their gift is logged |
 | `membership-env-setup.md` | Step-by-step Google Sheets API credential setup |
 | `membership-application-form.md` | Google Form structure and field mapping |
 | `followup-email-pending-items.md` | Email draft with pending items list for PMAFI |
