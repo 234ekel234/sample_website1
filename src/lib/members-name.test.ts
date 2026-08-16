@@ -110,6 +110,17 @@ describe("reading a form responses sheet", () => {
     expect((await checkMembership("juan@work.com"))?.memberSince).toBe("2026");
   });
 
+  it("reads a timestamp that arrives as a Sheets serial, not text", async () => {
+    // readRange asks for UNFORMATTED_VALUE, so a date-formatted Timestamp cell
+    // comes back as a number. Serial 46082 is in 2026.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("46082.635", "s@e.com", "Serial Person", "s@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { checkMembership } = await load();
+    expect((await checkMembership("s@e.com"))?.memberSince).toBe("2026");
+  });
+
   it("reads the PMA class out of whatever was typed", async () => {
     const { checkMembership } = await load();
     expect((await checkMembership("juan@work.com"))?.pmaClass).toBe("1988");

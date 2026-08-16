@@ -35,6 +35,7 @@
 // same lean shape it was when the roster was a separate sheet.
 
 import { readRange } from "@/lib/sheets";
+import { normalizeSheetDate } from "@/lib/sheet-date";
 
 export interface MemberRecord {
   name: string;
@@ -226,7 +227,12 @@ async function loadRoster(): Promise<Roster> {
       .filter(Boolean);
     if (!name || addresses.length === 0) continue;
 
-    const when = cell(row, col.timestamp);
+    // The Timestamp column is date-formatted, and readRange asks for
+    // UNFORMATTED_VALUE — so it arrives as a Sheets serial ("46082.6"), not
+    // text. normalizeYear finds no year in that and every member silently lost
+    // their joining year. Normalise to ISO first; this is the same trap
+    // sheet-date.ts exists to hold, and it applies here too.
+    const when = normalizeSheetDate(cell(row, col.timestamp));
     const member: MemberRecord = {
       name,
       email: addresses[0],
@@ -236,7 +242,7 @@ async function loadRoster(): Promise<Roster> {
       // No "member since" question exists, and asking for one would be odd —
       // the year they applied IS the year they joined, and the timestamp is
       // already sitting in the row.
-      memberSince: normalizeYear(when),
+      memberSince: normalizeYear(when),  // `when` is ISO by here
     };
 
     for (const address of addresses) {
