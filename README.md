@@ -101,7 +101,7 @@ NEWS_SHEET_ID=                      # Home page news
 DONATIONS_SHEET_ID=                 # Giving log (falls back to MEMBERS_SHEET_ID)
 RESEND_API_KEY=                     # Emailed donor giving summaries
 
-# Optional — defaults to "Form Responses 1!A1:Z". Starts at row 1: the header
+# Optional — defaults to "Membership Applications!A1:Z". Starts at row 1: the header
 # row is what the column mapping reads.
 MEMBERS_SHEET_RANGE=
 ```

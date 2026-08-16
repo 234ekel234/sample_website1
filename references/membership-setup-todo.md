@@ -140,9 +140,11 @@ form, and staff add one column of their own.
    form's own columns. Leave it blank for new rows.
 2. Set `MEMBERS_SHEET_ID` to that spreadsheet's ID (locally in `.env.local` and
    in Vercel).
-3. If the responses tab is not named `Form Responses 1`, set
-   `MEMBERS_SHEET_RANGE` to `<tab name>!A1:Z`. Note it starts at **row 1** —
-   the header row is data here, not decoration.
+3. The responses tab should be named **`Membership Applications`**, which is
+   the code's default — rename it off Google's `Form Responses 1`, because that
+   name is positional and gets reassigned if a form is ever recreated. If you
+   name it something else, set `MEMBERS_SHEET_RANGE` to `<tab name>!A1:Z`. Note
+   it starts at **row 1** — the header row is data here, not decoration.
 
 **Columns are located by HEADER TEXT, never by position.** A responses sheet's
 layout belongs to the form, so adding or reordering a question shifts every

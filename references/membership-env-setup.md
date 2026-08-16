@@ -19,7 +19,7 @@ these are never committed.)
 | `MEMBERS_SHEET_ID` | yes | The **form's responses spreadsheet** ID — the long string in its URL between `/d/` and `/edit`. Not a separate roster. |
 | `GOOGLE_SERVICE_ACCOUNT_EMAIL` | yes | The service account address, e.g. `pmafi-members@your-project.iam.gserviceaccount.com`. |
 | `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | yes | The `private_key` value from the service-account JSON key file. Keep the `-----BEGIN PRIVATE KEY-----\n…\n-----END PRIVATE KEY-----\n`. Literal `\n` escapes are fine — the code converts them. |
-| `MEMBERS_SHEET_RANGE` | no | Defaults to `Form Responses 1!A1:Z`. Set it only if the responses tab is named something else. Note it starts at **row 1** — the header row is what the column mapping reads, not decoration. |
+| `MEMBERS_SHEET_RANGE` | no | Defaults to `Membership Applications!A1:Z`. Set it only if the tab is named something else. Note it starts at **row 1** — the header row is what the column mapping reads, not decoration. |
 
 Example `.env.local` (do **not** commit):
 

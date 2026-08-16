@@ -13,7 +13,7 @@
 //   MEMBERS_SHEET_ID                     – the spreadsheet ID from its URL
 //   GOOGLE_SERVICE_ACCOUNT_EMAIL         – ...@...iam.gserviceaccount.com
 //   GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY   – the PEM private key (\n-escaped is OK)
-//   MEMBERS_SHEET_RANGE   (optional)     – defaults to "Form Responses 1!A1:Z"
+//   MEMBERS_SHEET_RANGE   (optional)     – defaults to "Membership Applications!A1:Z"
 //
 // THE SOURCE IS THE FORM'S RESPONSES SHEET. Every applicant row is created by
 // the membership form; staff add one column of their own, Status, and set it to
@@ -211,7 +211,12 @@ async function loadRoster(): Promise<Roster> {
   }
 
   const sheetId = requireEnv("MEMBERS_SHEET_ID");
-  const range = process.env.MEMBERS_SHEET_RANGE ?? "Form Responses 1!A1:Z";
+  // The tab was renamed off Google's default "Form Responses 1" on purpose.
+  // That name is POSITIONAL: recreate the form and its responses land in
+  // "Form Responses 3", while the old tab keeps its name and its stale rows —
+  // or worse, another form's responses take the number and the membership
+  // check silently starts reading donations. A real name cannot be reassigned.
+  const range = process.env.MEMBERS_SHEET_RANGE ?? "Membership Applications!A1:Z";
   const rows = await readRange(sheetId, range);
   if (rows.length === 0) return { members: [], byEmail: new Map() };
 
