@@ -16,7 +16,20 @@ import {
 
 const initialState: MembershipCheckState = { status: "idle" };
 
-export default function MembershipCheck({ applyHref }: { applyHref: string }) {
+export default function MembershipCheck({
+  applyHref,
+  payFirst,
+}: {
+  applyHref: string;
+  /**
+   * Which join flow is live. A Pending record means opposite things under each:
+   * pay-first, they have already paid and are waiting on verification;
+   * apply-first, they are waiting on an invoice and have paid nothing. Telling
+   * someone who has paid that an invoice is coming reads as their money going
+   * missing, so this must follow the flow the page is actually showing.
+   */
+  payFirst: boolean;
+}) {
   const [state, action, pending] = useActionState(
     checkMembershipAction,
     initialState
@@ -84,12 +97,21 @@ export default function MembershipCheck({ applyHref }: { applyHref: string }) {
             <p className="font-semibold text-sky-900">
               We&apos;ve received your application, {state.name.split(" ")[0]}.
             </p>
-            <p className="mt-1 text-sm text-sky-800">
-              Your membership is <strong>pending payment</strong>. Our team will
-              confirm your category and email you an invoice with payment
-              instructions. Your membership activates once your payment is
-              received.
-            </p>
+            {payFirst ? (
+              <p className="mt-1 text-sm text-sky-800">
+                Your payment is <strong>being verified</strong>. Our team is
+                checking your receipt and confirming your membership category.
+                Your membership activates as soon as that is done — there is
+                nothing further for you to send.
+              </p>
+            ) : (
+              <p className="mt-1 text-sm text-sky-800">
+                Your membership is <strong>pending payment</strong>. Our team
+                will confirm your category and email you an invoice with payment
+                instructions. Your membership activates once your payment is
+                received.
+              </p>
+            )}
           </div>
         </div>
       )}

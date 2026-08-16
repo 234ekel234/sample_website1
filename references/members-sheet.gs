@@ -19,9 +19,14 @@
  * Columns (must stay in this order — the website maps to them):
  *   Name | Email | Category | Status
  *     - Category: Regular / Associate / Affiliate  (dropdown)
- *     - Status:   Active / Lapsed / Pending Payment (dropdown)
+ *     - Status:   Active / Lapsed / Pending Verification (dropdown)
  *   ("Status" here is the `standing` field in src/lib/members.ts.)
  */
+
+// The statuses column D accepts. "Pending Verification" is what the pay-first
+// auto-add script writes; "Pending Payment" is the older apply-first label,
+// kept so existing rows stay valid. src/lib/members.ts maps both to Pending.
+var STATUS_VALUES = ['Active', 'Lapsed', 'Pending Verification', 'Pending Payment'];
 
 function createPmafiMembersSheet() {
   var ss = SpreadsheetApp.create('PMAFI Members (private roster)');
@@ -46,13 +51,17 @@ function createPmafiMembersSheet() {
     .build();
   sheet.getRange('C2:C1000').setDataValidation(categoryRule);
 
-  // Status (column D): Active / Lapsed / Pending Payment
-  // "Pending Payment" is what the auto-add script writes for new applicants
+  // Status (column D): Active / Lapsed / Pending Verification
+  // "Pending Verification" is what the auto-add script writes for new
+  // applicants under the pay-first flow — they have paid, and staff are
+  // checking the receipt. "Pending Payment" is the older apply-first label;
+  // it stays allowed so existing rows do not show the red invalid-data flag,
+  // and the website maps both to the same Pending state.
   // (see references/membership-autoadd.gs).
   var statusRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Active', 'Lapsed', 'Pending Payment'], true)
+    .requireValueInList(STATUS_VALUES, true)
     .setAllowInvalid(false)
-    .setHelpText('Pick one: Active, Lapsed, or Pending Payment.')
+    .setHelpText('Pick one: ' + STATUS_VALUES.join(', ') + '.')
     .build();
   sheet.getRange('D2:D1000').setDataValidation(statusRule);
 
@@ -83,22 +92,25 @@ function createPmafiMembersSheet() {
 }
 
 /**
- * RUN THIS ONCE if your members sheet already exists (created before
- * "Pending Payment" was a status). It widens the column-D dropdown to allow
- * Active / Lapsed / Pending Payment, so auto-added rows don't show the red
+ * RUN THIS ONCE against an existing members sheet to widen the column-D
+ * dropdown to the current STATUS_VALUES, so auto-added rows don't show the red
  * "invalid data" flag.
+ *
+ * Re-run it whenever STATUS_VALUES changes. It was previously named
+ * addPendingPaymentToStatusDropdown(); it now covers every status, including
+ * "Pending Verification" written by the pay-first auto-add script.
  *
  *   1. Paste your members sheet ID below.
  *   2. Select this function in the toolbar and click Run.
  */
-function addPendingPaymentToStatusDropdown() {
+function updateStatusDropdown() {
   var MEMBERS_SHEET_ID = 'PASTE_YOUR_MEMBERS_SHEET_ID_HERE';
   var ss = SpreadsheetApp.openById(MEMBERS_SHEET_ID);
   var sheet = ss.getSheetByName('Members') || ss.getSheets()[0];
   var statusRule = SpreadsheetApp.newDataValidation()
-    .requireValueInList(['Active', 'Lapsed', 'Pending Payment'], true)
+    .requireValueInList(STATUS_VALUES, true)
     .setAllowInvalid(false)
-    .setHelpText('Pick one: Active, Lapsed, or Pending Payment.')
+    .setHelpText('Pick one: ' + STATUS_VALUES.join(', ') + '.')
     .build();
   sheet.getRange('D2:D1000').setDataValidation(statusRule);
   Logger.log('Status dropdown updated on: ' + ss.getUrl());

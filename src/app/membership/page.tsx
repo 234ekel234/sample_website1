@@ -14,7 +14,9 @@ import {
   IdCard,
 } from "lucide-react";
 import MembershipCheck from "./MembershipCheck";
+import DuesPayment from "./DuesPayment";
 import PageHero from "@/components/ui/PageHero";
+import { getContent, canPayFirst } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Membership | PMAFI",
@@ -85,7 +87,43 @@ const benefits = [
   },
 ];
 
-const steps = [
+/**
+ * The join flow, in the order the applicant actually experiences it.
+ *
+ * PAY_FIRST is the intended flow: the applicant settles their dues, then
+ * applies with the receipt attached, so one submission carries everything staff
+ * need and nobody waits on a manual invoice.
+ *
+ * APPLY_FIRST is the fallback, and it is not a lesser version — it is the only
+ * honest flow while the dues figures and payment channel are unconfirmed. You
+ * cannot tell someone to pay on their own without telling them how much and
+ * where. The page picks between them on canPayFirst(), so filling in the
+ * content sheet is what switches the site over; no deploy is involved.
+ */
+const PAY_FIRST_STEPS = [
+  {
+    title: "Pay your membership dues",
+    description:
+      "Settle the dues for your category through the bank or GCash details above, and keep the receipt.",
+  },
+  {
+    title: "Apply, attaching your receipt",
+    description:
+      "Complete the online application with your details and category, and attach your proof of payment to the form.",
+  },
+  {
+    title: "We verify your payment",
+    description:
+      "Our team confirms your receipt and the membership category that fits you. You can check your status on this page at any point.",
+  },
+  {
+    title: "Welcome to PMAFI",
+    description:
+      "Once your payment is verified, your membership goes active and we formally welcome you to the Foundation.",
+  },
+];
+
+const APPLY_FIRST_STEPS = [
   {
     title: "Submit the application form",
     description:
@@ -113,7 +151,11 @@ const steps = [
   },
 ];
 
-export default function MembershipPage() {
+export default async function MembershipPage() {
+  const content = await getContent();
+  const payFirst = canPayFirst(content);
+  const steps = payFirst ? PAY_FIRST_STEPS : APPLY_FIRST_STEPS;
+
   return (
     <main>
       {/* Hero */}
@@ -163,7 +205,10 @@ export default function MembershipPage() {
           </div>
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <MembershipCheck applyHref={APPLICATION_FORM_URL} />
+            <MembershipCheck
+              applyHref={APPLICATION_FORM_URL}
+              payFirst={payFirst}
+            />
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
@@ -281,12 +326,17 @@ export default function MembershipPage() {
               Applying Is Simple
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Apply online and we&apos;ll guide you through confirmation and
-              payment — no need to pay before we&apos;ve confirmed your details.
+              {payFirst
+                ? "Settle your dues, then apply with your receipt attached — one submission, and nothing to wait on before you can send it."
+                : "Apply online and we'll guide you through confirmation and payment — no need to pay before we've confirmed your details."}
             </p>
           </div>
 
-          <ol className="space-y-6">
+          {payFirst && (
+            <DuesPayment payment={content.payment} dues={content.dues} />
+          )}
+
+          <ol className="mt-10 space-y-6">
             {steps.map(({ title, description }, i) => (
               <li key={title} className="flex gap-5">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1B2A4A] text-sm font-bold text-[#C8A951]">

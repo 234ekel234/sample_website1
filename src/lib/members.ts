@@ -86,8 +86,17 @@ function normalizeCategory(value: string): MemberRecord["category"] | null {
 function normalizeStanding(value: string): MemberRecord["standing"] {
   const v = value.trim().toLowerCase();
   if (v === "active") return "Active";
-  // Auto-added applicants who haven't paid yet (see references/membership-autoadd.gs).
-  if (v === "pending payment" || v === "pending") return "Pending";
+  // Auto-added applicants awaiting staff action (references/membership-autoadd.gs).
+  //
+  // Both labels map to Pending on purpose. "Pending Verification" is what the
+  // pay-first flow writes — the applicant has paid and staff are checking the
+  // receipt. "Pending Payment" is the older apply-first label, and rows
+  // carrying it predate the change, so dropping it would silently demote real
+  // applicants to Lapsed. The site shows one Pending state either way; only
+  // the wording on /membership differs, driven by canPayFirst().
+  if (v === "pending verification" || v === "pending payment" || v === "pending") {
+    return "Pending";
+  }
   // Anything else (incl. blank / unrecognized) is treated as lapsed (fail safe).
   return "Lapsed";
 }
