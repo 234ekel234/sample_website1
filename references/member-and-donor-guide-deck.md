@@ -275,6 +275,57 @@ the person who paid for it, rather than left on a page they have to go and find.
 
 ---
 
+---
+
+# Links to put on the slides
+
+**Link the website page, not the Google Form.** The form addresses are long,
+unmemorable, and — for the donation form especially — designed to be swappable:
+its link lives in the content sheet precisely so PMAFI can replace the form
+without a developer. A deck that hardcodes it breaks silently the day that
+happens. Every page below carries the current button.
+
+| Where | Link | Use it on |
+|---|---|---|
+| Home | `www.pmafi.org` | Slides 1, 18 |
+| Membership | `www.pmafi.org/membership` | Slides 2–8 |
+| Digital member ID | `www.pmafi.org/membership/id` | Slide 9 |
+| Donate | `www.pmafi.org/donate` | Slides 10–14 |
+| Fund updates | `www.pmafi.org/donate/impact` | Slide 17 |
+| Look up my giving | `www.pmafi.org/donate/status` | Slides 15–17 |
+| Board of Trustees | `www.pmafi.org/about#board` | if the board comes up |
+| Contact | `www.pmafi.org/contact` | Slide 18 |
+
+All verified reachable. `www.pmafi.org/board` still works too — it redirects to
+`/about#board` — so an older printed link is safe to quote.
+
+## The two forms
+
+Only put these on a slide if the slide is specifically *"here is the form"*.
+Otherwise send people to the page.
+
+- **Membership application**
+  `docs.google.com/forms/d/e/1FAIpQLScCtlvJRRyJoIFpyBfn8co6qVLDd1GnfV4x6m4dJeYvtE8GBQ/viewform`
+  *Requires a Google sign-in — say so on the slide.*
+
+- **Tell us about your donation**
+  `docs.google.com/forms/d/e/1FAIpQLScvwRaJGbMYqDC6zSHB77GdQxxU9S_IGBo8k4yMM3R1YYFbww/viewform`
+  *No sign-in needed.*
+
+If either has to appear on a printed slide or a handout, make a short link
+(`bit.ly`, or a Google Sites redirect) rather than showing that string — nobody
+types it, and it wraps badly at any font size a room can read.
+
+## For the closing slide
+
+> **www.pmafi.org**
+> Join · Give · Track what your support achieves
+
+One address. Everything else in the deck is reachable from it, and one URL is
+the only kind an audience actually remembers.
+
+---
+
 ## Before you present — a checklist
 
 - [ ] Dues and bank/GCash details filled in, so slides 4 and 12 are truthful
