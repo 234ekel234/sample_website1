@@ -2,13 +2,19 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Landmark, Smartphone, Mail, ShieldCheck, FileCheck2 } from "lucide-react";
+import { Landmark, Smartphone, Mail, ShieldCheck, FileCheck2, ArrowRight } from "lucide-react";
 
 // Payment channels come from the staff-editable content sheet. Until PMAFI
 // fills them in, the page says details are being finalized and routes donors to
 // email — it never publishes a guessed account number.
 export interface HowToDonateContentProps {
   email: string;
+  /**
+   * Public link to the "Tell us about your donation" form. Blank until PMAFI
+   * creates it, and step 3 then keeps asking donors to email their details —
+   * which is what the page has always said, so an unset key is not a gap.
+   */
+  donationFormUrl: string;
   bankName: string;
   bankAccountName: string;
   bankAccountNumber: string;
@@ -16,15 +22,27 @@ export interface HowToDonateContentProps {
   gcashNumber: string;
 }
 
-const steps = [
+/**
+ * Step 3 is the one that varies.
+ *
+ * A bank transfer reaches PMAFI as a name and an amount — no address to reply
+ * to, no fund. Somebody has to close that gap. With a form it is structured and
+ * typed once by the donor; without one it is an email a staff member retypes,
+ * and a mistyped address means the donor's own gift is invisible to them at
+ * /donate/status with no way to tell why.
+ */
+const steps = (hasForm: boolean) => [
   "Choose how you'd like to give from the options above.",
   "Send your donation through the channel provided (or email us to arrange it).",
-  "Email your name, contact details, and proof of payment so we can acknowledge it.",
+  hasForm
+    ? "Tell us about your gift using the short form below, so we know it came from you and which fund you meant it for."
+    : "Email your name, contact details, and proof of payment so we can acknowledge it.",
   "Receive your official acknowledgment and receipt from the Foundation.",
 ];
 
 export default function HowToDonateContent({
   email,
+  donationFormUrl,
   bankName,
   bankAccountName,
   bankAccountNumber,
@@ -74,7 +92,7 @@ export default function HowToDonateContent({
               Making Your Donation
             </h2>
             <ol className="mt-8 space-y-6">
-              {steps.map((step, i) => (
+              {steps(Boolean(donationFormUrl)).map((step, i) => (
                 <motion.li
                   key={i}
                   initial={{ opacity: 0, y: 16 }}
@@ -89,6 +107,28 @@ export default function HowToDonateContent({
                 </motion.li>
               ))}
             </ol>
+
+            {/* Only once PMAFI has created the form and put its link in the
+                content sheet. Until then step 3 above still tells the donor to
+                email their details, so there is nothing dangling. */}
+            {donationFormUrl && (
+              <div className="mt-8">
+                <a
+                  href={donationFormUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-6 py-3 text-sm font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
+                >
+                  Tell us about your gift
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </a>
+                <p className="mt-2 max-w-md text-xs text-slate-500">
+                  Takes about a minute, and there is nothing to upload. It is
+                  what lets us acknowledge your gift and show it to you later at{" "}
+                  <span className="whitespace-nowrap">/donate/status</span>.
+                </p>
+              </div>
+            )}
           </motion.div>
 
           {/* Channels + trust */}

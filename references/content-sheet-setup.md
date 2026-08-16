@@ -100,6 +100,25 @@ nothing to publish and nothing to deploy.
 | `payment.gcash.name` | GCash account name |
 | `payment.gcash.number` | GCash number |
 
+### The donation form (`form.donation`)
+
+Paste the public link to the **"Tell us about your donation"** form
+(`references/donation-form.gs`) here and step 3 of *Making Your Donation*
+changes from *"email us your details"* to a button. Leave it blank and the page
+keeps the email instruction — which is what it has always said, so an unset key
+is not a gap.
+
+Why it matters: a bank transfer reaches PMAFI as a name and an amount. It
+carries no address to reply to and no fund. Somebody has to close that gap —
+with the form the donor types it once; without it a staff member retypes an
+email, and a mistyped address means that donor's own gift is invisible to them
+at `/donate/status` with no way to tell why.
+
+**The form deliberately has no file upload.** Google gates an entire form behind
+a Google sign-in as soon as one exists, and a donor is often a one-time visitor
+— that friction costs gifts. PMAFI's bank statement is the proof; the form's job
+is only to say who sent it.
+
 ### Giving directly (the `finance.*` keys)
 
 `/donate` carries a **Give Directly** section for gifts that need a conversation

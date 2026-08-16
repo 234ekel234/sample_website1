@@ -24,6 +24,7 @@
 //   payment.gcash.name    payment.gcash.number
 //   dues.regular          dues.associate        dues.affiliate
 //   finance.email         finance.phone         finance.name
+//   form.donation
 //
 // The dues values are free text, so staff control the wording as well as the
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
@@ -84,6 +85,15 @@ export interface SiteContent {
     phone: string;
     /** e.g. "Ask for the Treasurer". Omitted when blank. */
     name: string;
+  };
+  /**
+   * Public link to the "Tell us about your donation" Google Form
+   * (references/donation-form.gs). Blank until PMAFI creates it, and the
+   * donate page then keeps asking donors to email their details instead —
+   * which is what it has always done, so nothing breaks by leaving it unset.
+   */
+  forms: {
+    donation: string;
   };
 }
 
@@ -163,6 +173,9 @@ const FALLBACK: SiteContent = {
     phone: "",
     name: "",
   },
+  forms: {
+    donation: "",
+  },
 };
 
 function pick(map: Map<string, string>, key: string, fallback: string): string {
@@ -234,6 +247,9 @@ export async function getContent(): Promise<SiteContent> {
       email: pick(map, "finance.email", FALLBACK.finance.email),
       phone: pick(map, "finance.phone", FALLBACK.finance.phone),
       name: pick(map, "finance.name", FALLBACK.finance.name),
+    },
+    forms: {
+      donation: pick(map, "form.donation", FALLBACK.forms.donation),
     },
   };
 }
