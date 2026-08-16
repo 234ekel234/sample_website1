@@ -107,13 +107,34 @@ async function loadDonations(): Promise<DonationRecord[]> {
   const rows = await readRange(sheetId, range);
 
   const donations: DonationRecord[] = [];
-  for (const row of rows) {
+  for (const [i, row] of rows.entries()) {
     const reference = String(row[0] ?? "").trim();
     const email = String(row[1] ?? "").trim();
     const amount = normalizeAmount(String(row[4] ?? ""));
+
     // Skip blank/incomplete rows. A row without a reference or email can never
     // be matched anyway, and one without a real amount would render as "₱NaN".
-    if (!reference || !email || Number.isNaN(amount)) continue;
+    //
+    // SAY SO when the row was clearly being filled in. Staff who add a gift,
+    // generate a reference, email it to the donor, and then leave one cell
+    // empty have created a row that does not exist to the site — and the donor
+    // is told their reference does not match, which reads as the Foundation
+    // having lost their gift. A wholly blank row stays silent; a half-filled
+    // one is somebody's work in progress that nobody is going to chase.
+    if (!reference || !email || Number.isNaN(amount)) {
+      if (reference || email) {
+        const missing = !reference
+          ? "Reference (column A)"
+          : !email
+            ? "Email (column B)"
+            : "usable Amount (column E)";
+        console.warn(
+          `[donations] Row ${i + 2} is skipped — it has no ${missing}. ` +
+            "That gift cannot be looked up until this is filled in."
+        );
+      }
+      continue;
+    }
     donations.push({
       reference,
       email,
