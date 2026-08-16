@@ -129,9 +129,11 @@ lookups are separate server actions so the ID path has no name branch to reach.
 The name path returns neither the matched address nor the class year, and is
 rate-limited per client address.
 
-**A member who never used the form does not exist.** Using the responses sheet
-as the roster means there is no place to add someone by hand — an accepted trade
-for working in one sheet.
+**Everyone joins through the form, and that is a good fit here.** PMAFI has no
+existing membership roster, so the responses sheet being the roster costs nothing
+— there is nobody to migrate. The caveat only matters if that changes: a member
+who never used the form has no row, and adding one by hand means writing into a
+sheet the form also appends to.
 
 **Rate limiting is per-instance.** It runs in module memory, so on serverless it
 resets on a cold start. It stops realistic abuse, not a determined attacker.
@@ -153,6 +155,14 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries |
 
 ---
+
+## Before launch
+
+- **Clear the four test records** from `Membership Applications`. They currently
+  read as Active members, and one of them will greet a visitor by name if the
+  address is guessed. Nobody has joined yet, so the tab should be empty on the
+  day it goes live.
+- **Clear the test row** from `Donations` for the same reason.
 
 ## Blocked on PMAFI
 
