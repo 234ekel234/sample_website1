@@ -53,7 +53,7 @@ const benefits = [
     icon: Heart,
     title: "Invest in PMA Directly",
     description:
-      "Your dues fund the scholarships, facilities, and programs that shape every cadet who walks through Fort del Pilar — a tangible investment in the next generation of officers.",
+      "Your membership fee funds the scholarships, facilities, and programs that shape every cadet who walks through Fort del Pilar — a tangible investment in the next generation of officers.",
   },
   {
     icon: Users,
@@ -95,7 +95,7 @@ const benefits = [
  * the application form already tells applicants to pay before they apply. A
  * page that disagreed with the form it links to would be worse than one missing
  * a number — an applicant reading "no need to pay yet" here and "settle your
- * dues first" there does not know which to believe.
+ * pay first" there does not know which to believe.
  *
  * What still varies is whether we can PRINT the figures. When the content sheet
  * has none, step one sends the applicant to ask rather than inventing an amount
@@ -103,10 +103,10 @@ const benefits = [
  */
 const joinSteps = (contactEmail: string, detailsPublished: boolean) => [
   {
-    title: "Settle your membership dues",
+    title: "Settle your membership fee",
     description: detailsPublished
-      ? "Settle the dues for your category using the bank or GCash details above, and keep the receipt."
-      : `Email us at ${contactEmail} for the dues for your category and where to send them. Settle the amount, and keep the receipt.`,
+      ? "Settle the fee for your category using the bank or GCash details above, and keep the receipt."
+      : `Email us at ${contactEmail} for the membership fee and where to send it. Settle the amount, and keep the receipt.`,
   },
   {
     // The sign-in requirement is stated here, before the visitor clicks away to
@@ -301,7 +301,7 @@ export default async function MembershipPage() {
               How to Join
               <span className="h-px w-8 bg-[#C8A951]/50" />
             </p>
-            {/* The ordering still has to be clear — dues before application is
+            {/* The ordering still has to be clear — payment before application is
                 what a returning visitor gets wrong — but it belongs in the
                 lede, not the heading. "Pay First, Then Apply" led with the
                 Foundation collecting rather than the member joining, which
@@ -311,8 +311,8 @@ export default async function MembershipPage() {
               Everything in One Application
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-slate-500">
-              Settle your dues, then apply with your receipt attached. It all
-              arrives together, so there&apos;s no invoice to wait for.
+              Settle your membership fee, then apply with your receipt attached.
+              It all arrives together, so there&apos;s no invoice to wait for.
             </p>
           </div>
 

@@ -2,8 +2,8 @@ import { Landmark, Smartphone, Receipt } from "lucide-react";
 import type { SiteContent } from "@/lib/content";
 
 /**
- * Dues and where to send them — the half of the pay-first flow that cannot be
- * invented.
+ * The membership fee and where to send it — the half of the pay-first flow that
+ * cannot be invented.
  *
  * Rendered ONLY when hasPaymentDetails() is true. The page never calls this with
  * blank values, but every field is still guarded individually: a sheet with a
@@ -22,11 +22,23 @@ export default function DuesPayment({
   payment: SiteContent["payment"];
   dues: SiteContent["dues"];
 }) {
-  const tiers = [
+  const perCategory = [
     { label: "Regular Member", amount: dues.regular },
     { label: "Associate Member", amount: dues.associate },
     { label: "Affiliate Member", amount: dues.affiliate },
   ].filter((t) => t.amount);
+
+  // PMAFI charges the same fee for every category. Printing it three times
+  // reads as a mistake rather than a fact, so an identical figure collapses to
+  // one line. The CATEGORIES are not collapsed anywhere else — they carry
+  // governance rights, not a price tier: only Regular members vote in the
+  // election of the Board of Trustees.
+  const sameForAll =
+    perCategory.length > 1 &&
+    new Set(perCategory.map((t) => t.amount.trim())).size === 1;
+  const tiers = sameForAll
+    ? [{ label: "All categories", amount: perCategory[0].amount }]
+    : perCategory;
 
   const hasBank = payment.bankName && payment.bankAccountNumber;
   const hasGcash = payment.gcashName && payment.gcashNumber;
@@ -35,7 +47,9 @@ export default function DuesPayment({
     <div
       // Load-bearing: the membership application form links applicants straight
       // here (…/membership#dues) instead of restating the figures, so this page
-      // stays the single place dues and account numbers are published. Renaming
+      // stays the single place the fee and account numbers are published. The
+      // anchor keeps its `dues` name because the live form already links to it;
+      // renaming
       // this anchor breaks that link silently — the page still loads, it just
       // stops scrolling to the numbers the applicant was sent to read.
       id="dues"
@@ -44,15 +58,20 @@ export default function DuesPayment({
       <div className="border-b border-white/10 px-7 py-5">
         <p className="flex items-center gap-2 font-bold text-white">
           <Receipt className="h-5 w-5 text-[#C8A951]" />
-          Dues and payment details
+          Membership fee and payment details
         </p>
         <p className="mt-1 text-sm text-slate-300">
-          Settle your dues first, then attach the receipt to your application.
+          Settle your membership fee first, then attach the receipt to your
+          application.
         </p>
       </div>
 
       {tiers.length > 0 && (
-        <div className="grid gap-px bg-white/10 sm:grid-cols-3">
+        <div
+          className={`grid gap-px bg-white/10 ${
+            tiers.length > 1 ? "sm:grid-cols-3" : ""
+          }`}
+        >
           {tiers.map(({ label, amount }) => (
             <div key={label} className="bg-[#0a1628] px-7 py-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-slate-400">

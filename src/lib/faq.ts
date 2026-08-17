@@ -47,7 +47,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How do I become a member?",
     answer:
-      "You can apply online through the membership page. The form takes a few minutes, and once it is submitted your application is recorded as Pending Payment while the Foundation confirms your dues.",
+      "Settle the membership fee first, then apply online with your proof of payment attached — everything arrives in one submission, so there is no invoice to wait for. Your application is recorded straight away while the Foundation verifies your payment.",
     keywords: ["join", "apply", "application", "sign up", "register", "membership"],
     linkLabel: "Apply for membership",
     linkHref: "/membership",
@@ -62,17 +62,20 @@ const FALLBACK: FaqEntry[] = [
     linkHref: "/membership",
   },
   {
-    question: "How much are the membership dues?",
+    question: "How much is the membership fee?",
     answer:
-      "Dues are confirmed directly by the Foundation, as they depend on your membership category. Please get in touch and we will send you the current amount and how to settle it.",
-    keywords: ["dues", "fee", "cost", "how much", "price", "payment", "annual"],
-    linkLabel: "Ask about dues",
-    linkHref: "/contact",
+      "The current fee and where to send it are published on the membership page. It is a one-time payment — there is no annual renewal.",
+    // Deliberately does NOT restate the figure. It lives in the content sheet
+    // and renders on /membership; repeating it here would give staff two places
+    // to update and one to forget.
+    keywords: ["dues", "fee", "cost", "how much", "price", "payment", "annual", "renew"],
+    linkLabel: "See the membership fee",
+    linkHref: "/membership#dues",
   },
   {
     question: "How do I check my membership status?",
     answer:
-      "Enter your email address on the membership page and the site will show your current standing — Active, Pending Payment, or Lapsed. Your details stay private; only your own record is shown.",
+      "Look yourself up on the membership page by email, or by name if you are not sure which address the Foundation has on file. It shows your current standing — Active, being verified, or Lapsed. Your details stay private; only your own record is ever shown.",
     keywords: ["status", "standing", "active", "lapsed", "pending", "check", "verify"],
     linkLabel: "Check your status",
     linkHref: "/membership",

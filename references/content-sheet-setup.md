@@ -167,6 +167,43 @@ column A is spelled exactly right, with no extra spaces.
 
 ---
 
+## The "FAQ" tab — three rows are out of date
+
+The FAQ tab is what the site's assistant actually answers from; the wording in
+the code is only a fallback for when the sheet is unreachable. Three rows still
+describe the old join flow, where PMAFI invoiced after reviewing an application.
+Replace their answers with these:
+
+**"How do I become a member?"**
+
+> Settle the membership fee first, then apply online with your proof of payment
+> attached — everything arrives in one submission, so there is no invoice to wait
+> for. Your application is recorded straight away while the Foundation verifies
+> your payment.
+
+**"How much are the membership dues?"** — retitle to **"How much is the
+membership fee?"**
+
+> The current fee and where to send it are published on the membership page. It
+> is a one-time payment — there is no annual renewal.
+
+*Deliberately does not repeat the figure. It already lives in `dues.regular`
+and renders on the membership page; putting it here as well gives you two places
+to update and one to forget.*
+
+**"How do I check my membership status?"**
+
+> Look yourself up on the membership page by email, or by name if you are not
+> sure which address the Foundation has on file. It shows your current standing —
+> Active, being verified, or Lapsed. Your details stay private; only your own
+> record is ever shown.
+
+Also worth checking the whole tab for the words **"dues"**, **"Pending
+Payment"** and **"invoice"** — all three belong to the flow the site no longer
+uses.
+
+---
+
 ## The "Fund Updates" tab — what a donation achieved
 
 This lives in the **same spreadsheet** as the Content tab, on its own tab named
