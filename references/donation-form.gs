@@ -61,7 +61,9 @@ var FUNDS = [
   'Endowment Fund'
 ];
 
-var CONTACT_EMAIL = 'pmafi.web@gmail.com';
+// Where a donor is told to email a receipt. PMAFI's published address — NOT
+// the pmafi.web@gmail.com Google account that owns this form.
+var CONTACT_EMAIL = 'PMAFI_PMA@yahoo.com';
 
 function createPmafiDonationForm() {
   var form = FormApp.create('PMAFI — Tell us about your donation');

@@ -252,7 +252,7 @@ function createPmafiMembershipForm() {
     .setTitle('How are you sending your receipt?')
     .setChoiceValues([
       'Attached above',
-      'I will email it to pmafi.web@gmail.com',
+      'I will email it to PMAFI_PMA@yahoo.com',
       'I need help — please contact me'
     ])
     .setRequired(true);

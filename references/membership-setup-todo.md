@@ -124,7 +124,7 @@ to a page that cannot tell them what to pay.
 **Known tradeoff:** Google Forms requires respondents to be signed in to a
 Google account to upload a file. That is friction for older alumni. The form's
 Payment section therefore also tells them they can submit without the upload and
-email the receipt to `pmafi.web@gmail.com` instead, so nobody is locked out.
+email the receipt to `PMAFI_PMA@yahoo.com` instead, so nobody is locked out.
 
 **Still to confirm with PMAFI:** the dues amounts per category and the bank /
 GCash details. These are the only things blocking the flow.
@@ -212,7 +212,7 @@ does it, the applicant sees "your payment is being verified" on the website.
    | Answer | What to do |
    |---|---|
    | *Attached above* | Verify and clear it — nothing to chase |
-   | *I will email it to pmafi.web@gmail.com* | Check the inbox; chase if it has not arrived in a few days |
+   | *I will email it to PMAFI_PMA@yahoo.com* | Check the inbox; chase if it has not arrived in a few days |
    | *I need help — please contact me* | Reach out directly. They likely paid over a counter and have a paper slip |
 
    The upload is deliberately not required: the applicant has **already paid**

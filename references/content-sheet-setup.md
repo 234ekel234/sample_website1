@@ -40,7 +40,7 @@ today", and for the pending items it means "stay hidden".
 | 2 | `chairman.name` | LEO ANGELO D. LEUTERIO |
 | 3 | `chairman.title` | Chairman, PMAFI |
 | 4 | `chairman.body` | *(the message — see note below)* |
-| 5 | `contact.email` | pmafi.web@gmail.com |
+| 5 | `contact.email` | PMAFI_PMA@yahoo.com |
 | 6 | `contact.phone` | *(blank until confirmed)* |
 | 7 | `contact.address` | Fort del Pilar, Baguio City, Philippines |
 | 8 | `social.facebook` | *(blank until confirmed)* |

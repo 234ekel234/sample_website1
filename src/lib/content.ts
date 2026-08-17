@@ -139,8 +139,14 @@ const FALLBACK: SiteContent = {
     ],
   },
   contact: {
-    // Interim working inbox — real messages arrive here.
-    email: "pmafi.web@gmail.com",
+    // PMAFI's official address, confirmed 2026-08-17. This is the FALLBACK, so
+    // it is what renders if the content sheet is ever unreachable — it should
+    // match what the sheet says rather than lagging behind it.
+    //
+    // NOT the same as pmafi.web@gmail.com, which owns the Google Forms and the
+    // spreadsheets. That account stays as it is; a Yahoo address cannot own a
+    // Google Form.
+    email: "PMAFI_PMA@yahoo.com",
     // Hidden until PMAFI confirms the official number.
     phone: "",
     // Matches what the footer shows today. PMAFI has not confirmed whether the

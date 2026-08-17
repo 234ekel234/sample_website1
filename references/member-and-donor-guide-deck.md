@@ -105,7 +105,7 @@ against the Foundation's own records and confirms your category.
 1. **The form asks you to sign in to a Google account.** That is Google's
    requirement for accepting a file upload, not PMAFI's.
 2. **If you cannot sign in, or your receipt is on paper**, email
-   `pmafi.web@gmail.com` instead and the Foundation will take your application
+   `PMAFI_PMA@yahoo.com` instead and the Foundation will take your application
    that way. Nobody is turned away for this.
 
 ---
