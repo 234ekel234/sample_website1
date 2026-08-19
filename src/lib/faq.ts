@@ -84,7 +84,12 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Can I get a membership ID card?",
     answer:
-      "Yes. Members can generate a digital PMAFI ID card with their name, category, photo and a QR code, then download it. The card is created in your own browser and your photo is never uploaded or stored.",
+      // NO QR CODE. The card carries none, and DigitalIdGenerator deliberately
+      // makes no scan-to-verify claim because nothing on the site could answer
+      // a scan yet — that needs persisted cards and a lookup endpoint (Phase 3,
+      // Module A). Promising one here sent members looking for a square that
+      // isn't on their card.
+      "Yes. Members can generate a digital PMAFI ID card carrying their name, category, standing and photo, then download it as an image. The card is created in your own browser and your photo is never uploaded or stored.",
     keywords: ["id", "card", "identification", "digital id", "badge", "photo"],
     linkLabel: "Create your ID",
     linkHref: "/membership/id",
@@ -127,7 +132,10 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Are donations tax-deductible?",
     answer:
-      "PMAFI is a registered non-stock, non-profit foundation and provides official acknowledgment for every gift. For the current position on tax treatment of your donation, please contact the Foundation directly.",
+      // Same answer as the contact page's FAQ, and it must stay that way: this
+      // one used to send the donor to the Foundation for a tax position PMAFI
+      // cannot give while its donee-institution status is still being updated.
+      "PMAFI is a registered non-stock, non-profit foundation, and every gift is acknowledged. Its donee-institution status with the BIR is currently being updated, so the site makes no claim about deductibility — for your own situation, please consult your accountant or tax adviser.",
     keywords: ["tax", "deductible", "bir", "receipt", "donee", "exemption"],
     linkLabel: "Ask about receipts",
     linkHref: "/contact",
@@ -201,7 +209,12 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "What happens after I submit my application?",
     answer:
-      "Your application is reviewed and your membership category confirmed. You then receive an invoice with payment instructions, settle the dues and send proof of payment, and your membership is activated once that payment is confirmed.",
+      // PAY-FIRST, which is what the application form itself says. This answer
+      // described the retired apply-first flow and told applicants to wait for
+      // an invoice that is never sent — so they waited instead of paying, and
+      // their row sat Pending. See DuesPayment.tsx and the "Pending Payment"
+      // note in members.ts for the two labels this ordering left behind.
+      "Membership is pay-first: you settle the membership fee and attach your proof of payment to the application form. The Foundation then verifies the payment and confirms your category, and your membership is activated once that check is done — until then your status shows as being verified.",
     keywords: ["after applying", "next steps", "process", "what happens", "approval", "review"],
     linkLabel: "See how to join",
     linkHref: "/membership",
