@@ -173,6 +173,47 @@ describe("re-submissions", () => {
     const { findMemberByName } = await load();
     expect((await findMemberByName("Juan Dela Cruz")).kind).toBe("found");
   });
+
+  // Re-applying with a DIFFERENT typed address is the case that broke. The two
+  // rows overlap in only one of their addresses, so keying purely on address
+  // left one human as two records — and the name lookup called them ambiguous
+  // forever, which is precisely the member it exists to help.
+  const REAPPLIED_WITH_SECOND_ADDRESS = [
+    HEADER,
+    row("2026-03-01", "juan@gmail.com", "Juan Dela Cruz", "juan@gmail.com", "Regular", "1988", "Active"),
+    row("2026-06-01", "juan@gmail.com", "Juan Dela Cruz", "juan@work.ph", "Regular", "1988", ""),
+  ];
+
+  it("stays one person when a re-application adds a second address", async () => {
+    readRange.mockResolvedValue(REAPPLIED_WITH_SECOND_ADDRESS);
+    const { findMemberByName } = await load();
+    const r = await findMemberByName("Juan Dela Cruz");
+    expect(r.kind).toBe("found");
+  });
+
+  it("gives the same standing whichever of their addresses they type", async () => {
+    // The other half of the same bug: the fresh row is Pending, so looking up
+    // the newly added address demoted a member the older row had as Active.
+    readRange.mockResolvedValue(REAPPLIED_WITH_SECOND_ADDRESS);
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@gmail.com"))?.standing).toBe("Active");
+    expect((await checkMembership("juan@work.ph"))?.standing).toBe("Active");
+  });
+
+  it("does not merge two people who share one address", async () => {
+    // The Google-added column holds whoever was signed in, so one laptop used
+    // to submit for a classmate puts the same address on both rows. Merging on
+    // address alone would answer Maria's own address with Juan's record.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "shared@gmail.com", "Juan Dela Cruz", "juan@work.ph", "Regular", "1988", "Active"),
+      row("2026-03-02", "shared@gmail.com", "Maria Santos", "maria@work.ph", "Associate", "1995", ""),
+    ]);
+    const { findMemberByName, checkMembership } = await load();
+    expect((await findMemberByName("Maria Santos")).kind).toBe("found");
+    expect((await checkMembership("maria@work.ph"))?.name).toBe("Maria Santos");
+    expect((await checkMembership("juan@work.ph"))?.name).toBe("Juan Dela Cruz");
+  });
 });
 
 describe("normalizeName", () => {

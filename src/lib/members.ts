@@ -205,6 +205,104 @@ const STANDING_RANK: Record<MemberRecord["standing"], number> = {
   Lapsed: 1,
 };
 
+/** One parsed row, before rows are collapsed into people. */
+interface Applicant {
+  member: MemberRecord;
+  /** Normalised submission date — breaks ties between rows of equal standing. */
+  when: string;
+  /** Every address on the row, lowercased. */
+  addresses: string[];
+}
+
+/** Whether `a` should displace `b`: better standing first, then newer row. */
+function outranks(a: Applicant, b: Applicant): boolean {
+  const rankA = STANDING_RANK[a.member.standing];
+  const rankB = STANDING_RANK[b.member.standing];
+  return rankA !== rankB ? rankA > rankB : a.when > b.when;
+}
+
+/**
+ * Collapse rows into one record per person, indexed by every address that
+ * person can be found under.
+ *
+ * A PERSON IS NEITHER A ROW NOR AN ADDRESS, and treating one as the other is
+ * where this went wrong. Re-applying appends a row rather than updating the
+ * existing one, and a member who types a different address the second time
+ * leaves two rows overlapping in only some of their addresses. Keying purely on
+ * address left those as two separate MemberRecords, so the roster held one
+ * human twice and findMemberByName called them `ambiguous` — permanently, and
+ * for precisely the member the name lookup exists to serve: one who cannot
+ * remember which address they registered under. Their standing also depended on
+ * which address they typed, so a re-application demoted them by one route and
+ * not the other.
+ *
+ * So rows are unioned into a person when they share an address AND agree on the
+ * name. THE NAME GUARD IS LOAD-BEARING: the Google-added email column holds
+ * whoever was signed in, so one laptop used to submit for several classmates
+ * puts the same address on all of their rows. Merging on address alone would
+ * fold those classmates into one person and answer a member's own address with
+ * somebody else's record.
+ *
+ * The cost is the mirror case — a member whose name was corrected between two
+ * submissions stays two people, so their former name still resolves. That
+ * returns their own row as it was recorded, never an invented one, and it is
+ * the same thing the old address-keyed code did.
+ */
+function buildRoster(applicants: Applicant[]): Roster {
+  // Union-find over row indices, with path halving.
+  const parent = applicants.map((_, i) => i);
+  const find = (i: number): number => {
+    while (parent[i] !== i) {
+      parent[i] = parent[parent[i]];
+      i = parent[i];
+    }
+    return i;
+  };
+  const union = (a: number, b: number) => {
+    const rootA = find(a);
+    const rootB = find(b);
+    if (rootA !== rootB) parent[rootB] = rootA;
+  };
+
+  const seen = new Map<string, number>();
+  applicants.forEach((app, i) => {
+    const person = nameKey(app.member.name);
+    for (const address of app.addresses) {
+      // NUL-joined: neither a folded name nor an address can contain one, so
+      // no name/address pair can collide by running together.
+      const key = `${person}\u0000${address}`;
+      const first = seen.get(key);
+      if (first === undefined) seen.set(key, i);
+      else union(first, i);
+    }
+  });
+
+  // The one row that represents each person.
+  const best = new Map<number, Applicant>();
+  applicants.forEach((app, i) => {
+    const root = find(i);
+    const held = best.get(root);
+    if (!held || outranks(app, held)) best.set(root, app);
+  });
+
+  // Every address resolves to its person's winning row, so typing either
+  // address gives the same answer. An address two different people share falls
+  // back to the same standing-first rule, which is what it has always done.
+  const chosen = new Map<string, Applicant>();
+  applicants.forEach((app, i) => {
+    const winner = best.get(find(i)) ?? app;
+    for (const address of app.addresses) {
+      const held = chosen.get(address);
+      if (!held || outranks(winner, held)) chosen.set(address, winner);
+    }
+  });
+
+  const byEmail = new Map<string, MemberRecord>();
+  for (const [address, app] of chosen) byEmail.set(address, app.member);
+
+  return { members: [...best.values()].map((a) => a.member), byEmail };
+}
+
 async function loadRoster(): Promise<Roster> {
   if (membersCache && membersCache.expires > Date.now()) {
     return membersCache.data;
@@ -222,8 +320,8 @@ async function loadRoster(): Promise<Roster> {
 
   const col = mapColumns(rows[0]);
 
-  // Keyed by email so re-submissions collapse to one member.
-  const byEmail = new Map<string, { member: MemberRecord; when: string }>();
+  // One entry per ROW here; buildRoster collapses them into people below.
+  const applicants: Applicant[] = [];
 
   for (const row of rows.slice(1)) {
     const name = cell(row, col.name);
@@ -250,28 +348,17 @@ async function loadRoster(): Promise<Roster> {
       memberSince: normalizeYear(when),  // `when` is ISO by here
     };
 
-    for (const address of addresses) {
-      const key = address.toLowerCase();
-      const held = byEmail.get(key);
-      if (
-        !held ||
-        STANDING_RANK[member.standing] > STANDING_RANK[held.member.standing] ||
-        (STANDING_RANK[member.standing] === STANDING_RANK[held.member.standing] &&
-          when > held.when)
-      ) {
-        byEmail.set(key, { member, when });
-      }
-    }
+    applicants.push({
+      member,
+      when,
+      addresses: addresses.map((a) => a.toLowerCase()),
+    });
   }
 
   // byEmail carries one entry per ADDRESS, so a member with two resolves from
   // either. members carries one entry per PERSON, so a name search cannot
   // report the same applicant twice and call it ambiguous.
-  const index = new Map<string, MemberRecord>();
-  for (const [address, held] of byEmail) index.set(address, held.member);
-  const members = [...new Set(index.values())];
-
-  const roster: Roster = { members, byEmail: index };
+  const roster = buildRoster(applicants);
   membersCache = { data: roster, expires: Date.now() + MEMBERS_TTL_MS };
   return roster;
 }

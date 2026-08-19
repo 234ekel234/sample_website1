@@ -55,7 +55,20 @@ export async function checkGivingAction(
   // the reference while holding the address fixed.
   const guessLimit = rateLimit(`giving-lookup:${email.toLowerCase()}`, 10, 10 * 60 * 1000);
   if (!guessLimit.ok) {
-    return { status: "nomatch" };
+    // NOT "nomatch". Keying the limit on the address being probed means anyone
+    // can burn a known donor's budget, and answering the donor's own next visit
+    // with "we couldn't find a matching donation" tells them the Foundation has
+    // lost their gift — the exact reading this file works elsewhere to avoid.
+    //
+    // Saying so leaks nothing. The uniform-miss rule exists so that a response
+    // cannot reveal whether an address has ever given; this branch is decided
+    // purely by how many requests the caller has just sent, which the caller
+    // already knows, and it never reaches the sheet.
+    return {
+      status: "error",
+      message:
+        "Too many lookups for this address just now. Please wait a few minutes and try again.",
+    };
   }
 
   let history;
