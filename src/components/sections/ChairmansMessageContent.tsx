@@ -33,17 +33,29 @@ export default function ChairmansMessageContent({
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="relative mx-auto w-full max-w-[320px]"
+            className="relative mx-auto w-full max-w-[240px]"
           >
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-[#16294d] to-[#0a1628] shadow-lg">
-              {/* Chairman portrait (reused from the Board of Trustees page) */}
-              <div className="relative aspect-[4/5]">
+              {/*
+                SIZED TO THE SOURCE, NOT TO THE LAYOUT. Every board portrait is
+                195x195 — thumbnails, and the largest this one can be without
+                turning to mush. At the previous 320px wide and 4:5, `object-cover`
+                first cropped the square down to a 156x195 slice and then stretched
+                that to 640x800 on a retina screen: a ~4x enlargement of an image
+                that had already lost a fifth of its width.
+
+                Square keeps every pixel the file has, and 240px brings the
+                enlargement down to ~2x. It is still a 195px image doing a 480px
+                job — only a higher-resolution original actually fixes this, and it
+                is on the information request as Priority 3.
+              */}
+              <div className="relative aspect-square">
                 <Image
                   src={PORTRAIT}
                   alt={name}
                   fill
                   className="object-cover object-top"
-                  sizes="360px"
+                  sizes="240px"
                 />
               </div>
               <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#0a1628] via-[#0a1628]/70 to-transparent p-6 pt-16">
