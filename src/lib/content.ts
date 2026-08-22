@@ -157,20 +157,30 @@ const FALLBACK: SiteContent = {
     facebook: "",
     instagram: "",
   },
+  // Confirmed by PMAFI. These are the FALLBACK, so they are what renders if the
+  // content sheet is ever unreachable — and, for the keys the sheet leaves
+  // blank, what renders today.
+  //
+  // THE ACCOUNT NUMBER KEEPS ITS HYPHENS ON PURPOSE. It is Metrobank's own
+  // formatting, it is easier to copy onto a deposit slip without transposing a
+  // digit, and punctuation is the one thing Google Sheets cannot read as a
+  // number — so a staff member pasting this form of it into the sheet cannot
+  // lose the leading zero the way the current cell already has.
   payment: {
-    bankName: "",
-    bankAccountName: "",
-    bankAccountNumber: "",
-    gcashName: "",
-    gcashNumber: "",
+    bankName: "Metrobank",
+    bankAccountName: "PMA Foundation Inc or PMAFI",
+    bankAccountNumber: "022-3-002800705",
+    gcashName: "Maribel Galano",
+    gcashNumber: "09173270229",
   },
-  // Unset until PMAFI confirms the figures. While these are blank the join
-  // flow is unchanged — the page just asks applicants to request the amounts
-  // rather than printing them. See hasPaymentDetails above.
+  // ₱3,000 one-time for every category, confirmed 2026-08-17. Free text, so the
+  // wording is PMAFI's too — and DuesPayment collapses three identical figures
+  // into a single "All categories" line rather than printing the same number
+  // three times, which reads as a mistake.
   dues: {
-    regular: "",
-    associate: "",
-    affiliate: "",
+    regular: "₱3,000 one-time",
+    associate: "₱3,000 one-time",
+    affiliate: "₱3,000 one-time",
   },
   // No dedicated finance contact has been supplied. The donate page falls back
   // to contact.email rather than hiding the option — see SiteContent above.
@@ -189,6 +199,72 @@ function pick(map: Map<string, string>, key: string, fallback: string): string {
   return value ? value : fallback;
 }
 
+/**
+ * Keys whose value is an IDENTIFIER made of digits, never a quantity.
+ *
+ * A leading zero is significant in every one of them — Philippine mobile
+ * numbers all begin 09, and the Metrobank account begins 022 — and this is
+ * exactly where Sheets will silently destroy it. `readRange` asks for
+ * UNFORMATTED_VALUE, so a cell Sheets decided was numeric arrives as a JSON
+ * number, and 0223002800705 becomes 223002800705 with nothing anywhere to say
+ * so. It reached the live /donate page that way once already; staff could not
+ * see it either, because the cell displays truncated to them too.
+ *
+ * The cure is a plain-text cell (or a value with punctuation in it, like
+ * "022-3-002800705", which Sheets cannot read as a number). This warning is how
+ * anybody finds out that it is needed.
+ */
+const DIGIT_IDENTIFIER_KEYS = new Set([
+  "payment.bank.account_number",
+  "payment.gcash.number",
+  "contact.phone",
+]);
+
+const digitsOf = (value: string) => value.replace(/\D/g, "");
+
+/**
+ * Read a digit identifier, restoring leading zeros Sheets has already eaten.
+ *
+ * The sheet normally wins over FALLBACK, and it still does here — with one
+ * exception. When the sheet's digits are the tail of the confirmed value and
+ * shorter, the only thing that can have happened is a numeric cell dropping
+ * leading zeros: 0223002800705 stored as a number is 223002800705. That is not
+ * PMAFI changing the account, it is Sheets corrupting it, and publishing it
+ * sends a member's money to a stranger.
+ *
+ * A GENUINE CHANGE STILL WINS. Different digits do not tail-match, so the day
+ * PMAFI moves banks the sheet overrides this without a deploy — which is the
+ * whole reason these details live in a sheet. And once the cell is reformatted
+ * as text the digits match exactly, this stops firing, and the sheet is simply
+ * authoritative again. It is self-healing, not a permanent override.
+ */
+function pickIdentifier(
+  map: Map<string, string>,
+  key: string,
+  fallback: string
+): string {
+  const raw = map.get(key)?.trim();
+  if (!raw) return fallback;
+  if (!fallback) return raw;
+
+  const fromSheet = digitsOf(raw);
+  const confirmed = digitsOf(fallback);
+  if (
+    fromSheet !== confirmed &&
+    confirmed.length > fromSheet.length &&
+    confirmed.endsWith(fromSheet)
+  ) {
+    console.warn(
+      `[content] "${key}" reads ${raw} in the sheet but the confirmed value is ` +
+        `${fallback} — the leading zero has been stripped by a numeric cell. ` +
+        "Publishing the confirmed value. Format that cell as plain text and " +
+        "retype it to make the sheet authoritative again."
+    );
+    return fallback;
+  }
+  return raw;
+}
+
 export async function getContent(): Promise<SiteContent> {
   const sheetId = process.env.CONTENT_SHEET_ID;
   if (!sheetId) return FALLBACK;
@@ -204,7 +280,22 @@ export async function getContent(): Promise<SiteContent> {
   const map = new Map<string, string>();
   for (const row of rows) {
     const key = String(row[0] ?? "").trim();
-    if (key) map.set(key, String(row[1] ?? ""));
+    if (!key) continue;
+    const raw = row[1];
+    // Warn, but still publish. Whether a leading zero was lost is not knowable
+    // from here — a numeric cell that never had one looks identical — so
+    // blanking the value would hide a correct account number as readily as a
+    // truncated one, and a donate page with no account details is its own
+    // failure. Say so loudly instead and let a human check the cell.
+    if (typeof raw === "number" && DIGIT_IDENTIFIER_KEYS.has(key)) {
+      console.warn(
+        `[content] "${key}" arrived as a number (${raw}), so its cell is ` +
+          "numeric-formatted and any leading zero has already been stripped — " +
+          "0223002800705 would reach the site as 223002800705. Format that " +
+          "cell as plain text and retype the value in full. Publishing it as-is."
+      );
+    }
+    map.set(key, String(raw ?? ""));
   }
 
   const body = map.get("chairman.body")?.trim();
@@ -236,13 +327,17 @@ export async function getContent(): Promise<SiteContent> {
         "payment.bank.account_name",
         FALLBACK.payment.bankAccountName
       ),
-      bankAccountNumber: pick(
+      bankAccountNumber: pickIdentifier(
         map,
         "payment.bank.account_number",
         FALLBACK.payment.bankAccountNumber
       ),
       gcashName: pick(map, "payment.gcash.name", FALLBACK.payment.gcashName),
-      gcashNumber: pick(map, "payment.gcash.number", FALLBACK.payment.gcashNumber),
+      gcashNumber: pickIdentifier(
+        map,
+        "payment.gcash.number",
+        FALLBACK.payment.gcashNumber
+      ),
     },
     dues: {
       regular: pick(map, "dues.regular", FALLBACK.dues.regular),
