@@ -7,6 +7,7 @@ import {
   UserCheck,
   Handshake,
   ArrowRight,
+  ArrowDown,
   Heart,
   Flag,
   BookOpen,
@@ -150,23 +151,35 @@ export default async function MembershipPage() {
       >
         {/* The page's primary action, in the hero — a visitor who arrives
             already intending to join should not have to scroll past the
-            status check and three explainer sections to find it. */}
+            status check and three explainer sections to find it.
+
+            IT GOES TO THE INSTRUCTIONS, NOT THE FORM. Membership is pay-first:
+            the applicant settles the fee and attaches the receipt to the form.
+            Opening the form straight from the hero skipped the one screen that
+            says so, so an applicant met the upload field with nothing to upload
+            — and their row sits Pending until somebody chases them for a
+            receipt they were never told to get. The form link lives at the foot
+            of that section, after the fee and the account details.
+
+            Arrow points DOWN because this scrolls rather than leaving. */}
         <a
-          href={APPLICATION_FORM_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="#join"
           className={cn(
             buttonVariants({ size: "lg" }),
             "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
           )}
         >
           Apply for Membership
-          <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+          <ArrowDown className="ml-2 h-4 w-4 transition-transform group-hover:translate-y-1" />
         </a>
       </PageHero>
 
-      {/* Status check */}
-      <section className="bg-white py-20">
+      {/* Status check.
+          The `check` anchor is load-bearing: the navbar's "Check My Status" and
+          the FAQ assistant both link to /membership#check. Without it the nav
+          offered no route to this at all — the dropdown said only "Join PMAFI",
+          which names the bottom half of a page whose top half is this. */}
+      <section id="check" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
@@ -184,10 +197,7 @@ export default async function MembershipPage() {
           </div>
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <MembershipCheck
-              applyHref={APPLICATION_FORM_URL}
-              contactEmail={content.contact.email}
-            />
+            <MembershipCheck contactEmail={content.contact.email} />
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
@@ -292,8 +302,11 @@ export default async function MembershipPage() {
         </div>
       </section>
 
-      {/* How to join */}
-      <section className="bg-white py-20">
+      {/* How to join.
+          The `join` anchor is load-bearing: the hero's "Apply for Membership"
+          scrolls here rather than opening the form, so that the fee and the
+          pay-first ordering are read before the form is. */}
+      <section id="join" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-12 text-center">
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">

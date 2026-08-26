@@ -172,3 +172,46 @@ describe("checkGivingAction — fund updates", () => {
     expect(state).toEqual({ status: "nomatch" });
   });
 });
+
+describe("checkGivingAction — throttling", () => {
+  it("does not tell a throttled donor their gift is missing", async () => {
+    // The limit is keyed on the address being probed, so anyone can burn a
+    // known donor's budget. Answering their own next visit with "no matching
+    // donation" reads as the Foundation having lost their gift.
+    getGivingHistory.mockResolvedValue(null);
+    const { checkGivingAction } = await load();
+
+    for (let i = 0; i < 10; i++) {
+      await checkGivingAction({ status: "idle" }, form("juan@example.com", `guess-${i}`));
+    }
+
+    const state = await checkGivingAction({ status: "idle" }, form("juan@example.com", "R1"));
+    expect(state.status).toBe("error");
+    if (state.status === "error") expect(state.message).toMatch(/wait a few minutes/i);
+  });
+
+  it("stops reaching the sheet once the limit is hit", async () => {
+    getGivingHistory.mockResolvedValue(null);
+    const { checkGivingAction } = await load();
+
+    for (let i = 0; i < 10; i++) {
+      await checkGivingAction({ status: "idle" }, form("juan@example.com", `guess-${i}`));
+    }
+    expect(getGivingHistory).toHaveBeenCalledTimes(10);
+
+    await checkGivingAction({ status: "idle" }, form("juan@example.com", "R1"));
+    expect(getGivingHistory).toHaveBeenCalledTimes(10);
+  });
+
+  it("throttles per address, so one donor cannot lock out another", async () => {
+    getGivingHistory.mockResolvedValue(null);
+    const { checkGivingAction } = await load();
+
+    for (let i = 0; i < 10; i++) {
+      await checkGivingAction({ status: "idle" }, form("juan@example.com", `guess-${i}`));
+    }
+
+    const other = await checkGivingAction({ status: "idle" }, form("maria@example.com", "R1"));
+    expect(other).toEqual({ status: "nomatch" });
+  });
+});

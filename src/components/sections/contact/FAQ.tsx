@@ -4,6 +4,11 @@ import { useInView } from "framer-motion";
 import { useRef, useState } from "react";
 import { Plus, Minus } from "lucide-react";
 
+// THE SECOND FAQ ON THIS SITE. The assistant's list lives in src/lib/faq.ts and
+// answers several of these same questions; the two drifted apart until this
+// page promised a phone line the contact panel above it shows as "coming soon"
+// and receipts the donation pipeline issues as a separate later stage. When an
+// answer here overlaps one there, change both.
 const faqs = [
   {
     q: "How can I support PMAFI?",
@@ -11,15 +16,15 @@ const faqs = [
   },
   {
     q: "Where does my donation go?",
-    a: "Contributions are channeled into our four core program areas — facilities and modernization, academic excellence and scholarships, leadership and character formation, and alumni and community partnerships. Every peso goes toward strengthening PMA and the cadets it produces.",
+    a: "Contributions are channeled into our four core program areas — Facilities & Modernization, Academic Excellence & Endowment, Leadership Formation, and Partnerships & Alumni Engagement. Every peso goes toward strengthening PMA and the cadets it produces.",
   },
   {
     q: "How do I make a donation?",
-    a: "Message us by email or phone and we'll share the Foundation's official bank transfer and e-wallet details. Once your donation is received, we issue an acknowledgment and an official receipt for your records.",
+    a: "Email us and we'll share the Foundation's official bank transfer and e-wallet details. Every gift is acknowledged once our team has received and recorded it, and you can check its progress any time on the donation status page.",
   },
   {
     q: "Are donations to PMAFI tax-deductible?",
-    a: "PMAFI is a registered non-stock, non-profit foundation and provides official receipts for every contribution. For questions on deductibility, we recommend consulting your accountant or tax advisor regarding your specific situation.",
+    a: "PMAFI is a registered non-stock, non-profit foundation. Its donee-institution status with the BIR is currently being updated, so we make no claim about deductibility here — for your own situation we recommend consulting your accountant or tax advisor.",
   },
   {
     q: "Do I need to be a PMA graduate to get involved?",

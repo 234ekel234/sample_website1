@@ -11,7 +11,7 @@ import {
   AlertTriangle,
   Clock,
   UserPlus,
-  ArrowRight,
+  ArrowDown,
   Users,
 } from "lucide-react";
 
@@ -20,10 +20,8 @@ const initialState: MembershipLookupState = { status: "idle" };
 type Mode = "email" | "name";
 
 export default function MembershipCheck({
-  applyHref,
   contactEmail,
 }: {
-  applyHref: string;
   /** From the content sheet, so a changed inbox is not stranded in this file. */
   contactEmail: string;
 }) {
@@ -183,14 +181,23 @@ export default function MembershipCheck({
               ? "You may not be registered yet, or your records may use a different email — try looking yourself up by name instead."
               : "You may not be registered yet, or PMAFI may hold your name differently. Try your email address instead, or contact us if you believe this is an error."}
           </p>
+          {/* To the instructions, not the form — the same reason the hero
+              button goes there. Membership is pay-first, and whoever clicks
+              THIS button is the most motivated applicant on the page: they have
+              just been told they have no membership. Handing them the form
+              straight away put the receipt upload in front of them before
+              anything had mentioned a fee.
+
+              A plain anchor, and an absolute path rather than a bare "#join":
+              the path matches the page this renders on, so the browser scrolls
+              within the document and the "not found" result stays on screen
+              behind them. */}
           <a
-            href={applyHref}
-            target="_blank"
-            rel="noopener noreferrer"
+            href="/membership#join"
             className="group mt-4 inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#A07830] hover:text-white"
           >
             Apply for Membership
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />
           </a>
         </div>
       )}
