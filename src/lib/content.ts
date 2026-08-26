@@ -242,6 +242,42 @@ const digitsOf = (value: string) => value.replace(/\D/g, "");
  * as text the digits match exactly, this stops firing, and the sheet is simply
  * authoritative again. It is self-healing, not a permanent override.
  */
+const peso = new Intl.NumberFormat("en-PH", {
+  style: "currency",
+  currency: "PHP",
+  maximumFractionDigits: 0,
+});
+
+/**
+ * Read a money value, giving a bare number its currency back.
+ *
+ * These cells are free text so that staff control the wording as well as the
+ * figure — "₱3,000 one-time", "By arrangement" and "₱2,000 / year" are all
+ * meant to work. But the natural thing to type into a spreadsheet is 3000, and
+ * Sheets stores that as a number, so the fee rendered as "3000" next to a bank
+ * account and a GCash number: unmistakably a quantity, with nothing to say of
+ * what.
+ *
+ * Typing ₱3,000 is NOT a reliable fix, which is why this is handled here. In a
+ * Philippine-locale spreadsheet Sheets recognises the peso sign, parses the
+ * cell back into the number 3000 and merely *formats* it as currency — and
+ * readRange asks for UNFORMATTED_VALUE, so we would receive 3000 again with the
+ * sign discarded. The same trap as the account number, one column over.
+ *
+ * So a numeric cell is formatted; anything typed as text passes through
+ * untouched, and staff who want "₱3,000 one-time" still get exactly that.
+ */
+function pickMoney(
+  map: Map<string, string>,
+  numeric: Set<string>,
+  key: string,
+  fallback: string
+): string {
+  const raw = map.get(key)?.trim();
+  if (!raw) return fallback;
+  return numeric.has(key) ? peso.format(Number(raw)) : raw;
+}
+
 function pickIdentifier(
   map: Map<string, string>,
   key: string,
@@ -282,10 +318,13 @@ export async function getContent(): Promise<SiteContent> {
   }
 
   const map = new Map<string, string>();
+  /** Keys whose cell was numeric — the sheet's formatting is lost by here. */
+  const numeric = new Set<string>();
   for (const row of rows) {
     const key = String(row[0] ?? "").trim();
     if (!key) continue;
     const raw = row[1];
+    if (typeof raw === "number") numeric.add(key);
     // Warn, but still publish. Whether a leading zero was lost is not knowable
     // from here — a numeric cell that never had one looks identical — so
     // blanking the value would hide a correct account number as readily as a
@@ -344,9 +383,9 @@ export async function getContent(): Promise<SiteContent> {
       ),
     },
     dues: {
-      regular: pick(map, "dues.regular", FALLBACK.dues.regular),
-      associate: pick(map, "dues.associate", FALLBACK.dues.associate),
-      affiliate: pick(map, "dues.affiliate", FALLBACK.dues.affiliate),
+      regular: pickMoney(map, numeric, "dues.regular", FALLBACK.dues.regular),
+      associate: pickMoney(map, numeric, "dues.associate", FALLBACK.dues.associate),
+      affiliate: pickMoney(map, numeric, "dues.affiliate", FALLBACK.dues.affiliate),
     },
     finance: {
       email: pick(map, "finance.email", FALLBACK.finance.email),

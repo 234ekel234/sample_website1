@@ -220,3 +220,41 @@ describe("pickIdentifier", () => {
     expect(content.dues.regular).toBe("₱3,000 one-time");
   });
 });
+
+// --- Money cells ------------------------------------------------------------
+
+describe("pickMoney", () => {
+  async function loadWith(rows: unknown[][]) {
+    vi.resetModules();
+    const readRange = vi.fn().mockResolvedValue(rows);
+    vi.doMock("@/lib/sheets", () => ({ readRange }));
+    process.env.CONTENT_SHEET_ID = "test-sheet";
+    return import("@/lib/content");
+  }
+  afterEach(() => vi.doUnmock("@/lib/sheets"));
+
+  it("gives a bare number its currency back", async () => {
+    // What staff actually type. It rendered as "3000" beside a bank account —
+    // unmistakably a quantity, with nothing to say of what.
+    const { getContent } = await loadWith([["dues.regular", 3000]]);
+    const content = await getContent();
+    expect(content.dues.regular).toBe("₱3,000");
+  });
+
+  it("leaves staff wording alone", async () => {
+    // The cell is free text so PMAFI controls the phrasing, not just the figure.
+    const { getContent } = await loadWith([
+      ["dues.regular", "₱3,000 one-time"],
+      ["dues.associate", "By arrangement"],
+    ]);
+    const content = await getContent();
+    expect(content.dues.regular).toBe("₱3,000 one-time");
+    expect(content.dues.associate).toBe("By arrangement");
+  });
+
+  it("falls back when the cell is empty", async () => {
+    const { getContent } = await loadWith([["dues.regular", ""]]);
+    const content = await getContent();
+    expect(content.dues.regular).toBe("₱3,000 one-time");
+  });
+});
