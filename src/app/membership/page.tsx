@@ -197,10 +197,7 @@ export default async function MembershipPage() {
           </div>
 
           <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 sm:p-8">
-            <MembershipCheck
-              applyHref={APPLICATION_FORM_URL}
-              contactEmail={content.contact.email}
-            />
+            <MembershipCheck contactEmail={content.contact.email} />
           </div>
 
           <div className="mt-6 flex flex-col items-center gap-3 rounded-2xl border border-[#C8A951]/30 bg-[#0a1628] p-6 text-center sm:flex-row sm:justify-between sm:text-left">
