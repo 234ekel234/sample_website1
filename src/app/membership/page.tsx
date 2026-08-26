@@ -165,8 +165,12 @@ export default async function MembershipPage() {
         </a>
       </PageHero>
 
-      {/* Status check */}
-      <section className="bg-white py-20">
+      {/* Status check.
+          The `check` anchor is load-bearing: the navbar's "Check My Status" and
+          the FAQ assistant both link to /membership#check. Without it the nav
+          offered no route to this at all — the dropdown said only "Join PMAFI",
+          which names the bottom half of a page whose top half is this. */}
+      <section id="check" className="scroll-mt-24 bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">

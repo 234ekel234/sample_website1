@@ -28,6 +28,12 @@ const links: NavLink[] = [
     href: "/membership",
     children: [
       { label: "Join PMAFI", href: "/membership" },
+      // A section of /membership, not a route — the same arrangement as
+      // /about#board. It is listed because "Join PMAFI" was the only membership
+      // entry in the bar, so a member looking for the status check found a label
+      // describing the one thing they had already done. Donate has surfaced its
+      // equivalent as "My Donations" all along.
+      { label: "Check My Status", href: "/membership#check" },
       { label: "Digital Member ID", href: "/membership/id" },
     ],
   },
