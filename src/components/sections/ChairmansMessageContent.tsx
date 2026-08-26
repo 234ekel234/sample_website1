@@ -51,21 +51,27 @@ export default function ChairmansMessageContent({
             initial={{ opacity: 0, x: -30 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, ease: "easeOut" }}
-            className="relative mx-auto w-full max-w-[240px]"
+            className="relative mx-auto w-full max-w-[320px]"
           >
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-[#16294d] to-[#0a1628] shadow-lg">
               {/*
-                SIZED TO THE SOURCE, NOT TO THE LAYOUT. Every board portrait is
-                195x195 — thumbnails, and the largest this one can be without
-                turning to mush. At the previous 320px wide and 4:5, `object-cover`
-                first cropped the square down to a 156x195 slice and then stretched
-                that to 640x800 on a retina screen: a ~4x enlargement of an image
-                that had already lost a fifth of its width.
+                SIZE IS A JUDGEMENT CALL HERE, NOT AN OPTIMUM. Every board
+                portrait is 195x195 — thumbnail size — so on a retina screen any
+                frame past ~100px is already enlarging, and every pixel of width
+                after that is bought with sharpness: 240px is roughly 2x, this
+                320px is roughly 3.3x.
 
-                Square keeps every pixel the file has, and 240px brings the
-                enlargement down to ~2x. It is still a 195px image doing a 480px
-                job — only a higher-resolution original actually fixes this, and it
-                is on the information request as Priority 3.
+                It sits at 320 because a portrait that reads as small undersells
+                the person in it, and of the two faults that is the worse one.
+                Softness is at least honest about the source.
+
+                What is NOT negotiable is the square. The frame was once 4:5,
+                and `object-cover` threw away a fifth of the width to reach that
+                shape before enlarging what survived — paying twice. Square uses
+                every pixel the file has.
+
+                Only a larger original actually fixes this; it is on the
+                information request as Priority 3.
               */}
               <div className="relative aspect-square">
                 {portrait && (
@@ -74,7 +80,7 @@ export default function ChairmansMessageContent({
                     alt={name}
                     fill
                     className="object-cover object-top"
-                    sizes="240px"
+                    sizes="320px"
                   />
                 )}
               </div>
