@@ -131,8 +131,12 @@ const CONTENT_RANGE = "Content!A2:B";
  */
 const FALLBACK: SiteContent = {
   chairman: {
-    name: "LEO ANGELO D. LEUTERIO",
-    title: "Chairman, PMAFI",
+    // PMAFI's President, who now carries the home page message. The key names
+    // stay chairman.* because they are the content sheet's contract — see
+    // ChairmansMessage.tsx. Portrait and heading both derive from these two
+    // values, so this fallback stays internally consistent on its own.
+    name: "Bartolome Vicente O. Bacarro",
+    title: "President, PMAFI",
     body: [
       "We cannot deny that what we are today, we owe in part to the Philippine Military Academy. The Foundation exists so that the next generation of cadets inherits an Academy even stronger than the one that shaped us.",
       "Through your membership and support, PMAFI sustains the faculty, facilities, and programs that keep the PMA a true center of academic excellence and character formation. Every contribution is an investment in the leaders who will serve and defend our nation.",
