@@ -46,27 +46,31 @@ export default function OurStory() {
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
               Our Story
             </h2>
-            {/* PMAFI's REGISTERED PURPOSE, in its own words — taken from the
-                Foundation's 2025 Annual Report, not written on its behalf. The
-                previous copy said much the same thing and said it warmly, but
-                it was ours: "bridge the gap", "the Long Gray Line". This is
-                what the Foundation was actually chartered to do, which is both
-                truer and more specific than anything we would have invented. */}
+            {/* FACTS FROM PMAFI'S 2025 ANNUAL REPORT, WORDED FOR THE WEB.
+                Everything here is checkable against the report — the 1988
+                registration, the purpose, the four things the Foundation funds,
+                Road Map 2028 — but the sentences are the site's own. The first
+                draft followed the report's charter language closely enough to
+                read as pasted; a foundation's own page should not sound like
+                its filing. What must not drift is the substance: no claim here
+                should outrun what the report says. */}
             <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              The Philippine Military Academy Foundation, Inc. is a non-stock,
-              non-profit corporation registered with the Securities and Exchange
-              Commission in 1988. Its purpose is to contribute to scholastic
-              progress, and to national security and development.
+              The Philippine Military Academy Foundation has been a registered
+              non-stock, non-profit corporation since 1988. Its work is
+              scholastic before it is anything else — and through that, it
+              serves the country&apos;s security and development.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
-              Specifically, PMAFI exists to help the Academy further improve the
-              quality of its instruction — in pursuit of character building,
-              academic excellence, military skills proficiency, and physical
-              development.
+              In practice, that means helping the Academy teach better. PMAFI
+              puts its support behind the quality of instruction itself: the
+              character formation, academic depth, military skill and physical
+              readiness that turn a cadet into an officer.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
-              With the adoption of the PMA Road Map 2028, the Foundation
-              prioritises its support along the guidelines set out there.
+              Since the Academy adopted its Road Map 2028, the Foundation has
+              aligned what it funds to the priorities set out there — so its
+              giving follows the PMA&apos;s own plan rather than running
+              alongside it.
             </p>
           </motion.div>
 

@@ -44,13 +44,12 @@ export default function BoardOfTrustees() {
               Superintendent ex officio is the sixteen cards below. If a card is
               ever added or removed, this sentence has to move with it. */}
           <p className="mx-auto mt-4 max-w-2xl text-slate-500">
-            The affairs of the Foundation are managed by a Board of fifteen
-            Trustees, elected from among its regular members, with the
-            Superintendent of the Academy sitting <em>ex officio</em>. An
-            Executive Committee chaired by the President acts for the Board
-            between meetings and recommends what action to take on the
-            Academy&apos;s requests for support. Day to day, the Foundation is
-            run by its President as Chief Executive Officer.
+            Fifteen trustees, elected by the membership, govern the Foundation;
+            the Academy&apos;s Superintendent sits with them <em>ex officio</em>.
+            Between board meetings, an Executive Committee chaired by the
+            President decides how PMAFI answers the Academy&apos;s requests for
+            support. The President serves as chief executive and runs the
+            Foundation day to day.
           </p>
         </div>
 
