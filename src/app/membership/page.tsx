@@ -44,8 +44,14 @@ const categories = [
   {
     icon: Handshake,
     title: "Affiliate Member",
+    // NOT "selected". The Foundation's own annual report puts affiliate
+    // membership as open to all other persons and entities — everyone who is
+    // not PMA alumni, faculty or staff. "Selected" invented a vetting step
+    // PMAFI does not describe, and did it in the discouraging direction: the
+    // one category open to the general public read as though it were by
+    // invitation.
     description:
-      "Open to selected individuals and organizations who share PMAFI's values and support its vision, mission, and objectives.",
+      "Open to anyone outside the Academy — individuals, companies, and institutions alike — who shares PMAFI's values and wants to support its work.",
   },
 ];
 
