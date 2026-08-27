@@ -56,7 +56,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "What membership categories are there?",
     answer:
-      "PMAFI has three categories: Regular, Associate and Affiliate. The membership page explains who each one is intended for.",
+      "Three: Regular, Associate and Affiliate. Regular and Associate are for alumni, faculty and staff of the Academy; Affiliate is open to everyone else, including companies and institutions. All three pay the same one-time fee, and Regular members are the ones who vote in Board elections.",
     keywords: ["category", "categories", "regular", "associate", "affiliate", "type"],
     linkLabel: "See the categories",
     linkHref: "/membership",
@@ -118,7 +118,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How do I make a donation?",
     answer:
-      "The Donate page explains the ways to give and the steps involved. Payment details are confirmed directly by the Foundation, so please message us and we will send you the current channels and arrange your gift.",
+      "The Donate page carries the Foundation's bank and GCash details along with the steps to follow. Send your gift through whichever channel suits you, then tell the Foundation it came from you so it can be acknowledged and credited to the fund you intended.",
     keywords: ["donate", "give", "gift", "bank", "gcash", "transfer", "how to pay"],
     linkLabel: "Go to the Donate page",
     linkHref: "/donate",
@@ -147,8 +147,8 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "What is PMAFI?",
     answer:
-      "The Philippine Military Academy Foundation, Inc. is a non-stock, non-profit foundation that supports the Philippine Military Academy — helping it improve the quality of its instruction, its pursuit of academic excellence, and the character development of its cadets.",
-    keywords: ["pmafi", "who", "what is", "foundation", "about", "mission"],
+      "The Philippine Military Academy Foundation, Inc. has been a registered non-stock, non-profit corporation since 1988. It supports the Philippine Military Academy — helping it improve the quality of its instruction, its pursuit of academic excellence, and the character development of its cadets.",
+    keywords: ["pmafi", "who", "what is", "foundation", "about", "mission", "founded", "established", "1988"],
     linkLabel: "About the Foundation",
     linkHref: "/about",
     suggested: true,
@@ -156,7 +156,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Who is on the Board of Trustees?",
     answer:
-      "The Board of Trustees page lists the 2025–2026 board, with each member's role and background.",
+      "Fifteen trustees elected by the membership, with the Superintendent of the Academy sitting ex officio. Between board meetings an Executive Committee chaired by the President decides how the Foundation answers the Academy's requests, and the President serves as its chief executive. The About page lists the 2025–2026 board with each member's role and background.",
     keywords: ["board", "trustees", "leadership", "officers", "chairman", "who runs"],
     linkLabel: "Meet the Board",
     linkHref: "/about#board",
@@ -187,7 +187,10 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Who can become a Regular or Associate member?",
     answer:
-      "Both categories are open to alumni, faculty and staff of the Philippine Military Academy. Regular members take an active role in the Foundation's mission; Associate members support its programs and objectives alongside them.",
+      // The real distinction is governance, not enthusiasm. "Regular members
+      // take an active role; Associate members support alongside them" gave an
+      // applicant nothing to choose on, now that both pay the same fee.
+      "Both are open to alumni, faculty and staff of the Philippine Military Academy, and both pay the same one-time fee. The difference is a say in how the Foundation is run: Regular members vote in the election of the Board of Trustees, and the trustees are themselves elected from among the Regular membership.",
     keywords: ["eligible", "eligibility", "who can join", "qualify", "regular", "associate", "alumni", "faculty"],
     linkLabel: "See the categories",
     linkHref: "/membership",
@@ -195,7 +198,9 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Who can become an Affiliate member?",
     answer:
-      "Affiliate membership is open to selected individuals and organizations who share PMAFI's values and support its vision, mission and objectives. You do not need to be a PMA graduate.",
+      // "Selected" invented a vetting step PMAFI does not describe. Kept in
+      // step with the affiliate card on /membership.
+      "Anyone outside the Academy — individuals, companies and institutions alike — who shares PMAFI's values and wants to support its work. You do not need to be a PMA graduate.",
     keywords: ["affiliate", "organization", "company", "not alumni", "partner"],
     linkLabel: "See the categories",
     linkHref: "/membership",
@@ -258,7 +263,11 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How will I know my donation was received?",
     answer:
-      "After sending your donation, email your name, contact details and proof of payment to the Foundation. You will then receive an official acknowledgment and receipt.",
+      // NOT "an acknowledgment and receipt" as one event. The donation log
+      // tracks them as separate stages — Received, Acknowledged, Receipt
+      // issued, Allocated — and promising both at once overstates where a gift
+      // has got to.
+      "Tell the Foundation about your gift once you have sent it, using the short form on the Donate page or by email, and it will be acknowledged. You can follow its progress afterwards on the My Donations page, which shows each stage as it is reached.",
     keywords: ["confirm", "receipt", "acknowledgment", "proof", "received", "confirmation"],
     linkLabel: "How to give",
     linkHref: "/donate",
@@ -285,7 +294,10 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How do I create my digital member ID?",
     answer:
-      "Go to the digital ID page, enter your name and membership category, and add a photo. The card is generated instantly and you can download it to keep on your phone.",
+      // NOT "enter your name and membership category" — that described the card
+      // before it was gated, when it was built from whatever a visitor typed
+      // and was therefore forgeable. The only thing supplied now is the photo.
+      "Go to the digital ID page and enter the email address on your membership. Once the Foundation's records confirm you, your card is built from them — your name, category and standing come from the roster, and the only thing you add is a photo. Download it and keep it on your phone.",
     keywords: ["id card", "digital id", "create id", "member id", "card", "download"],
     linkLabel: "Create my ID",
     linkHref: "/membership/id",
@@ -308,6 +320,22 @@ const FALLBACK: FaqEntry[] = [
     keywords: ["official", "part of", "afp", "government", "independent", "affiliated"],
     linkLabel: "About PMAFI",
     linkHref: "/about",
+  },
+  {
+    question: "How many members does PMAFI have?",
+    answer:
+      "As of 31 December 2025 the Foundation had 6,049 members — 5,960 Regular, 10 Associate and 79 Affiliate. The figure is from PMAFI's 2025 annual report.",
+    keywords: ["how many", "members", "size", "membership", "total", "6049"],
+    linkLabel: "Join them",
+    linkHref: "/membership",
+  },
+  {
+    question: "How is the Foundation governed?",
+    answer:
+      "By a board of fifteen trustees elected from the Regular membership, with the Superintendent of the Academy sitting ex officio. An Executive Committee chaired by the President acts for the board between meetings, and the President is the Foundation's chief executive.",
+    keywords: ["governed", "governance", "run", "managed", "board", "executive", "president", "structure"],
+    linkLabel: "Meet the Board",
+    linkHref: "/about#board",
   },
   {
     question: "What does PMAFI stand for?",
@@ -366,5 +394,26 @@ export async function getFaqs(): Promise<FaqEntry[]> {
     });
   }
 
-  return entries.length > 0 ? entries : FALLBACK;
+  // MERGED, NOT REPLACED — and that distinction cost real accuracy once.
+  //
+  // This used to return the sheet's rows outright whenever there were any, so a
+  // tab holding fifteen answers silently replaced a curated set of thirty. Every
+  // question the sheet had not caught up with simply vanished from the
+  // assistant, and — worse — corrections made in FALLBACK could never reach a
+  // visitor, because a stale sheet row for the same question always won. A
+  // pay-first flow was fixed here and went on being described as apply-first
+  // live for weeks.
+  //
+  // Now FALLBACK is the floor and the sheet is an override. Staff keep full
+  // control of any answer they choose to write, question by question, which is
+  // the point of the tab; but an answer nobody has entered falls back to a
+  // maintained one rather than disappearing, and deleting a row restores it.
+  //
+  // Matching is on the folded question text, so casing and punctuation in the
+  // sheet do not create a duplicate entry alongside the built-in one.
+  const key = (q: string) =>
+    q.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const merged = new Map(FALLBACK.map((e) => [key(e.question), e]));
+  for (const entry of entries) merged.set(key(entry.question), entry);
+  return [...merged.values()];
 }
