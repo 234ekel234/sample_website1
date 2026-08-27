@@ -76,6 +76,16 @@ const programs = [
   },
 ];
 
+// PMAFI's own stated plans, from its 2025 Annual Report. Kept as the
+// Foundation's commitments rather than rewritten into marketing copy: each one
+// is something PMAFI has said it will do, and none carries a date or a figure
+// we would then be answerable for.
+const plans = [
+  "Every member of the PMA faculty to hold not only a master's degree but a doctorate. The Academy and the Foundation have jointly prepared a plan to make this possible, and PMAFI has committed to seeing it implemented.",
+  "Additional support for PMAFI scholars taking master's degrees in critical and high-priority subjects — including those studying in Metro Manila, or far from Baguio.",
+  "Greater emphasis on research into the conduct of instruction at the Academy, and into the performance of the cadets themselves.",
+];
+
 const howToHelp = [
   {
     icon: Users,
@@ -157,6 +167,53 @@ export default function ProgramsPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* What the Foundation has committed to next.
+          Every item is PMAFI's own stated plan, quoted from the 2025 Annual
+          Report — no forecast, no figure and no promise of ours. It sits before
+          "Get Involved" on purpose: a visitor deciding whether to give should
+          see what the money is already committed to before being asked. */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <div className="mb-12 text-center">
+            <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
+              <span className="h-px w-8 bg-[#C8A951]/50" />
+              Looking Ahead
+              <span className="h-px w-8 bg-[#C8A951]/50" />
+            </p>
+            <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
+              What the Foundation Is Working Toward
+            </h2>
+            <p className="mx-auto mt-4 max-w-xl text-slate-500">
+              The commitments PMAFI has set out for the period ahead.
+            </p>
+          </div>
+
+          <ul className="space-y-6">
+            {plans.map((plan) => (
+              <li key={plan} className="flex gap-4">
+                <span
+                  aria-hidden="true"
+                  className="mt-2.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#C8A951]"
+                />
+                <p className="text-lg leading-relaxed text-slate-600">{plan}</p>
+              </li>
+            ))}
+          </ul>
+
+          <figure className="mt-12 border-l-2 border-[#C8A951] pl-6">
+            <blockquote className="text-lg italic leading-relaxed text-[#1B2A4A]">
+              &ldquo;We will also continue to work closely with PMA authorities
+              on how we can better assist the Academy in the character building
+              of the cadets, so that they shall possess the character essential
+              to the pursuit of a progressive military career.&rdquo;
+            </blockquote>
+            <figcaption className="mt-3 text-sm text-slate-500">
+              PMAFI Annual Report, 2025
+            </figcaption>
+          </figure>
         </div>
       </section>
 

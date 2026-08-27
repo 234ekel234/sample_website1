@@ -46,20 +46,27 @@ export default function OurStory() {
             <h2 className="mt-3 text-4xl font-bold tracking-tight text-[#1B2A4A]">
               Our Story
             </h2>
+            {/* PMAFI's REGISTERED PURPOSE, in its own words — taken from the
+                Foundation's 2025 Annual Report, not written on its behalf. The
+                previous copy said much the same thing and said it warmly, but
+                it was ours: "bridge the gap", "the Long Gray Line". This is
+                what the Foundation was actually chartered to do, which is both
+                truer and more specific than anything we would have invented. */}
             <p className="mt-6 text-lg leading-relaxed text-slate-600">
-              The Philippine Military Academy Foundation, Inc. (PMAFI) was
-              established to bridge the gap between the Academy&apos;s mission
-              and the resources it needs to fulfill it. As a non-stock,
-              non-profit foundation, PMAFI mobilizes private sector support,
-              alumni networks, and community partnerships to advance PMA&apos;s
-              institutional goals.
+              The Philippine Military Academy Foundation, Inc. is a non-stock,
+              non-profit corporation registered with the Securities and Exchange
+              Commission in 1988. Its purpose is to contribute to scholastic
+              progress, and to national security and development.
             </p>
             <p className="mt-4 text-lg leading-relaxed text-slate-600">
-              From modernizing training facilities to funding scholarships and
-              supporting cadet development programs, PMAFI ensures that the men
-              and women of the Long Gray Line are equipped — not just with
-              weapons and tactics, but with the education, values, and character
-              demanded of officers who lead in service of the Filipino people.
+              Specifically, PMAFI exists to help the Academy further improve the
+              quality of its instruction — in pursuit of character building,
+              academic excellence, military skills proficiency, and physical
+              development.
+            </p>
+            <p className="mt-4 text-lg leading-relaxed text-slate-600">
+              With the adoption of the PMA Road Map 2028, the Foundation
+              prioritises its support along the guidelines set out there.
             </p>
           </motion.div>
 

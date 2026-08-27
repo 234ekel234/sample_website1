@@ -6,8 +6,14 @@ import { Shield, Users, BookOpen, Award } from "lucide-react";
 const pillars = [
   {
     icon: Shield,
-    label: "Over a Century of Service",
-    note: "Standing behind PMA since its founding — funding the Academy that has defended the Philippines for generations.",
+    // THE CENTURY BELONGS TO THE ACADEMY, NOT THE FOUNDATION. This tile read
+    // "Over a Century of Service — Standing behind PMA since its founding",
+    // which claimed roughly eighty years the Foundation has not existed for:
+    // PMAFI was registered with the SEC in 1988, as its own annual report and
+    // the structured data in StructuredData.tsx both say, and as /about now
+    // states in as many words. Keep the two pages agreeing.
+    label: "Serving the Academy Since 1988",
+    note: "A non-stock, non-profit foundation, formed to support an Academy that has been shaping the nation's officers for more than a century.",
   },
   {
     icon: Users,

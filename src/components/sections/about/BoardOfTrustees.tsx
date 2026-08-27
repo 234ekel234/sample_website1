@@ -35,10 +35,22 @@ export default function BoardOfTrustees() {
             Who Leads the Foundation
           </h2>
           <p className="mt-2 text-lg font-light text-gold-ink">2025 – 2026</p>
+          {/* HOW THE FOUNDATION IS ACTUALLY GOVERNED, from its 2025 Annual
+              Report. The previous lede praised the trustees without saying what
+              they do, so a page listing sixteen faces explained none of them.
+
+              The numbers are load-bearing and they check out against
+              board-data.ts: fifteen elected trustees plus the PMA
+              Superintendent ex officio is the sixteen cards below. If a card is
+              ever added or removed, this sentence has to move with it. */}
           <p className="mx-auto mt-4 max-w-2xl text-slate-500">
-            Distinguished graduates of the Philippine Military Academy, united
-            in their commitment to strengthen PMAFI and serve the nation through
-            principled leadership.
+            The affairs of the Foundation are managed by a Board of fifteen
+            Trustees, elected from among its regular members, with the
+            Superintendent of the Academy sitting <em>ex officio</em>. An
+            Executive Committee chaired by the President acts for the Board
+            between meetings and recommends what action to take on the
+            Academy&apos;s requests for support. Day to day, the Foundation is
+            run by its President as Chief Executive Officer.
           </p>
         </div>
 
