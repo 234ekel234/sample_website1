@@ -141,6 +141,8 @@ export default function DigitalIdGenerator({
   const { email, name, category, standing, pmaClass, memberSince } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
+  /** Set when a chosen file could not be decoded. Cleared on the next attempt. */
+  const [photoError, setPhotoError] = useState<string | null>(null);
 
   // The photo is the one input the roster cannot supply, so it is remembered
   // HERE — in this browser, never on a server. That keeps "your photo never
@@ -324,12 +326,32 @@ export default function DigitalIdGenerator({
 
   const onPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    // Clearing the input lets the SAME file be chosen again. A change event
+    // only fires when the value differs, so without this a member who picked a
+    // photo, hit an error, and reached for the identical file had nothing
+    // happen at all.
+    e.target.value = "";
     if (!file) return;
+
+    setPhotoError(null);
     const url = URL.createObjectURL(file);
     loadImage(url)
       .then((img) => {
         setPhoto(img);
         cachePhoto(img);
+      })
+      // WITHOUT THIS THE FAILURE IS SILENT. `accept="image/*"` is what the file
+      // picker offers, not what the browser can decode: an iPhone HEIC outside
+      // Safari, a RAW file, a truncated download all reach here and reject.
+      // `.finally` does not handle a rejection, so this was an unhandled
+      // promise error in the console and, on screen, nothing whatsoever — the
+      // download button stayed disabled under "Add a photo to download your
+      // ID", which is the one message guaranteed to look wrong to somebody who
+      // just added one.
+      .catch(() => {
+        setPhotoError(
+          "That image couldn't be opened. JPEG and PNG always work — photos straight from an iPhone are sometimes in a format browsers can't read."
+        );
       })
       .finally(() => URL.revokeObjectURL(url));
   };
@@ -442,6 +464,18 @@ export default function DigitalIdGenerator({
               className="hidden"
             />
           </label>
+          {/* aria-live so a screen reader announces the failure: this is the
+              only feedback a rejected file produces, and it appears without
+              any change of focus. */}
+          {photoError && (
+            <p
+              role="alert"
+              aria-live="polite"
+              className="mt-2 text-sm font-medium text-red-600"
+            >
+              {photoError}
+            </p>
+          )}
         </div>
 
         <button
