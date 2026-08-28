@@ -275,7 +275,17 @@ function pickMoney(
 ): string {
   const raw = map.get(key)?.trim();
   if (!raw) return fallback;
-  return numeric.has(key) ? peso.format(Number(raw)) : raw;
+  if (!numeric.has(key)) return raw;
+
+  // A numeric ZERO is not a fee of nothing, it is an empty cell that happens to
+  // hold a 0 — a cleared figure, a formula with no input. Formatting it gave
+  // "₱0", and because that string is truthy hasPaymentDetails() went on to
+  // publish the whole payment block: a membership fee of zero pesos printed
+  // above a real bank account. Fall back instead, which is the same thing a
+  // blank cell does.
+  const amount = Number(raw);
+  if (!Number.isFinite(amount) || amount <= 0) return fallback;
+  return peso.format(amount);
 }
 
 function pickIdentifier(
@@ -290,6 +300,14 @@ function pickIdentifier(
   const fromSheet = digitsOf(raw);
   const confirmed = digitsOf(fallback);
   if (
+    // A cell with NO digits at all is not a truncated number, it is staff
+    // writing something — "TBA", "ask us", "closing this account". Without this
+    // guard `confirmed.endsWith("")` is true for every one of them, so any note
+    // typed here was silently replaced by the hardcoded account number. That is
+    // the sheet losing to code on the one value where the sheet must win: it
+    // would keep publishing an old account after PMAFI had tried to take it
+    // down.
+    fromSheet.length > 0 &&
     fromSheet !== confirmed &&
     confirmed.length > fromSheet.length &&
     confirmed.endsWith(fromSheet)

@@ -258,3 +258,71 @@ describe("pickMoney", () => {
     expect(content.dues.regular).toBe("₱3,000 one-time");
   });
 });
+
+// --- Edge cases found in audit ---------------------------------------------
+
+describe("cells that are not the value they look like", () => {
+  async function loadWith(rows: unknown[][]) {
+    vi.resetModules();
+    const readRange = vi.fn().mockResolvedValue(rows);
+    vi.doMock("@/lib/sheets", () => ({ readRange }));
+    process.env.CONTENT_SHEET_ID = "test-sheet";
+    return import("@/lib/content");
+  }
+  let warn: ReturnType<typeof vi.spyOn>;
+  beforeEach(() => {
+    warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+  });
+  afterEach(() => {
+    warn.mockRestore();
+    vi.doUnmock("@/lib/sheets");
+  });
+
+  it("lets staff write a note in the account number cell", async () => {
+    // "TBA" has no digits, and confirmed.endsWith("") is true for every string,
+    // so the restoration used to fire and publish the hardcoded account over
+    // whatever staff had typed. On the one value where the sheet must win, code
+    // was overruling it — and would have kept an old account live after PMAFI
+    // tried to take it down.
+    const { getContent } = await loadWith([
+      ["payment.bank.account_number", "TBA"],
+    ]);
+    const content = await getContent();
+    expect(content.payment.bankAccountNumber).toBe("TBA");
+  });
+
+  it("does the same for a GCash note", async () => {
+    const { getContent } = await loadWith([["payment.gcash.number", "ask us"]]);
+    const content = await getContent();
+    expect(content.payment.gcashNumber).toBe("ask us");
+  });
+
+  it("still restores a genuinely truncated number", async () => {
+    // The guard above must not disarm the case it was built for.
+    const { getContent } = await loadWith([
+      ["payment.bank.account_number", 223002800705],
+    ]);
+    const content = await getContent();
+    expect(content.payment.bankAccountNumber).toBe("022-3-002800705");
+  });
+
+  it("treats a zero fee as an empty cell, not a fee of nothing", async () => {
+    // "₱0" is truthy, so hasPaymentDetails published the entire payment block —
+    // a membership fee of zero pesos printed above a real bank account.
+    const { getContent, hasPaymentDetails } = await loadWith([
+      ["dues.regular", 0],
+      ["dues.associate", 0],
+      ["dues.affiliate", 0],
+    ]);
+    const content = await getContent();
+    expect(content.dues.regular).not.toBe("₱0");
+    expect(content.dues.regular).toBe("₱3,000 one-time");
+    expect(hasPaymentDetails(content)).toBe(true);
+  });
+
+  it("ignores a negative fee too", async () => {
+    const { getContent } = await loadWith([["dues.regular", -3000]]);
+    const content = await getContent();
+    expect(content.dues.regular).toBe("₱3,000 one-time");
+  });
+});
