@@ -149,19 +149,6 @@ export default async function Footer() {
         <span>
           © {new Date().getFullYear()} Philippine Military Academy Foundation,
           Inc. All rights reserved.
-          {/* Discreet build credit — the standing referral channel agreed in
-              place of a one-off testimonial. Kept to the copyright line so it
-              reads as attribution rather than advertising. */}
-          <span className="ml-2 text-slate-500">
-            Site by{" "}
-            <a
-              href="mailto:tusi.ekel@gmail.com"
-              className="transition-colors hover:text-[#C8A951]"
-            >
-              Simoun Tusi
-            </a>
-            .
-          </span>
         </span>
         <span className="sm:text-right">
           PMAFI is an independent foundation supporting the PMA — not an
