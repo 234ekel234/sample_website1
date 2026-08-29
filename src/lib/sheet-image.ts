@@ -37,6 +37,20 @@ export function toDisplayImageUrl(raw: string): string {
   const trimmed = raw.trim();
   if (!trimmed) return "";
 
+  // A SAME-ORIGIN PATH is allowed, so a photograph can ship with the site and
+  // still be chosen from the sheet — "/fund-chairs.jpg" rather than a Drive
+  // link. This keeps the property the allowlist exists for: a path beginning
+  // with a single slash cannot address another host, so nothing here can point
+  // the page at somebody else's server.
+  //
+  // The second character matters. "//evil.com/x.jpg" is protocol-relative and
+  // goes straight off-origin, and browsers treat a backslash as a slash in
+  // authority position, so "/\evil.com" does too. Both are rejected; only a
+  // single slash followed by an ordinary path character is a local file.
+  if (trimmed.startsWith("/") && !/^\/[/\\]/.test(trimmed)) {
+    return trimmed;
+  }
+
   const fileId =
     trimmed.match(/\/file\/d\/([^/?#]+)/)?.[1] ??
     trimmed.match(/[?&]id=([^&]+)/)?.[1];
