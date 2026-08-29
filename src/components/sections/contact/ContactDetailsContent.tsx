@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Mail, Phone, Clock, MessageSquare } from "lucide-react";
+import { Mail, Phone, MessageSquare } from "lucide-react";
 
 // Contact channels come from the staff-editable content sheet.
 //
@@ -15,12 +15,12 @@ export interface ContactDetailsContentProps {
   phone: string;
 }
 
+// NO RESPONSE-TIME PROMISE. "Response within 24 hours" was a commitment the
+// Foundation had not made and cannot staff — a volunteer board and a shared
+// inbox — and it was the first thing a visitor read on the page. Promising a
+// deadline you miss is worse than promising nothing: the next message arrives
+// asking why nobody replied.
 const expectations = [
-  {
-    icon: Clock,
-    title: "Response within 24 hours",
-    description: "We acknowledge every message by the next business day.",
-  },
   {
     icon: MessageSquare,
     title: "No pressure to commit",

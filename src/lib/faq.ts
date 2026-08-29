@@ -172,7 +172,10 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "How can I contact the Foundation?",
     answer:
-      "The Contact page has the Foundation's current details, and messages are acknowledged by the next business day.",
+      // No response-time promise here either — see ContactDetailsContent. The
+      // assistant repeating a deadline the contact page has dropped would put
+      // it back in front of the visitor by another route.
+      "The Contact page has the Foundation's current details. Email reaches the team directly, and is the quickest way to get an answer about membership, a donation or a partnership.",
     keywords: ["contact", "email", "reach", "phone", "call", "message", "talk"],
     linkLabel: "Contact us",
     linkHref: "/contact",

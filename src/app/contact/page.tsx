@@ -7,7 +7,7 @@ import OrderCTA from "@/components/sections/OrderCTA";
 export const metadata: Metadata = {
   title: "Contact | PMAFI",
   description:
-    "Get in touch with the Philippine Military Academy Foundation, Inc. Reach us by email about membership, donations, or partnerships — we respond within 24 hours.",
+    "Get in touch with the Philippine Military Academy Foundation, Inc. Reach us by email about membership, donations, or partnerships.",
 };
 
 export default function ContactPage() {
