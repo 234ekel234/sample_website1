@@ -21,9 +21,13 @@ import Image from "next/image";
  * It also says something the parade ground could not: this is the Foundation
  * itself, at the Academy, in front of the cadets it exists to serve.
  *
- * object-top, not centred: the 3:2 original loses ~15% to the 16/9 crop, and
- * taking it off the bottom sheds empty foreground chairs while keeping the
- * Academy seal, the screen and the Corps.
+ * object-CENTRE for this frame. The 3:2 original loses ~15% to the 16/9 crop,
+ * and where that comes off depends on the photograph: this one has empty hall
+ * and high windows along the top with the Corps seated low, so anchoring to the
+ * top would keep the ceiling and cut the cadets. Splitting the loss keeps them.
+ *
+ * The home page hero uses a different frame from the same visit — deliberately,
+ * so a visitor going home → About does not meet the same photograph twice.
  */
 export default function AcademyBand() {
   return (
@@ -35,7 +39,7 @@ export default function AcademyBand() {
               src="/pma-corps-annual-visit.jpg"
               alt="Cadets of the Philippine Military Academy seated in the assembly hall as the PMAFI Board of Trustees addresses them during its annual visit."
               fill
-              className="object-cover object-top"
+              className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 1024px"
             />
           </div>
