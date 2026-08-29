@@ -6,6 +6,7 @@
 // and the FAQ assistant all link to /about#board, and /board itself 308s here
 // (see next.config.ts) so older links and search results keep working.
 
+import Image from "next/image";
 import { officers, committeeMembers, trustees } from "@/lib/board-data";
 import BoardMemberCard from "@/components/board/BoardMemberCard";
 
@@ -51,6 +52,27 @@ export default function BoardOfTrustees() {
             support. The President serves as chief executive and runs the
             Foundation day to day.
           </p>
+
+          {/* The Board actually meeting, beneath the paragraph describing how
+              it governs. Sixteen portraits show who they are; this shows what
+              they do, which is the half the section never had. Deliberately a
+              16/7 band rather than a feature image, so it introduces the
+              trustees instead of competing with them. */}
+          <figure className="mx-auto mt-10 max-w-4xl">
+            <div className="relative aspect-[16/7] w-full overflow-hidden rounded-2xl bg-slate-200">
+              <Image
+                src="/board-meeting.jpg"
+                alt="The PMAFI Board of Trustees in session around the boardroom table."
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 896px"
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-slate-500">
+              The Board in session. Between meetings, an Executive Committee
+              chaired by the President acts on the Academy&apos;s requests.
+            </figcaption>
+          </figure>
         </div>
 
         {/* Officers */}

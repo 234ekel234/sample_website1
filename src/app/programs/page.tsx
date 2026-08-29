@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -167,6 +168,32 @@ export default function ProgramsPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* The people the four programme areas exist for, between what the
+          Foundation does and what it has committed to do next. One band rather
+          than a photograph per programme: we have four programme areas and one
+          suitable photograph, and three placeholders would look worse than
+          none. */}
+      <section className="bg-white pb-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <figure className="overflow-hidden rounded-2xl">
+            <div className="relative aspect-[16/8] w-full bg-slate-100">
+              <Image
+                src="/faculty.jpg"
+                alt="Faculty, staff and personnel of the Philippine Military Academy gathered with officers of the Foundation."
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-slate-500">
+              The faculty and staff of the Academy, with officers of the
+              Foundation. Every programme here exists to support the people in
+              this room and the cadets they teach.
+            </figcaption>
+          </figure>
         </div>
       </section>
 
