@@ -41,6 +41,15 @@ export const boardMembers: BoardMember[] = [
     group: "officer",
   },
   {
+    // PORTRAIT PROVENANCE. bacarro.jpg is not the 195x195 thumbnail the other
+    // fifteen are: it is his official Philippine Army portrait, cropped square
+    // from a 1440x1800 original, and it is public domain — Wikimedia Commons
+    // tags it PD-PhilippinesGov, a work of the Government of the Philippines
+    // under RA 8293, with no attribution required. Checked before use rather
+    // than assumed, because he is a living person and the file came off the
+    // internet. It matters here beyond the board grid: the home page message
+    // resolves its portrait from this record by name, and that frame enlarges
+    // a photograph more than anywhere else on the site.
     id: "bacarro",
     name: "Bartolome Vicente O. Bacarro",
     role: "President & Chairman, Executive Committee",
