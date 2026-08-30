@@ -56,6 +56,27 @@ export function normalizeSheetDate(value: string): string {
 }
 
 /**
+ * Format a normalised date for display: "2024-11-15" becomes "15 November 2024".
+ *
+ * Anything that is not ISO is returned untouched, because a staff member who
+ * wrote "Upcoming" or "Every March" meant it — the whole point of keeping
+ * unparseable text in normalizeSheetDate is that it survives to the screen.
+ *
+ * The `T00:00:00` is load-bearing: `new Date("2024-11-15")` is parsed as UTC
+ * midnight and renders as the 14th anywhere west of Greenwich, which is trap 2
+ * arriving by the other door.
+ */
+export function formatSheetDate(value: string): string {
+  const raw = value.trim();
+  if (!isIsoDate(raw)) return raw;
+  return new Date(`${raw}T00:00:00`).toLocaleDateString("en-PH", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+/**
  * Sort comparator: newest first, with unparseable dates ranked to the bottom
  * rather than sorting on their first character against an ISO string.
  */

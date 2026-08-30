@@ -289,6 +289,49 @@ not a spreadsheet column.
 
 ---
 
+## The "News" tab — the home page's News & Announcements
+
+Also in the **same spreadsheet**, on a tab named **`News`**. It fills the three
+cards under *"Latest Updates"* on the home page.
+
+This tab moved here on 2026-08-31. It used to live in a spreadsheet of its own,
+which had never been shared with the service account — so the site could not read
+it and quietly fell back to three sample items instead. Nobody was told, because
+an unreadable sheet and an empty one look identical to the code. Keeping News in
+the spreadsheet PMAFI already shares means that particular silence cannot recur.
+
+### Columns
+
+| Column | Header | Required | Notes |
+|---|---|---|---|
+| A | `Title` | **yes** | The headline on the card |
+| B | `Excerpt` | **yes** | One or two sentences underneath |
+| C | `Category` | no | The gold pill on the image — `Events`, `Programs`, `Community` |
+| D | `Date` | no | Any readable date. Blank shows *"Upcoming"* |
+| E | `Link` | no | Makes the whole card clickable, opening in a new tab |
+| F | `Published` | **yes** | `Yes` to show it. Anything else keeps it a draft |
+| G | `Image URL` | no | A Google Drive share link, or a photo already on the site such as `/pma-corps-annual-visit.jpg` |
+
+### Three cards is the natural limit
+
+The home page lays these out in a row of three. A fourth published row wraps onto
+a second row of cards — fine if that is what you want, worth knowing if it isn't.
+
+### Never leave zero published rows
+
+An empty News tab is treated exactly like a broken one, and the three sample
+items come back: *"Annual General Membership Meeting"*, *"Professorial Chair &
+Endowment Awarding"*, *"Class Reunion & Homecoming Support"*. **Those are
+placeholders, not real events.** One accurate row is always better than none.
+
+### Dates are dates, and that used to show
+
+Typing `15 November 2024` into column D makes Google store a date, and the site
+reads raw cell values — so the card printed `45611`, the internal number Sheets
+keeps dates as. Fixed 2026-08-31; dates now display as written whether the cell
+is formatted as a date or as plain text. Free text like `Upcoming` still passes
+through untouched.
+
 ## What this does not cover
 
 Page text across About, Programs, Donate and the Contact FAQ, along with the
@@ -296,5 +339,5 @@ Board of Trustees profiles, remains in the website's code and is updated by the
 developer. See *"What PMAFI can update directly"* in the proposal for the full
 split.
 
-News and announcements are on their own separate sheet, and continue to work as
-they do today.
+News and announcements used to be on their own separate sheet. As of 2026-08-31
+they are the `News` tab of this same spreadsheet — see above.

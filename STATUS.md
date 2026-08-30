@@ -148,7 +148,7 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY` | ✅ | ✅ | all sheet reads |
 | `MEMBERS_SHEET_ID` | ✅ | ✅ | membership check + donation lookup (same private spreadsheet) |
 | `CONTENT_SHEET_ID` | ✅ | ✅ | site content, FAQ, fund updates |
-| `NEWS_SHEET_ID` | ✅ | ✅ | news feed |
+| `NEWS_SHEET_ID` | ✅ | ✅ | news feed — since 2026-08-31 the **same spreadsheet as `CONTENT_SHEET_ID`**, on its `News` tab. The old standalone sheet was never shared with the service account, so the feed silently served samples. Set for Production only; Preview is unset, matching `CONTENT_SHEET_ID` |
 | `NEXT_PUBLIC_GA_ID` | — | ✅ | Google Analytics |
 | `MEMBERS_SHEET_RANGE` | — | — | optional; defaults to `Membership Applications!A1:Z` |
 | `DONATIONS_SHEET_ID` | — | — | optional; falls back to `MEMBERS_SHEET_ID` |
@@ -176,7 +176,11 @@ In the order they unblock the most:
    Message on any one makes `/donate/impact` real and shows on donors' own
    results.
 4. **Chairman's message** — currently placeholder text, not PMAFI's words.
-5. **News items** — currently samples.
+5. **News items** — one real row is live (the Board's annual visit, 15 November
+   2024, dated from the welcome slide in the photo). Two drafts sit unpublished
+   in the `News` tab awaiting PMAFI: the teaching-excellence awarding needs a
+   date, and the alumni gift needs a decision on naming the donor. Publishing
+   any row replaces the samples; leaving none published brings them back.
 6. **Phone number, social URLs** — hidden rather than invented.
 7. **BIR donee status** — no page claims tax deductibility until confirmed.
 8. **FAQ expansion and sign-off.**

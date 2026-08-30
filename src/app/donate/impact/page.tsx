@@ -6,21 +6,13 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, Landmark, Sparkles } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import { getFundUpdates, groupByFund } from "@/lib/fund-updates";
+import { formatSheetDate } from "@/lib/sheet-date";
 
 export const metadata: Metadata = {
   title: "Fund Updates | PMAFI",
   description:
     "See what each PMAFI fund has accomplished — the professorial chairs, endowments, facilities and cadet programs your support makes possible.",
 };
-
-function formatDate(value: string): string {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
-  return new Date(`${value}T00:00:00`).toLocaleDateString("en-PH", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  });
-}
 
 export default async function FundUpdatesPage() {
   const updates = await getFundUpdates();
@@ -92,13 +84,24 @@ export default async function FundUpdatesPage() {
                       <li key={`${u.fund}-${u.title}-${u.date}`} className="relative">
                         <span className="absolute -left-[1.9rem] top-1.5 h-2.5 w-2.5 rounded-full bg-[#C8A951] ring-4 ring-white" />
                         <article className="overflow-hidden rounded-2xl border border-slate-200 bg-white transition-shadow hover:shadow-[0_18px_40px_-24px_rgba(27,42,74,0.4)]">
+                          {/* An ASPECT RATIO, not a fixed height. h-56 was 224px
+                              whatever the card's width, so on a desktop card it
+                              became a ~4:1 letterbox and object-cover took a
+                              band through the middle of the photograph — which,
+                              for a picture of people standing up, is their
+                              torsos with the heads cropped off.
+
+                              object-top for the same reason: when a photograph
+                              has people in it they are near the top, and
+                              anchoring there is the safer default for whatever
+                              staff put in the sheet next. */}
                           {u.image && (
-                            <div className="relative h-56 w-full bg-slate-100">
+                            <div className="relative aspect-[16/7] w-full bg-slate-100">
                               <Image
                                 src={u.image}
                                 alt={u.title}
                                 fill
-                                className="object-cover"
+                                className="object-cover object-top"
                                 sizes="(max-width: 768px) 100vw, 700px"
                               />
                             </div>
@@ -106,7 +109,7 @@ export default async function FundUpdatesPage() {
                           <div className="p-6">
                             {u.date && (
                               <p className="text-xs font-semibold uppercase tracking-widest text-gold-ink">
-                                {formatDate(u.date)}
+                                {formatSheetDate(u.date)}
                               </p>
                             )}
                             <h3 className="mt-1.5 text-lg font-bold text-[#1B2A4A]">

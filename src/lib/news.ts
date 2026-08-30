@@ -18,6 +18,7 @@
 
 import { readRange } from "@/lib/sheets";
 import { toDisplayImageUrl } from "@/lib/sheet-image";
+import { formatSheetDate, normalizeSheetDate } from "@/lib/sheet-date";
 
 export interface NewsItem {
   title: string;
@@ -69,7 +70,13 @@ export async function getNews(): Promise<NewsItem[]> {
       const title = String(row[0] ?? "").trim();
       const excerpt = String(row[1] ?? "").trim();
       const category = String(row[2] ?? "").trim();
-      const date = String(row[3] ?? "").trim();
+      // A DATE CELL IS A NUMBER. `readRange` asks Sheets for UNFORMATTED_VALUE,
+      // so "15 November 2024" typed into a date-formatted cell arrives as the
+      // serial 45611 and the card printed exactly that. Every other sheet the
+      // site reads already went through normalizeSheetDate; news was the one
+      // that never did. Normalise to ISO, then format for the reader — free
+      // text like "Upcoming" passes through both untouched.
+      const date = formatSheetDate(normalizeSheetDate(String(row[3] ?? "")));
       const link = String(row[4] ?? "").trim();
       const published = String(row[5] ?? "").trim().toLowerCase();
 
