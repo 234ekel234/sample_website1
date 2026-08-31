@@ -25,6 +25,7 @@ const MEMBER: MemberRecord = {
   standing: "Active",
   pmaClass: "1988",
   memberSince: "2010",
+  source: "form",
 };
 
 async function load() {
@@ -151,5 +152,56 @@ describe("lookupMembershipAction — email path", () => {
     const state = await lookupMembershipAction({ status: "idle" }, fd);
     expect(state.status).toBe("notfound");
     expect(findMemberByName).not.toHaveBeenCalled();
+  });
+});
+
+describe("checkMembershipForIdAction — the digital ID gate", () => {
+  const fd = (email: string) => {
+    const f = new FormData();
+    f.set("email", email);
+    return f;
+  };
+
+  it("issues a card to a member who applied through the form", async () => {
+    checkMembership.mockResolvedValue(MEMBER);
+    const { checkMembershipForIdAction } = await load();
+    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    if (state.status !== "found") throw new Error("expected found");
+    expect(state.name).toBe("Juan Dela Cruz");
+  });
+
+  it("REFUSES a member staff added by hand", async () => {
+    // Both the name and the address on a Manual Members row were typed by
+    // somebody other than the member, so nobody has shown the address belongs
+    // to the person named. A card is a credential bearing the Foundation's
+    // seal; it may not rest on an address no member ever entered.
+    checkMembership.mockResolvedValue({ ...MEMBER, source: "manual" });
+    const { checkMembershipForIdAction } = await load();
+    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    expect(state.status).toBe("manual");
+  });
+
+  it("leaks nothing about the member when it refuses", async () => {
+    // The refusal state is serialized to the browser like any other. It must
+    // carry no name, category or standing — the visitor has not been shown to
+    // be the person they typed.
+    checkMembership.mockResolvedValue({ ...MEMBER, source: "manual" });
+    const { checkMembershipForIdAction } = await load();
+    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    expect(JSON.stringify(state)).not.toMatch(/Juan|Regular|Active|1988/);
+  });
+
+  it("still refuses a bad address and an unknown one, as before", async () => {
+    checkMembership.mockResolvedValue(null);
+    const { checkMembershipForIdAction } = await load();
+    expect((await checkMembershipForIdAction({ status: "idle" }, fd("nope"))).status).toBe("error");
+    expect((await checkMembershipForIdAction({ status: "idle" }, fd("no@one.com"))).status).toBe("notfound");
+  });
+
+  it("does not fall back to a card when the sheet read fails", async () => {
+    checkMembership.mockRejectedValue(new Error("sheets down"));
+    const { checkMembershipForIdAction } = await load();
+    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    expect(state.status).toBe("error");
   });
 });

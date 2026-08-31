@@ -68,10 +68,36 @@ that same flow.
 - Only the mapped columns are read — phone numbers, addresses and receipt links
   stay in the sheet.
 
-**Two lookups, deliberately separate.** `/membership` accepts an email or a
+**Members staff add by hand go on their own tab.** Google Forms writes each
+response to the row after the last one *it* wrote, a position it tracks itself
+rather than reading off the bottom of the sheet — so rows typed into the
+responses sheet sit in space the form still considers free, and each new
+submission overwrites one, silently and with no undo. PMAFI lost rows this way
+in August 2026. The roster is now the union of two tabs:
+
+| Tab | Written by | ID card? |
+|---|---|---|
+| `Membership Applications` | The form | Yes |
+| `Manual Members` | Staff, by hand. No form ever writes to it | **No** |
+
+Both are read through the same header-based mapper, so the manual tab needs
+only headers containing "name", "email", "category", "status", "pma class" and
+"timestamp" — column order is its own business. A missing tab is not an error.
+Template: `references/manual-members-sheet.tsv`.
+
+**Three lookups, deliberately separate.** `/membership` accepts an email or a
 name. `/membership/id`, which mints a card bearing the Foundation's seal,
 accepts an **email only** — names are public, so allowing one to mint a card
-would make the credential forgeable by anyone who can read.
+would make the credential forgeable by anyone who can read — **and refuses
+manual members**, because both the name and the address on a hand-typed row
+were entered by somebody other than the member, so nobody has shown the address
+belongs to the person named. A manual member can still check their standing,
+which tells them only what PMAFI already told them.
+
+A member who is added by hand and *later applies through the form* is promoted
+to form, and can then mint a card — even when the manual row still wins on
+standing, which it usually does, since staff set Active and a fresh submission
+carries a blank status meaning Pending.
 
 Tabs are named `Membership Applications` and `Donation Reports` rather than
 Google's `Form Responses N`, which is positional and gets reassigned when a form
@@ -157,11 +183,12 @@ lookups are separate server actions so the ID path has no name branch to reach.
 The name path returns neither the matched address nor the class year, and is
 rate-limited per client address.
 
-**Everyone joins through the form, and that is a good fit here.** PMAFI has no
-existing membership roster, so the responses sheet being the roster costs nothing
-— there is nobody to migrate. The caveat only matters if that changes: a member
-who never used the form has no row, and adding one by hand means writing into a
-sheet the form also appends to.
+**The form is no longer the only way onto the roster** — the caveat this file
+carried from the start ("a member who never used the form has no row, and adding
+one by hand means writing into a sheet the form also appends to") stopped being
+theoretical in August 2026 and is answered by the `Manual Members` tab above.
+What remains true is that a hand-typed row proves less than a submitted one,
+which is why it cannot mint an ID card.
 
 **Rate limiting is per-instance.** It runs in module memory, so on serverless it
 resets on a cold start. It stops realistic abuse, not a determined attacker.
@@ -179,6 +206,7 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `NEWS_SHEET_ID` | ✅ | ✅ | news feed — since 2026-08-31 the **same spreadsheet as `CONTENT_SHEET_ID`**, on its `News` tab. The old standalone sheet was never shared with the service account, so the feed silently served samples. Set for Production and Preview |
 | `NEXT_PUBLIC_GA_ID` | — | ✅ | Google Analytics |
 | `MEMBERS_SHEET_RANGE` | — | — | optional; defaults to `Membership Applications!A1:Z` |
+| `MANUAL_MEMBERS_RANGE` | — | — | optional; defaults to `Manual Members!A1:Z`. A missing tab is not an error |
 | `DONATIONS_SHEET_ID` | — | — | optional; falls back to `MEMBERS_SHEET_ID` |
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries |
 

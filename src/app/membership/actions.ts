@@ -1,7 +1,11 @@
 "use server";
 
 import { headers } from "next/headers";
-import { checkMembership, findMemberByName } from "@/lib/members";
+import {
+  checkMembership,
+  findMemberByName,
+  type MemberRecord,
+} from "@/lib/members";
 import { rateLimit } from "@/lib/rate-limit";
 
 export type MembershipCheckState =
@@ -20,14 +24,26 @@ export type MembershipCheckState =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function checkMembershipAction(
-  _prev: MembershipCheckState,
+/**
+ * The email lookup both public entry points share.
+ *
+ * Returns the record itself rather than a state, because the ID gate needs to
+ * see `source` — which must never travel to the browser in a state object, and
+ * has no reason to.
+ */
+async function lookupByEmail(
   formData: FormData
-): Promise<MembershipCheckState> {
+): Promise<
+  | { kind: "state"; state: MembershipCheckState }
+  | { kind: "member"; email: string; member: MemberRecord }
+> {
   const email = String(formData.get("email") ?? "").trim();
 
   if (!EMAIL_RE.test(email)) {
-    return { status: "error", message: "Please enter a valid email address." };
+    return {
+      kind: "state",
+      state: { status: "error", message: "Please enter a valid email address." },
+    };
   }
 
   let member;
@@ -37,17 +53,21 @@ export async function checkMembershipAction(
     // Sheet read / config failure — don't falsely report "not a member".
     console.error("Membership lookup failed:", err);
     return {
-      status: "error",
-      message:
-        "We couldn't check your status right now. Please try again shortly, or contact us if it persists.",
+      kind: "state",
+      state: {
+        status: "error",
+        message:
+          "We couldn't check your status right now. Please try again shortly, or contact us if it persists.",
+      },
     };
   }
 
-  if (!member) {
-    return { status: "notfound", email };
-  }
+  if (!member) return { kind: "state", state: { status: "notfound", email } };
+  return { kind: "member", email, member };
+}
 
-  // Return only the matched member's own record (they entered their own email).
+/** The matched member's own record — they entered their own address. */
+function foundState(email: string, member: MemberRecord): MembershipCheckState {
   return {
     status: "found",
     email,
@@ -57,6 +77,56 @@ export async function checkMembershipAction(
     pmaClass: member.pmaClass,
     memberSince: member.memberSince,
   };
+}
+
+export async function checkMembershipAction(
+  _prev: MembershipCheckState,
+  formData: FormData
+): Promise<MembershipCheckState> {
+  const found = await lookupByEmail(formData);
+  if (found.kind === "state") return found.state;
+  return foundState(found.email, found.member);
+}
+
+// ---------------------------------------------------------------------------
+// The /membership/id gate — email only, AND form-submitted members only.
+// ---------------------------------------------------------------------------
+
+export type MembershipIdState =
+  | MembershipCheckState
+  /** On the roster, but added by staff rather than by their own application. */
+  | { status: "manual" };
+
+/**
+ * The membership check the ID generator runs, and the only one it may run.
+ *
+ * A THIRD ACTION RATHER THAN A FLAG ON THE OTHER TWO. checkMembershipAction is
+ * also what the /membership status check calls for its email path, and a
+ * manual member is perfectly entitled to see their own standing there — it
+ * tells them only what PMAFI already told them when it added them. What they
+ * may not do is mint a PNG bearing the Foundation's seal.
+ *
+ * WHY THE DISTINCTION IS REAL. A form row was created by the member: Google
+ * made them sign in to attach a receipt, so the address on the row is one they
+ * demonstrably control. A `Manual Members` row was typed by staff — both the
+ * name and the address. Nobody has shown that the address belongs to the person
+ * named, so anyone who can guess or learn that address could mint that member's
+ * card. The existing gate is already weak in this respect (it proves an address
+ * is ON the roster, not that the visitor owns it, which is Phase 3 Module A);
+ * this at least declines to widen the hole to addresses no member ever typed.
+ *
+ * Following the pattern set by the name lookup: a separate function, so the
+ * card path has no branch that could be reached with a manual record rather
+ * than a boolean somebody could later invert.
+ */
+export async function checkMembershipForIdAction(
+  _prev: MembershipIdState,
+  formData: FormData
+): Promise<MembershipIdState> {
+  const found = await lookupByEmail(formData);
+  if (found.kind === "state") return found.state;
+  if (found.member.source === "manual") return { status: "manual" };
+  return foundState(found.email, found.member);
 }
 
 // ---------------------------------------------------------------------------

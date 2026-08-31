@@ -46,6 +46,21 @@ export interface MemberRecord {
   pmaClass: string;
   /** Year they joined, e.g. "2019". Blank when the roster has not recorded it. */
   memberSince: string;
+  /**
+   * Which tab the member came from.
+   *
+   * "form" — they submitted the membership form, so the row is theirs and the
+   * address on it was typed by them.
+   *
+   * "manual" — staff added them to the `Manual Members` tab. The row asserts a
+   * membership, but nobody proved the address belongs to the person named: a
+   * staff member typed both. **This is why manual members cannot mint a digital
+   * ID card** (see checkMembershipForIdAction). They can check their standing,
+   * which reveals only what PMAFI already told them; they cannot obtain a PNG
+   * bearing the Foundation's seal on the strength of an address somebody else
+   * entered on their behalf.
+   */
+  source: "form" | "manual";
 }
 
 // --- Small server-side cache (this module is never bundled to the client) ---
@@ -212,7 +227,12 @@ interface Applicant {
   when: string;
   /** Every address on the row, lowercased. */
   addresses: string[];
+  /** Which tab this row came from. See MemberRecord.source. */
+  source: Source;
 }
+
+/** Where a batch of rows came from. See MemberRecord.source. */
+type Source = MemberRecord["source"];
 
 /** Whether `a` should displace `b`: better standing first, then newer row. */
 function outranks(a: Applicant, b: Applicant): boolean {
@@ -285,22 +305,47 @@ function buildRoster(applicants: Applicant[]): Roster {
     if (!held || outranks(app, held)) best.set(root, app);
   });
 
+  // A PERSON IS "form" IF ANY OF THEIR ROWS IS, whichever row wins on standing.
+  //
+  // Somebody staff added by hand who later applies through the form properly
+  // has proved the address is theirs — the form made them sign in to upload a
+  // receipt. But their manual row may still outrank the form row, because a
+  // staff-set Active beats the blank status a fresh submission carries. Reading
+  // the source off the winning row alone would therefore deny a card to exactly
+  // the member who did everything asked of them.
+  const formRoots = new Set<number>();
+  applicants.forEach((app, i) => {
+    if (app.source === "form") formRoots.add(find(i));
+  });
+  const memberByRoot = new Map<number, MemberRecord>();
+  for (const [root, app] of best) {
+    memberByRoot.set(root, {
+      ...app.member,
+      source: formRoots.has(root) ? "form" : "manual",
+    });
+  }
+
   // Every address resolves to its person's winning row, so typing either
   // address gives the same answer. An address two different people share falls
   // back to the same standing-first rule, which is what it has always done.
-  const chosen = new Map<string, Applicant>();
+  const chosen = new Map<string, { root: number; app: Applicant }>();
   applicants.forEach((app, i) => {
-    const winner = best.get(find(i)) ?? app;
+    const root = find(i);
+    const winner = best.get(root) ?? app;
     for (const address of app.addresses) {
       const held = chosen.get(address);
-      if (!held || outranks(winner, held)) chosen.set(address, winner);
+      if (!held || outranks(winner, held.app)) {
+        chosen.set(address, { root, app: winner });
+      }
     }
   });
 
   const byEmail = new Map<string, MemberRecord>();
-  for (const [address, app] of chosen) byEmail.set(address, app.member);
+  for (const [address, { root, app }] of chosen) {
+    byEmail.set(address, memberByRoot.get(root) ?? app.member);
+  }
 
-  return { members: [...best.values()].map((a) => a.member), byEmail };
+  return { members: [...memberByRoot.values()], byEmail };
 }
 
 async function loadRoster(): Promise<Roster> {
@@ -315,12 +360,60 @@ async function loadRoster(): Promise<Roster> {
   // or worse, another form's responses take the number and the membership
   // check silently starts reading donations. A real name cannot be reassigned.
   const range = process.env.MEMBERS_SHEET_RANGE ?? "Membership Applications!A1:Z";
-  const rows = await readRange(sheetId, range);
-  if (rows.length === 0) return { members: [], byEmail: new Map() };
+
+  // TWO TABS, BECAUSE GOOGLE FORMS OVERWRITES ROWS TYPED INTO ITS OWN SHEET.
+  //
+  // A form writes each response to the row after the last one IT wrote, a
+  // position it tracks itself rather than reading off the bottom of the sheet.
+  // Rows added by hand below the last response therefore sit in space the form
+  // still considers free, and the next submission lands on top of one — one
+  // member lost per submission, silently, with no undo. PMAFI hit this in
+  // August 2026 after adding fifteen members by hand.
+  //
+  // So members added by staff live on their OWN tab, which no form ever writes
+  // to, and the roster is the union of the two. This also answers the caveat
+  // STATUS.md has carried from the start: a member who never used the form now
+  // has somewhere to exist.
+  //
+  // Both tabs are read with the SAME header-based mapper, so the manual tab
+  // needs only headers whose text contains "name", "email", "category",
+  // "status", "pma class" and "timestamp" — column order is its own business.
+  const manualRange =
+    process.env.MANUAL_MEMBERS_RANGE ?? "Manual Members!A1:Z";
+
+  const [formRows, manualRows] = await Promise.all([
+    readRange(sheetId, range),
+    // A MISSING TAB IS NOT AN ERROR. Most deployments will not have one, and a
+    // roster that refuses to load because an optional tab is absent would take
+    // the membership check down for everybody to serve nobody.
+    readRange(sheetId, manualRange).catch(() => [] as unknown[][]),
+  ]);
+
+  const applicants: Applicant[] = [
+    ...parseRoster(formRows, "form"),
+    ...parseRoster(manualRows, "manual"),
+  ];
+
+  // byEmail carries one entry per ADDRESS, so a member with two resolves from
+  // either. members carries one entry per PERSON, so a name search cannot
+  // report the same applicant twice and call it ambiguous.
+  const roster = buildRoster(applicants);
+  membersCache = { data: roster, expires: Date.now() + MEMBERS_TTL_MS };
+  return roster;
+}
+
+/**
+ * Parse one tab's rows into applicants. Exported for testing.
+ *
+ * Row 1 is the header row — see the note at the top of this file about columns
+ * being located by text, never by position.
+ */
+export function parseRoster(rows: unknown[][], source: Source): Applicant[] {
+  if (rows.length === 0) return [];
 
   const col = mapColumns(rows[0]);
 
-  // One entry per ROW here; buildRoster collapses them into people below.
+  // One entry per ROW here; buildRoster collapses them into people.
   const applicants: Applicant[] = [];
 
   for (const row of rows.slice(1)) {
@@ -346,21 +439,18 @@ async function loadRoster(): Promise<Roster> {
       // the year they applied IS the year they joined, and the timestamp is
       // already sitting in the row.
       memberSince: normalizeYear(when),  // `when` is ISO by here
+      source,
     };
 
     applicants.push({
       member,
       when,
       addresses: addresses.map((a) => a.toLowerCase()),
+      source,
     });
   }
 
-  // byEmail carries one entry per ADDRESS, so a member with two resolves from
-  // either. members carries one entry per PERSON, so a name search cannot
-  // report the same applicant twice and call it ambiguous.
-  const roster = buildRoster(applicants);
-  membersCache = { data: roster, expires: Date.now() + MEMBERS_TTL_MS };
-  return roster;
+  return applicants;
 }
 
 export async function checkMembership(

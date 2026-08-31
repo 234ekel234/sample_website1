@@ -3,13 +3,13 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import {
-  checkMembershipAction,
-  type MembershipCheckState,
+  checkMembershipForIdAction,
+  type MembershipIdState,
 } from "@/app/membership/actions";
 import DigitalIdGenerator from "./DigitalIdGenerator";
-import { Search, UserPlus, ArrowRight, ShieldCheck } from "lucide-react";
+import { Search, UserPlus, ArrowRight, ShieldCheck, Mail } from "lucide-react";
 
-const initialState: MembershipCheckState = { status: "idle" };
+const initialState: MembershipIdState = { status: "idle" };
 
 /**
  * Gate in front of the ID generator.
@@ -27,10 +27,16 @@ const initialState: MembershipCheckState = { status: "idle" };
  * This inherits the membership check's known limitation — it confirms an email
  * exists in the roster, not that the visitor owns it. Closing that needs real
  * sign-in, which is Phase 3, Module A.
+ *
+ * MEMBERS ADDED BY STAFF CANNOT MINT A CARD. The action this calls is not the
+ * one /membership uses: it refuses records from the `Manual Members` tab, where
+ * both the name and the address were typed by somebody other than the member.
+ * They can still check their standing on /membership, which tells them only
+ * what PMAFI already told them.
  */
 export default function IdGate() {
   const [state, action, pending] = useActionState(
-    checkMembershipAction,
+    checkMembershipForIdAction,
     initialState
   );
 
@@ -101,6 +107,41 @@ export default function IdGate() {
               Apply for membership
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
+          </div>
+        )}
+
+        {/* On the roster, but their row was created by staff rather than by
+            them. Say what to do next and never why in detail — "your record was
+            typed by somebody else" is both confusing and faintly insulting, and
+            spelling out which addresses cannot mint a card is a map for anyone
+            who wanted to try. */}
+        {state.status === "manual" && (
+          <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
+            <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
+              <Mail className="h-5 w-5 text-[#C8A951]" />
+              Your membership needs to be confirmed by the Foundation first.
+            </p>
+            <p className="mt-1 text-sm text-slate-600">
+              You are on the roster, so your standing is available on the
+              membership page. A digital ID card, though, can only be issued
+              once your own application is on file. Please get in touch and the
+              Foundation will sort it out with you.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <Link
+                href="/contact"
+                className="group inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#A07830] hover:text-white"
+              >
+                Contact the Foundation
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+              </Link>
+              <Link
+                href="/membership#check"
+                className="inline-flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-colors hover:border-[#C8A951]"
+              >
+                Check membership status
+              </Link>
+            </div>
           </div>
         )}
 
