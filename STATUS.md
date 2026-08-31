@@ -147,6 +147,7 @@ mistake shows stale content rather than an empty page. Staff guide:
 | `News` | The home page's News & Announcements | Moved here 2026-08-31 from a standalone sheet that had never been shared with the service account, so the feed silently served samples for months |
 | `Fund updates` | `/donate/impact` and the updates shown in a donor's own lookup | |
 | `Chairs` | The roll of endowed chairs on `/programs` | One column. There is deliberately no place to put an amount |
+| `Donation Photos` | The gallery on `/donate/impact` | Photos live in Drive; the tab is the index. Caption is required — it is the alt text. `Published` exists so a cheque with a name and an amount cannot reach the web by drag-and-drop |
 | `FAQ` | The assistant's answer set | |
 
 The FAQ assistant is a floating widget on every page — keyword matching with a

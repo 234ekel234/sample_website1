@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { ArrowRight, Landmark, Sparkles } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
 import YearInReview from "@/components/sections/donate/YearInReview";
+import DonationGallery from "@/components/sections/donate/DonationGallery";
 import { getFundUpdates, groupByFund } from "@/lib/fund-updates";
 import { formatSheetDate } from "@/lib/sheet-date";
 
@@ -159,6 +160,12 @@ export default async function FundUpdatesPage() {
           </div>
         </div>
       </section>
+
+      {/* After the written record, not before it. The fund timeline is what a
+          donor came to read; the photographs are the same story told again for
+          anyone who scrolled past it. Renders nothing at all when the sheet has
+          no published photographs. */}
+      <DonationGallery />
     </main>
   );
 }

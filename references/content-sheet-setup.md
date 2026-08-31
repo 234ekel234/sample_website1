@@ -332,6 +332,48 @@ keeps dates as. Fixed 2026-08-31; dates now display as written whether the cell
 is formatted as a date or as plain text. Free text like `Upcoming` still passes
 through untouched.
 
+## The "Donation Photos" tab — the gallery on /donate/impact
+
+Photographs of gifts being handed over. The pictures themselves live in **Google
+Drive**; this tab is the index that decides which of them are public.
+
+### Columns
+
+| Column | Header | Required | Notes |
+|---|---|---|---|
+| A | `Image URL` | **yes** | The Drive share link, set to *"Anyone with the link can view"*. A path to a photo already on the site (`/donation-handover.jpg`) also works |
+| B | `Caption` | **yes** | One sentence. **This is also the alt text** a blind visitor hears, so describe what is happening — "Alumni of PMA Class 1967 presenting their gift", not "photo 4" |
+| C | `Date` | no | Newest appear first; undated ones sit at the end |
+| D | `Published` | **yes** | `Yes` to show it. Anything else keeps it private |
+
+Seed file: `references/donation-photos-sheet.tsv`.
+
+### Why a sheet, and not just a Drive folder
+
+The site could have read a Drive folder directly, and staff would only have had
+to drop files into it. It deliberately does not. **A shared folder would become a
+publishing pipeline** — whatever lands in it reaches the public within a minute,
+with nobody having looked at it and no caption.
+
+That is the wrong arrangement for these photographs in particular. A donation
+photo is very often a presentation cheque, and a presentation cheque shows a
+donor's name beside the amount they gave. That is precisely the pairing the *My
+Donations* page demands a reference code to protect, and precisely what had to
+be blurred out of the handover photograph on the Donate page. Ticking
+`Published` makes putting a name or a figure on the internet a decision somebody
+made on purpose.
+
+### Before you publish a photograph
+
+- **Look at what is written in the frame.** Cheques, banners and certificates
+  carry names and amounts. If an amount is legible, do not publish it — send it
+  over and it can be blurred, as the Donate page photograph was.
+- **Consider whether the people in it agreed to appear.** The donation form asks
+  *"May we acknowledge you publicly?"* — a gallery is that same question asked
+  again, in pictures.
+- **No photograph is better than a doubtful one.** An empty tab renders no
+  gallery at all; the page simply carries on without it.
+
 ## The "Chairs" tab — the roll of endowed professorial chairs
 
 Also in the **same spreadsheet**, on a tab named **`Chairs`**. It fills the
