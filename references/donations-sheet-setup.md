@@ -84,6 +84,29 @@ pasting them in a different order, per gift, forty times in a morning. Put an
 amount in the fund column and the site skips the row silently — and the donor is
 told their reference does not match, which reads as PMAFI having lost their gift.
 
+### Get told when a report arrives
+
+Run **PMAFI → Turn on report notifications** once. From then on, every donation
+report emails whoever owns the spreadsheet — donor, amount, fund, how it was
+sent, and a link to the row.
+
+This matters more than it sounds. A donor gives on Monday, reports it, and sees
+nothing on *My Donations* until somebody opens this sheet and logs it. The
+longer that takes, the more it reads as PMAFI having lost their money. The email
+is a tap on the shoulder; verifying and logging are still done by a person.
+
+Two things it deliberately does **not** do:
+
+- **It does not email membership applications.** Both forms feed this one
+  spreadsheet, so the notification checks which tab the row landed in first.
+- **It does not include the bank or GCash transaction number.** That is a
+  banking identifier, and email gets forwarded and left sitting in inboxes in a
+  way a private spreadsheet does not. Whoever verifies the gift opens the sheet
+  anyway.
+
+To send notifications somewhere other than the spreadsheet owner — a finance
+address, or several people — set `NOTIFY_TO` at the top of the script.
+
 ### The other way: a gift that never came through the form
 
 A cheque handed over at an event, say. Add the row to `Donations` yourself using

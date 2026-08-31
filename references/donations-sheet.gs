@@ -44,6 +44,13 @@
  *   cell, then **PMAFI → Generate reference for selected cells**. Never type a
  *   reference by hand, and never copy the row above and edit the digits.
  *
+ *   NOTIFICATIONS — run **PMAFI → Turn on report notifications** once, and
+ *   every new donation report is emailed to whoever owns this spreadsheet (or
+ *   to NOTIFY_TO, if set). Membership applications land in this same file and
+ *   are deliberately not emailed. Nothing else changes: the email is a tap on
+ *   the shoulder, and verifying, logging and acknowledging are still done by a
+ *   person.
+ *
  *   NEVER type a gift into `Donation Reports`. That tab belongs to the form,
  *   which writes each response to the row after the last one IT wrote — so a
  *   hand-typed row sits in space the form still considers free and gets
@@ -90,6 +97,15 @@ var REPORT_HEADERS = {
  */
 var LOGGED_HEADER = 'Logged reference';
 
+/**
+ * Who is told when a donor reports a gift. Blank = whoever owns this
+ * spreadsheet, which is the safe default because it is certainly a real inbox
+ * somebody reads. Set it to the finance address once PMAFI has one.
+ *
+ * Several addresses are fine: 'a@x.com, b@y.com'.
+ */
+var NOTIFY_TO = '';
+
 /** Must match src/lib/funds.ts. Anything else still works, but only if the
  *  Fund Updates tab spells it identically. */
 var FUNDS = ['Professorial Chair Fund', 'Endowment Fund', 'General Fund'];
@@ -115,7 +131,117 @@ function onOpen() {
     .createMenu('PMAFI')
     .addItem('Log selected report(s) to Donations', 'logSelectedReports')
     .addItem('Generate reference for selected cells', 'generateReferences')
+    .addSeparator()
+    .addItem('Turn on report notifications', 'setUpNotifications')
     .addToUi();
+}
+
+// ── NOTIFICATIONS ────────────────────────────────────────────────────────────
+//
+// WHY: a donor gives on Monday, reports it, and then hears nothing until
+// somebody happens to open this spreadsheet. /donate/status shows them nothing
+// in the meantime, which reads as the Foundation having lost their money. The
+// whole donor-tracking feature is only as truthful as how quickly a human
+// notices a report arrived — and nothing was telling anyone.
+//
+// This does not verify, log or acknowledge anything. It is a tap on the
+// shoulder, and the rest of the work is still done by a person.
+
+/**
+ * Install the on-form-submit trigger. Run once, from the PMAFI menu.
+ *
+ * Idempotent: it clears its own previous triggers first, so clicking the menu
+ * item twice leaves one trigger rather than two emails per gift.
+ */
+function setUpNotifications() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+
+  var existing = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < existing.length; i++) {
+    if (existing[i].getHandlerFunction() === 'onDonationReport') {
+      ScriptApp.deleteTrigger(existing[i]);
+    }
+  }
+
+  ScriptApp.newTrigger('onDonationReport')
+    .forSpreadsheet(ss)
+    .onFormSubmit()
+    .create();
+
+  ui.alert(
+    'Notifications are on.\n\n' +
+    'Every new donation report will be emailed to ' + notifyAddress_() + '.\n\n' +
+    'Membership applications land in this same spreadsheet and are deliberately ' +
+    'NOT emailed — only donation reports are.'
+  );
+}
+
+/**
+ * Runs on every form submission into this spreadsheet.
+ *
+ * BOTH FORMS FEED THIS ONE FILE — membership responses and donation reports —
+ * and a spreadsheet trigger cannot be limited to one of them. So the first
+ * thing this does is check which tab the row landed in and return if it is not
+ * a donation report. Without that check, every membership application would
+ * email the finance inbox announcing a gift that does not exist.
+ */
+function onDonationReport(e) {
+  if (!e || !e.range) return; // Run by hand from the editor; there is no event.
+
+  try {
+    var sheet = e.range.getSheet();
+    if (sheet.getName() !== REPORTS_TAB_NAME) return;
+
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    var row = e.range.getRow();
+    var values = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+    var get = function (needle) {
+      var i = findHeader_(headers, needle);
+      return i < 0 ? '' : String(values[i] || '').trim();
+    };
+
+    var amount = parseAmount_(values[findHeader_(headers, REPORT_HEADERS.amount)]);
+    var lines = [
+      'A donor has reported a gift to PMAFI.',
+      '',
+      'Donor:   ' + (get(REPORT_HEADERS.name) || '(no name given)'),
+      'Amount:  ' + (isNaN(amount) ? '(not stated)' : 'PHP ' + amount.toLocaleString('en-PH')),
+      'Fund:    ' + (matchFund_(get(REPORT_HEADERS.fund)) || '(not designated)'),
+      'Sent on: ' + (get(REPORT_HEADERS.date) || '(not stated)'),
+      'Method:  ' + (get('how did you send') || '(not stated)'),
+      '',
+      // THE TRANSACTION NUMBER IS DELIBERATELY NOT HERE. It is a banking
+      // identifier, and an email is copied, forwarded and left in inboxes in a
+      // way a private spreadsheet is not. Whoever verifies the gift is opening
+      // the sheet anyway.
+      'Open row ' + row + ' to verify it against the bank record:',
+      e.range.getSheet().getParent().getUrl(),
+      '',
+      'Once the transfer is confirmed: select the row and use',
+      'PMAFI -> Log selected report(s) to Donations, then email the donor',
+      'their reference. Until that is done the gift is invisible to them.'
+    ];
+
+    MailApp.sendEmail({
+      to: notifyAddress_(),
+      subject: 'PMAFI: donation reported' +
+        (get(REPORT_HEADERS.name) ? ' by ' + get(REPORT_HEADERS.name) : ''),
+      body: lines.join('\n')
+    });
+  } catch (err) {
+    // NEVER let this throw. The trigger runs alongside the form submission, and
+    // a failure here must not put the donor's own report at risk — the row is
+    // already safely in the sheet by the time this runs, and a missed email is
+    // recoverable in a way a lost report is not.
+    console.error('Donation notification failed: ' + err);
+  }
+}
+
+/** Configured recipient, or the spreadsheet's owner. */
+function notifyAddress_() {
+  return NOTIFY_TO || Session.getEffectiveUser().getEmail();
 }
 
 /**
