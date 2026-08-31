@@ -147,7 +147,7 @@ mistake shows stale content rather than an empty page. Staff guide:
 | `News` | The home page's News & Announcements | Moved here 2026-08-31 from a standalone sheet that had never been shared with the service account, so the feed silently served samples for months |
 | `Fund updates` | `/donate/impact` and the updates shown in a donor's own lookup | |
 | `Chairs` | The roll of endowed chairs on `/programs` | One column. There is deliberately no place to put an amount |
-| `Donation Photos` | The gallery on `/donate/impact` | Photos live in Drive; the tab is the index. Caption is required — it is the alt text. `Published` exists so a cheque with a name and an amount cannot reach the web by drag-and-drop |
+| `Donation Photos` | The gallery on `/donate/impact` | Staff type a **file name** from the Drive photos folder; `DRIVE_PHOTOS_FOLDER_ID` says which folder. Caption is required — it is the alt text. Dropping a file in the folder publishes nothing: a row must name it and tick `Published`, so a cheque showing a name and an amount cannot reach the web by drag-and-drop |
 | `FAQ` | The assistant's answer set | |
 
 The FAQ assistant is a floating widget on every page — keyword matching with a
@@ -213,6 +213,7 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `NEXT_PUBLIC_GA_ID` | — | ✅ | Google Analytics |
 | `MEMBERS_SHEET_RANGE` | — | — | optional; defaults to `Membership Applications!A1:Z` |
 | `MANUAL_MEMBERS_RANGE` | — | — | optional; defaults to `Manual Members!A1:Z`. A missing tab is not an error |
+| `DRIVE_PHOTOS_FOLDER_ID` | ❌ | ❌ | the Drive folder the donation gallery resolves file names against. Needs the **Drive API enabled** in the Cloud project, the folder shared with the service account as Viewer, **and** link-sharing on so visitors' browsers can load the images. Unset means only pasted links work |
 | `DONATIONS_SHEET_ID` | — | — | optional; falls back to `MEMBERS_SHEET_ID` |
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries |
 

@@ -48,6 +48,20 @@ describe("parseDonationPhotos", () => {
     expect(out.map((p) => p.caption)).toEqual(["fine"]);
   });
 
+  it("treats a bare file name as a name to look up, not a URL", () => {
+    // The whole point of the change: staff type "handover.jpg" rather than
+    // pasting a share link. It stays unresolved here — resolving asks Drive.
+    const [photo] = parseDonationPhotos([row("handover.jpg", "named")]);
+    expect(photo.fileName).toBe("handover.jpg");
+    expect(photo.image).toBe("");
+  });
+
+  it("still accepts a pasted Drive link alongside names", () => {
+    const [photo] = parseDonationPhotos([row(DRIVE, "linked")]);
+    expect(photo.image).toBe("https://lh3.googleusercontent.com/d/ABC123");
+    expect(photo.fileName).toBe("");
+  });
+
   it("refuses a link on a host that cannot be loaded", () => {
     // next/image throws during server render on an unlisted host, which would
     // take the whole page down rather than drop one photograph.

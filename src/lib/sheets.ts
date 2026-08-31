@@ -18,7 +18,24 @@
 import crypto from "node:crypto";
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
-const SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets.readonly";
+/**
+ * Scopes the one cached token carries.
+ *
+ * `drive.metadata.readonly` is the narrowest scope that can list a folder: it
+ * returns names and ids and cannot read a file's CONTENTS at all. The gallery
+ * only needs to turn "handover.jpg" into a file id — the picture itself is
+ * fetched by the visitor's browser from a link-shared URL, never by us — so the
+ * broader `drive.readonly` would be asking for a capability nothing here uses.
+ *
+ * Both scopes on one token keeps a single cached credential. The service
+ * account can still only see what has been shared with it, which is the real
+ * boundary; the scope decides what it may do with those files, not which files
+ * exist to it.
+ */
+const SHEETS_SCOPE = [
+  "https://www.googleapis.com/auth/spreadsheets.readonly",
+  "https://www.googleapis.com/auth/drive.metadata.readonly",
+].join(" ");
 
 let tokenCache: { token: string; expires: number } | null = null;
 
