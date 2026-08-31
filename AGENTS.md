@@ -48,7 +48,7 @@ Full list with priorities: `references/pmafi-information-request.md`.
 - BIR donee institution status — pending confirmation. **No page may claim tax deductibility until it is**; `/donate` says "coming soon" and the FAQ defers to the donor's own accountant
 - Finance-team contact (`finance.email` / `finance.phone` / `finance.name`) for the Give Directly section on `/donate` — falls back to `contact.email`, so the section works without it, but a major-gift enquiry currently lands in the general inbox
 - Vercel Production has `MEMBERS_SHEET_ID`, `CONTENT_SHEET_ID`, `NEWS_SHEET_ID`, both service-account vars and `NEXT_PUBLIC_GA_ID` set (verified via `vercel env ls`). `MEMBERS_SHEET_RANGE` is deliberately **unset**, so production uses the code default `Membership Applications!A1:Z` — do not add it unless the tab is renamed again, or it will pin production to a stale range. The tab was renamed off Google's `Form Responses 1` because that name is positional and gets reassigned when a form is recreated
-- `DONATIONS_SHEET_ID` and `RESEND_API_KEY` are not set in Vercel, so `/donate/status` cannot look anything up or email a summary in production
+- `DONATIONS_SHEET_ID` is unset in Vercel and does not need to be: `donations.ts` falls back to `MEMBERS_SHEET_ID`, which is set, and the donation log lives in that same private spreadsheet — so **`/donate/status` does work in production** (this line previously claimed the opposite; corrected 2026-08-31). `RESEND_API_KEY` genuinely is unset, so the emailed-summary control stays hidden rather than failing
 
 ## References
 
