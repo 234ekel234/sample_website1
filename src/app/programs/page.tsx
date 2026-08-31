@@ -15,6 +15,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
+import ChairsRoll from "@/components/sections/programs/ChairsRoll";
 
 export const metadata: Metadata = {
   title: "Programs | PMAFI",
@@ -247,6 +248,11 @@ export default function ProgramsPage() {
           </figure>
         </div>
       </section>
+
+      {/* The proof, immediately before the ask. Everything above this describes
+          what the Foundation intends to do; this is the list of what it has
+          already done, one name at a time. */}
+      <ChairsRoll />
 
       {/* How You Can Help */}
       <section className="bg-slate-50 py-20">
