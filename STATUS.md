@@ -85,19 +85,24 @@ only headers containing "name", "email", "category", "status", "pma class" and
 "timestamp" — column order is its own business. A missing tab is not an error.
 Template: `references/manual-members-sheet.tsv`.
 
-**Three lookups, deliberately separate.** `/membership` accepts an email or a
+**Two lookups, deliberately separate.** `/membership` accepts an email or a
 name. `/membership/id`, which mints a card bearing the Foundation's seal,
 accepts an **email only** — names are public, so allowing one to mint a card
-would make the credential forgeable by anyone who can read — **and refuses
-manual members**, because both the name and the address on a hand-typed row
-were entered by somebody other than the member, so nobody has shown the address
-belongs to the person named. A manual member can still check their standing,
-which tells them only what PMAFI already told them.
+would make the credential forgeable by anyone who can read.
 
-A member who is added by hand and *later applies through the form* is promoted
-to form, and can then mint a card — even when the manual row still wins on
-standing, which it usually does, since staff set Active and a fresh submission
-carries a blank status meaning Pending.
+**Manual members mint cards on the same terms as everyone else.** They briefly
+could not: staff type both the name and the address on a hand-added row, so the
+argument ran that nobody had shown the address belonged to the person named.
+PMAFI settled it on 2026-08-31 — the address is asked of the member so they can
+be reached, and is theirs. With 38 of 80 roster rows manual, the refusal locked
+out nearly half the membership to close a gap it could not close anyway: the
+gate proves an address is *on* the roster, never that the visitor owns it, and
+that is equally true of form members. Closing it needs sign-in (Phase 3).
+
+`MemberRecord.source` still records which tab a member came from, and a manual
+member who later applies through the form is still promoted to `form`. Neither
+decides access now; the promotion logic stays correct for whenever an admin view
+wants to show provenance.
 
 Tabs are named `Membership Applications` and `Donation Reports` rather than
 Google's `Form Responses N`, which is positional and gets reassigned when a form

@@ -89,45 +89,30 @@ export async function checkMembershipAction(
 }
 
 // ---------------------------------------------------------------------------
-// The /membership/id gate — email only, AND form-submitted members only.
+// MEMBERS ADDED BY HAND CAN MINT A CARD, and there is no separate ID action.
+//
+// There was one briefly. It refused rows from the `Manual Members` tab on the
+// grounds that staff had typed both the name and the address, so nobody had
+// shown the address belonged to the person named — where a form row at least
+// proves the member controls the inbox, Google having made them sign in to
+// attach a receipt.
+//
+// PMAFI'S ANSWER, 2026-08-31: the address on a manual row is the member's own.
+// It is asked for precisely so the member can be reached and can use the site;
+// it is not invented by whoever typed the row. On that footing the distinction
+// the refusal rested on does not hold, and the cost of keeping it was real —
+// 38 of the roster's 80 rows are manual, so nearly half the membership would
+// have been told to contact the Foundation to get a card the site could
+// perfectly well issue.
+//
+// What remains true, and is unchanged either way: the gate proves an address is
+// ON the roster, not that the visitor owns it. That is the Phase 3 Module A
+// gap, and it was never closed here for form members either.
+//
+// MemberRecord.source is still populated and still tested. It is no longer
+// load-bearing for access, but it records which tab a member came from, which
+// an admin view would want the day one exists.
 // ---------------------------------------------------------------------------
-
-export type MembershipIdState =
-  | MembershipCheckState
-  /** On the roster, but added by staff rather than by their own application. */
-  | { status: "manual" };
-
-/**
- * The membership check the ID generator runs, and the only one it may run.
- *
- * A THIRD ACTION RATHER THAN A FLAG ON THE OTHER TWO. checkMembershipAction is
- * also what the /membership status check calls for its email path, and a
- * manual member is perfectly entitled to see their own standing there — it
- * tells them only what PMAFI already told them when it added them. What they
- * may not do is mint a PNG bearing the Foundation's seal.
- *
- * WHY THE DISTINCTION IS REAL. A form row was created by the member: Google
- * made them sign in to attach a receipt, so the address on the row is one they
- * demonstrably control. A `Manual Members` row was typed by staff — both the
- * name and the address. Nobody has shown that the address belongs to the person
- * named, so anyone who can guess or learn that address could mint that member's
- * card. The existing gate is already weak in this respect (it proves an address
- * is ON the roster, not that the visitor owns it, which is Phase 3 Module A);
- * this at least declines to widen the hole to addresses no member ever typed.
- *
- * Following the pattern set by the name lookup: a separate function, so the
- * card path has no branch that could be reached with a manual record rather
- * than a boolean somebody could later invert.
- */
-export async function checkMembershipForIdAction(
-  _prev: MembershipIdState,
-  formData: FormData
-): Promise<MembershipIdState> {
-  const found = await lookupByEmail(formData);
-  if (found.kind === "state") return found.state;
-  if (found.member.source === "manual") return { status: "manual" };
-  return foundState(found.email, found.member);
-}
 
 // ---------------------------------------------------------------------------
 // The /membership status check — email OR name.

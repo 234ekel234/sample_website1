@@ -155,7 +155,7 @@ describe("lookupMembershipAction — email path", () => {
   });
 });
 
-describe("checkMembershipForIdAction — the digital ID gate", () => {
+describe("the digital ID gate — checkMembershipAction", () => {
   const fd = (email: string) => {
     const f = new FormData();
     f.set("email", email);
@@ -164,44 +164,47 @@ describe("checkMembershipForIdAction — the digital ID gate", () => {
 
   it("issues a card to a member who applied through the form", async () => {
     checkMembership.mockResolvedValue(MEMBER);
-    const { checkMembershipForIdAction } = await load();
-    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    const { checkMembershipAction } = await load();
+    const state = await checkMembershipAction({ status: "idle" }, fd("juan@example.com"));
     if (state.status !== "found") throw new Error("expected found");
     expect(state.name).toBe("Juan Dela Cruz");
   });
 
-  it("REFUSES a member staff added by hand", async () => {
-    // Both the name and the address on a Manual Members row were typed by
-    // somebody other than the member, so nobody has shown the address belongs
-    // to the person named. A card is a credential bearing the Foundation's
-    // seal; it may not rest on an address no member ever entered.
+  it("issues a card to a member PMAFI added by hand", async () => {
+    // Decided 2026-08-31, reversing an earlier refusal: the address on a
+    // Manual Members row is the member's own — PMAFI asks for it so the member
+    // can be reached — not one invented by whoever typed the row. 38 of the
+    // roster's 80 rows are manual, so refusing them locked nearly half the
+    // membership out of a card the site could perfectly well issue.
     checkMembership.mockResolvedValue({ ...MEMBER, source: "manual" });
-    const { checkMembershipForIdAction } = await load();
-    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
-    expect(state.status).toBe("manual");
+    const { checkMembershipAction } = await load();
+    const state = await checkMembershipAction({ status: "idle" }, fd("juan@example.com"));
+    if (state.status !== "found") throw new Error("expected found");
+    expect(state.name).toBe("Juan Dela Cruz");
   });
 
-  it("leaks nothing about the member when it refuses", async () => {
-    // The refusal state is serialized to the browser like any other. It must
-    // carry no name, category or standing — the visitor has not been shown to
-    // be the person they typed.
+  it("never leaks the provenance of a record to the browser", async () => {
+    // source decides nothing about access now, and it is nobody's business on
+    // the client either — a payload saying "manual" would tell a visitor how
+    // another member's row was created.
     checkMembership.mockResolvedValue({ ...MEMBER, source: "manual" });
-    const { checkMembershipForIdAction } = await load();
-    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
-    expect(JSON.stringify(state)).not.toMatch(/Juan|Regular|Active|1988/);
+    const { checkMembershipAction } = await load();
+    const state = await checkMembershipAction({ status: "idle" }, fd("juan@example.com"));
+    expect(JSON.stringify(state)).not.toMatch(/manual|form/);
   });
 
-  it("still refuses a bad address and an unknown one, as before", async () => {
+  it("still refuses a bad address and an unknown one", async () => {
     checkMembership.mockResolvedValue(null);
-    const { checkMembershipForIdAction } = await load();
-    expect((await checkMembershipForIdAction({ status: "idle" }, fd("nope"))).status).toBe("error");
-    expect((await checkMembershipForIdAction({ status: "idle" }, fd("no@one.com"))).status).toBe("notfound");
+    const { checkMembershipAction } = await load();
+    expect((await checkMembershipAction({ status: "idle" }, fd("nope"))).status).toBe("error");
+    expect((await checkMembershipAction({ status: "idle" }, fd("no@one.com"))).status).toBe("notfound");
   });
 
   it("does not fall back to a card when the sheet read fails", async () => {
     checkMembership.mockRejectedValue(new Error("sheets down"));
-    const { checkMembershipForIdAction } = await load();
-    const state = await checkMembershipForIdAction({ status: "idle" }, fd("juan@example.com"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { checkMembershipAction } = await load();
+    const state = await checkMembershipAction({ status: "idle" }, fd("juan@example.com"));
     expect(state.status).toBe("error");
   });
 });
