@@ -334,67 +334,65 @@ through untouched.
 
 ## The "Donation Photos" tab — the gallery on /donate/impact
 
-Photographs of gifts being handed over. The pictures live in **one Google Drive
-folder**; this tab names the ones that should be public.
+Photographs of gifts being handed over, kept in Google Drive. This tab decides
+which of them are public.
 
 ### Columns
 
 | Column | Header | Required | Notes |
 |---|---|---|---|
-| A | `Photo` | **yes** | Just the file name as it appears in the photos folder — `handover.jpg`. Capitalisation does not matter, and the extension can be left off unless two files share the name. A full Drive share link or a path already on the site (`/donation-handover.jpg`) also works |
+| A | `Photo` | **yes** | The Drive **share link** for the photograph. A path to an image already on the site (`/donation-handover.jpg`) also works |
 | B | `Caption` | **yes** | One sentence. **This is also the alt text** a blind visitor hears, so describe what is happening — "Alumni of PMA Class 1967 presenting their gift", not "photo 4" |
 | C | `Date` | no | Newest appear first; undated ones sit at the end |
 | D | `Published` | **yes** | `Yes` to show it. Anything else keeps it private |
 
 Seed file: `references/donation-photos-sheet.tsv`.
 
-### The folder needs two kinds of sharing
-
-They do different jobs and both are needed:
-
-1. **Shared with the service account** (`pmafi-members@pmafi-website.iam.gserviceaccount.com`) as **Viewer** — this is what lets the site turn a file name into a photograph.
-2. **"Anyone with the link can view"** — this is what lets a *visitor's browser* load the picture. Without it the gallery shows grey boxes: the site finds the file perfectly well and then every visitor is refused it.
-
-The folder id goes in the `DRIVE_PHOTOS_FOLDER_ID` environment variable — it is
-the part of the folder's address after `/folders/`.
-
 ### Adding a photograph
 
-1. Put the image in the photos folder.
-2. Add a row: the file name, a caption, the date, and `Published` = `Yes`.
+1. Put the image in PMAFI's Drive.
+2. Right-click it → **Share** → **Copy link**.
+3. Add a row: the link, a caption, the date, and `Published` = `Yes`.
 
-**Putting a file in the folder publishes nothing on its own.** That is deliberate,
-and it is the whole reason this tab exists rather than the site simply showing
-the folder — see below.
+It appears within about a minute.
 
-### Why the folder does not publish by itself
+### Set the sharing on the FOLDER, once
 
-A donation photograph is very often a presentation cheque, and a presentation
-cheque shows a donor's name beside the amount they gave. That is precisely the
-pairing the *My Donations* page demands a reference code to protect, and
-precisely what had to be blurred out of the handover photograph on the Donate
-page. If the folder published on its own, that would be one drag-and-drop away
-— by someone tidying up files, who never intended to publish anything.
+Each photograph must be viewable by "anyone with the link", or a visitor's
+browser is refused it and the gallery shows a grey box. Rather than setting that
+on every file, set it **once on the folder the photos live in** — everything
+inside inherits it.
 
-Naming a photograph in this tab is the moment somebody looks at it.
+This is the single most common reason a photograph does not appear.
 
 ### Before you publish a photograph
 
 - **Read what is written in the frame.** Cheques, banners and certificates carry
   names and amounts. If an amount is legible, do not publish it — send it over
-  and it can be blurred, as the Donate page photograph was.
+  and it can be blurred, as the Donate page photograph was. This matters more
+  than it sounds: the *My Donations* page demands a reference code precisely so
+  that nobody learns what another person gave.
 - **Consider whether the people in it agreed to appear.** The donation form asks
   *"May we acknowledge you publicly?"* — a gallery is that same question asked
   again, in pictures.
 - **No photograph is better than a doubtful one.** An empty tab renders no
   gallery at all; the page simply carries on without it.
 
-### If a photograph does not appear
+### If the pasting ever gets tedious
 
-- The name may not match any file in the folder — check the spelling.
-- Two files may share the name once the extension is dropped (`awarding.png` and
-  `awarding.jpg`). Type the full name with its extension to say which you mean.
-- The folder may not be shared both ways described above.
+The site can also take **just a file name** — `handover.jpg` — looked up in one
+nominated Drive folder, so adding a photograph becomes typing its name. It is
+switched on by setting `DRIVE_PHOTOS_FOLDER_ID`, which also needs the Drive API
+enabled and the folder shared with the service account as Viewer.
+
+It is **deliberately not switched on**: about ten minutes of setup that only
+pays for itself somewhere past forty photographs. Rows holding links keep
+working either way, so this can be turned on later with nothing to migrate.
+Until it is, **type a link, not a name** — a bare file name will simply not
+appear, and the explanation goes to a server log nobody is watching.
+
+Note that even with names, dropping a file into the folder publishes nothing. A
+row still has to name it, caption it and tick `Published` — see above for why.
 
 ## The "Chairs" tab — the roll of endowed professorial chairs
 
