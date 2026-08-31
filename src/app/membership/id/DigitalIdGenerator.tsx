@@ -294,13 +294,32 @@ export default function DigitalIdGenerator({
     ctx.fillStyle = pillColor.fg;
     ctx.fillText(pillText, tx + 16, pillY + 20);
 
-    // ID + issued
+    // A STANDING WITHOUT A DATE IS A CLAIM WITHOUT AN EXPIRY.
+    //
+    // This is a PNG. Once downloaded it never changes, while the membership it
+    // describes does — a member who prints ACTIVE today and lapses next year is
+    // still holding a card that says ACTIVE, over the Foundation's seal, with
+    // nothing on it to suggest otherwise. Nobody reading it can tell whether it
+    // was generated this morning or three years ago.
+    //
+    // The card cannot expire on its own and this does not make it verifiable —
+    // that needs Phase 3. What it does is stop the card asserting a present
+    // tense it has no way to keep: "ACTIVE as of 31 August 2026" is true
+    // forever, where a bare "ACTIVE" stops being true the day the roster
+    // changes. Anyone shown a card dated two years ago knows to check.
+    ctx.fillStyle = "rgba(255,255,255,0.55)";
+    ctx.font = "500 12px system-ui, sans-serif";
+    ctx.fillText(`as of ${issued}`, tx + pillW + 12, pillY + 20);
+
+    // ID, joining year, and the date this copy was generated.
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = "600 12px system-ui, sans-serif";
     ctx.fillText("MEMBER NO.", tx, py + 192);
-    // "Member since" beats an issue date: the date moves every time the card is
-    // downloaded, which is odd on a credential. Falls back to the issue date
-    // when the roster has not recorded a joining year.
+    // BOTH DATES NOW, not one or the other. The joining year and the day this
+    // copy was generated answer different questions — how long they have been a
+    // member, and how stale the standing above is — and the card previously
+    // dropped the second whenever it knew the first, which is precisely the
+    // case for almost every member.
     ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 240);
     ctx.fillStyle = "#ffffff";
     ctx.font = "600 22px ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
@@ -430,7 +449,15 @@ export default function DigitalIdGenerator({
             <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
               Standing
             </dt>
-            <dd className="text-sm font-semibold text-slate-900">{standing}</dd>
+            <dd className="text-sm font-semibold text-slate-900">
+              {standing}
+              {/* Said here as well as on the card, so a member understands why
+                  the date is printed beside their standing before they wonder
+                  about it. */}
+              <span className="ml-1.5 font-normal text-slate-500">
+                as of {issued}
+              </span>
+            </dd>
           </div>
           {pmaClass && (
             <div>
