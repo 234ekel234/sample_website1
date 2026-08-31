@@ -20,14 +20,70 @@ import { SITE_HOST } from "@/lib/site";
  * plus an id-lookup endpoint (Phase 3, Module A).
  */
 
-// ISO ID-1 ("credit card") proportions, rendered at 2x for crisp exports.
-const CARD_W = 1000;
-const CARD_H = 630;
-const SCALE = 2;
+// ── PRINT GEOMETRY ───────────────────────────────────────────────────────────
+//
+// Drawn to ISO/IEC 7810 ID-1 — the CR80 card blank every ID printer takes —
+// on the assumption that these will eventually be printed rather than only
+// shown on a phone. That assumption changes four things a screen-only card
+// gets away with:
+//
+//   BLEED. Card printers print oversize and cut. Artwork that stops at the
+//   trim line leaves a white sliver on any sheet that shifts by half a
+//   millimetre, so the background runs 2mm past it on every side.
+//
+//   SAFE AREA. The cut is not exact either, so nothing that must survive sits
+//   within 4mm of the trim. Text pushed to the edge is text that gets sliced.
+//
+//   NO ROUNDED CORNERS IN THE ARTWORK. A CR80 blank is already die-cut round.
+//   Drawing rounded corners into the file means printing the card's corner
+//   radius onto a card that has its own — and it was also the source of the
+//   gold tabs at the top corners, where a square accent bar overhung a rounded
+//   body. The preview rounds them in CSS, which is where that belongs.
+//
+//   RESOLUTION. 635 dpi at card size, comfortably past the 300 a printer asks
+//   for, so the same file serves screen and press.
+//
+// 12.5 design units per millimetre keeps every dimension below a whole number.
+const MM = 12.5;
+const TRIM_W = 85.6 * MM;   // 1070
+const TRIM_H = 54 * MM;     // 675
+const BLEED = 2 * MM;       // 25
+const SAFE = 4 * MM;        // 50 in from the trim
+const CARD_W = TRIM_W + BLEED * 2; // 1120 — the whole artwork, bleed included
+const CARD_H = TRIM_H + BLEED * 2; // 725
+const SCALE = 2;            // 2240 × 1450 exported
+
+/** Left/top of the safe area, and the box everything must stay inside. */
+const X0 = BLEED + SAFE;              // 75
+const Y0 = BLEED + SAFE;              // 75
+const X1 = BLEED + TRIM_W - SAFE;     // 1045
+const Y1 = BLEED + TRIM_H - SAFE;     // 650
 
 const NAVY = "#0a1628";
 const NAVY_2 = "#1B2A4A";
 const GOLD = "#C8A951";
+
+/**
+ * The site's own typefaces, read off the document rather than guessed.
+ *
+ * The card used to draw in `system-ui`, which means San Francisco on a Mac,
+ * Segoe on Windows and Roboto on Android — the same member's card came out
+ * differently on every device, and none of them matched the site. That is
+ * survivable on screen and not survivable in print, where a batch of cards
+ * must be identical whichever machine generated them.
+ *
+ * next/font puts the real families on <html> as --font-sans and --font-mono.
+ */
+function siteFonts(): { sans: string; mono: string } {
+  if (typeof window === "undefined") {
+    return { sans: "system-ui, sans-serif", mono: "ui-monospace, monospace" };
+  }
+  const s = getComputedStyle(document.documentElement);
+  return {
+    sans: s.getPropertyValue("--font-sans").trim() || "system-ui, sans-serif",
+    mono: s.getPropertyValue("--font-mono").trim() || "ui-monospace, monospace",
+  };
+}
 
 /** localStorage key for the member's own photo. Browser-local, never uploaded. */
 const PHOTO_CACHE_KEY = "pmafi:id-photo";
@@ -108,11 +164,12 @@ function fitFont(
   maxW: number,
   max: number,
   min: number,
+  family: string,
   weight = 700
 ) {
   let size = max;
   do {
-    ctx.font = `${weight} ${size}px system-ui, -apple-system, 'Segoe UI', sans-serif`;
+    ctx.font = `${weight} ${size}px ${family}`;
     if (ctx.measureText(text).width <= maxW) break;
     size -= 1;
   } while (size > min);
@@ -177,6 +234,24 @@ export default function DigitalIdGenerator({
     };
   }, []);
 
+  // REDRAW ONCE THE WEBFONTS HAVE ACTUALLY LOADED.
+  //
+  // Canvas does not wait: ask it for Geist before the font file has arrived and
+  // it silently substitutes the fallback, then never repaints. The first card
+  // drawn on a cold load would come out in a different typeface from every card
+  // drawn after it — the exact inconsistency that switching off system-ui was
+  // meant to end.
+  const [fontsReady, setFontsReady] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    document.fonts?.ready
+      .then(() => !cancelled && setFontsReady(true))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
@@ -184,51 +259,62 @@ export default function DigitalIdGenerator({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const { sans, mono } = siteFonts();
+
     ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
     ctx.clearRect(0, 0, CARD_W, CARD_H);
     ctx.textAlign = "left";
     ctx.textBaseline = "alphabetic";
 
-    // Background
+    // Background — square, full bleed. See PRINT GEOMETRY above: the corner
+    // radius belongs to the card blank and to the CSS preview, not to the file.
     const bg = ctx.createLinearGradient(0, 0, CARD_W, CARD_H);
     bg.addColorStop(0, NAVY);
     bg.addColorStop(1, NAVY_2);
-    roundRect(ctx, 0, 0, CARD_W, CARD_H, 28);
     ctx.fillStyle = bg;
-    ctx.fill();
+    ctx.fillRect(0, 0, CARD_W, CARD_H);
 
-    // Gold top accent
+    // Gold band across the head of the card, run out through the bleed so a
+    // cut that lands 1mm low still finds gold rather than white paper.
     ctx.fillStyle = GOLD;
-    roundRect(ctx, 0, 0, CARD_W, 10, 0);
-    ctx.fill();
+    ctx.fillRect(0, 0, CARD_W, BLEED + 2.4 * MM);
+
+    // The seal again, very faint and very large, behind the details. A flat
+    // panel of navy reads as a slide; a watermark reads as a document, and it
+    // is the cheapest way to say "issued" without claiming verification.
+    ctx.save();
+    ctx.globalAlpha = 0.06;
+    const wm = 520;
+    ctx.drawImage(seal, X1 - wm + 60, Y0 + 120, wm, wm);
+    ctx.restore();
 
     // Header: seal + titles
-    ctx.drawImage(seal, 48, 44, 84, 84);
+    const sealSize = 108;
+    ctx.drawImage(seal, X0, Y0 + 8, sealSize, sealSize);
+    const hx = X0 + sealSize + 26;
     ctx.fillStyle = "#ffffff";
-    ctx.font =
-      "700 30px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillText("PMAFI", 150, 78);
+    ctx.font = `700 36px ${sans}`;
+    ctx.fillText("PMAFI", hx, Y0 + 48);
     ctx.fillStyle = GOLD;
-    ctx.font =
-      "600 14px system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif";
-    ctx.fillText("PHILIPPINE MILITARY ACADEMY FOUNDATION, INC.", 150, 102);
+    ctx.font = `600 15px ${sans}`;
+    ctx.fillText("PHILIPPINE MILITARY ACADEMY FOUNDATION, INC.", hx, Y0 + 74);
     ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.font = "600 13px system-ui, sans-serif";
-    ctx.fillText("DIGITAL MEMBER ID", 150, 124);
+    ctx.font = `600 13px ${sans}`;
+    ctx.fillText("MEMBER IDENTIFICATION CARD", hx, Y0 + 98);
 
     // Divider
     ctx.strokeStyle = "rgba(200,169,81,0.35)";
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 1.5;
     ctx.beginPath();
-    ctx.moveTo(48, 156);
-    ctx.lineTo(CARD_W - 48, 156);
+    ctx.moveTo(X0, Y0 + 132);
+    ctx.lineTo(X1, Y0 + 132);
     ctx.stroke();
 
-    // Photo
-    const px = 48,
-      py = 192,
-      pw = 240,
-      ph = 300;
+    // Photo — 20 × 25mm, the proportion an ID photo is cropped to.
+    const px = X0,
+      py = Y0 + 172,
+      pw = 20 * MM,
+      ph = 25 * MM;
     ctx.save();
     roundRect(ctx, px, py, pw, ph, 16);
     ctx.clip();
@@ -238,7 +324,7 @@ export default function DigitalIdGenerator({
       ctx.fillStyle = "rgba(255,255,255,0.06)";
       ctx.fillRect(px, py, pw, ph);
       ctx.fillStyle = "rgba(255,255,255,0.35)";
-      ctx.font = "500 15px system-ui, sans-serif";
+      ctx.font = `500 16px ${sans}`;
       ctx.textAlign = "center";
       ctx.fillText("Photo", px + pw / 2, py + ph / 2);
       ctx.textAlign = "left";
@@ -250,19 +336,19 @@ export default function DigitalIdGenerator({
     ctx.stroke();
 
     // Member details (right of photo)
-    const tx = 328;
-    const nameMaxW = CARD_W - tx - 48;
+    const tx = px + pw + 40;
+    const nameMaxW = X1 - tx;
     ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "600 13px system-ui, sans-serif";
+    ctx.font = `600 13px ${sans}`;
     ctx.fillText("MEMBER", tx, py + 14);
     ctx.fillStyle = "#ffffff";
-    const nameSize = fitFont(ctx, displayName, nameMaxW, 38, 22);
-    ctx.font = `700 ${nameSize}px system-ui, -apple-system, 'Segoe UI', sans-serif`;
-    ctx.fillText(displayName, tx, py + 56);
+    const nameSize = fitFont(ctx, displayName, nameMaxW, 42, 24, sans);
+    ctx.font = `700 ${nameSize}px ${sans}`;
+    ctx.fillText(displayName, tx, py + 58);
 
     ctx.fillStyle = GOLD;
-    ctx.font = "600 18px system-ui, sans-serif";
-    ctx.fillText(`${category} Member`, tx, py + 90);
+    ctx.font = `600 19px ${sans}`;
+    ctx.fillText(`${category} Member`, tx, py + 92);
     // PMA class — the identity marker that carries most weight in this
     // community, and already collected on the application form. Omitted
     // entirely when the roster has no class for this member.
@@ -270,18 +356,24 @@ export default function DigitalIdGenerator({
       const catW = ctx.measureText(`${category} Member`).width;
       const prevFill = ctx.fillStyle;
       ctx.fillStyle = "rgba(255,255,255,0.35)";
-      ctx.fillText("·", tx + catW + 10, py + 90);
+      ctx.fillText("·", tx + catW + 10, py + 92);
       ctx.fillStyle = "#C8A951";
-      ctx.fillText(`PMA ${pmaClass}`, tx + catW + 22, py + 90);
+      ctx.fillText(`PMA ${pmaClass}`, tx + catW + 22, py + 92);
       ctx.fillStyle = prevFill;
     }
 
     // Status pill — colour follows the roster, so a lapsed card reads as lapsed
     // at a glance rather than only in small print.
-    ctx.font = "700 14px system-ui, sans-serif";
+    //
+    // The three CATEGORIES are deliberately not colour-coded to match. PMAFI
+    // has never defined a colour for Regular, Associate or Affiliate, and
+    // inventing one here would put a scheme on a printed credential that the
+    // Foundation would then have to live with — and explain. The category is
+    // stated in words directly above.
+    ctx.font = `700 15px ${sans}`;
     const pillText = standing.toUpperCase();
-    const pillW = ctx.measureText(pillText).width + 32;
-    const pillY = py + 112;
+    const pillW = ctx.measureText(pillText).width + 34;
+    const pillY = py + 116;
     const pillColor =
       standing === "Active"
         ? { bg: "rgba(16,185,129,0.18)", fg: "#34d399" }   // emerald
@@ -289,10 +381,10 @@ export default function DigitalIdGenerator({
           ? { bg: "rgba(56,189,248,0.18)", fg: "#38bdf8" } // sky
           : { bg: "rgba(251,191,36,0.18)", fg: "#fbbf24" }; // amber — lapsed
     ctx.fillStyle = pillColor.bg;
-    roundRect(ctx, tx, pillY, pillW, 30, 15);
+    roundRect(ctx, tx, pillY, pillW, 34, 17);
     ctx.fill();
     ctx.fillStyle = pillColor.fg;
-    ctx.fillText(pillText, tx + 16, pillY + 20);
+    ctx.fillText(pillText, tx + 17, pillY + 23);
 
     // A STANDING WITHOUT A DATE IS A CLAIM WITHOUT AN EXPIRY.
     //
@@ -308,36 +400,40 @@ export default function DigitalIdGenerator({
     // forever, where a bare "ACTIVE" stops being true the day the roster
     // changes. Anyone shown a card dated two years ago knows to check.
     ctx.fillStyle = "rgba(255,255,255,0.55)";
-    ctx.font = "500 12px system-ui, sans-serif";
-    ctx.fillText(`as of ${issued}`, tx + pillW + 12, pillY + 20);
+    ctx.font = `500 13px ${sans}`;
+    ctx.fillText(`as of ${issued}`, tx + pillW + 14, pillY + 23);
 
     // ID, joining year, and the date this copy was generated.
     ctx.fillStyle = "rgba(255,255,255,0.5)";
-    ctx.font = "600 12px system-ui, sans-serif";
-    ctx.fillText("MEMBER NO.", tx, py + 192);
+    ctx.font = `600 12px ${sans}`;
+    ctx.fillText("MEMBER NO.", tx, py + 196);
     // BOTH DATES NOW, not one or the other. The joining year and the day this
     // copy was generated answer different questions — how long they have been a
     // member, and how stale the standing above is — and the card previously
     // dropped the second whenever it knew the first, which is precisely the
     // case for almost every member.
-    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 240);
+    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 248);
     ctx.fillStyle = "#ffffff";
-    ctx.font = "600 22px ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
-    ctx.fillText(memberId, tx, py + 220);
-    ctx.font = "500 18px system-ui, sans-serif";
-    ctx.fillText(memberSince || issued, tx, py + 268);
+    ctx.font = `600 24px ${mono}`;
+    ctx.fillText(memberId, tx, py + 226);
+    ctx.font = `500 19px ${sans}`;
+    ctx.fillText(memberSince || issued, tx, py + 278);
 
     // Footer note. No "scan to verify" claim: there is nothing to scan, and
     // nothing on the site could verify it yet. Scan-to-verify needs a lookup
     // endpoint and persisted cards — Phase 3, Module A.
     ctx.fillStyle = "rgba(255,255,255,0.4)";
-    ctx.font = "500 12px system-ui, sans-serif";
+    ctx.font = `500 13px ${sans}`;
     ctx.fillText(
       `Issued by the Philippine Military Academy Foundation · ${SITE_HOST}`,
-      48,
-      CARD_H - 40
+      X0,
+      Y1 - 4
     );
-  }, [seal, photo, displayName, category, memberId, issued, standing, pmaClass, memberSince]);
+    // fontsReady is not read above, but it must stay in this list: it is what
+    // re-runs the draw once the webfonts arrive, and canvas reads the font at
+    // fillText time rather than reacting to it later.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seal, photo, displayName, category, memberId, issued, standing, pmaClass, memberSince, fontsReady]);
 
   useEffect(() => {
     draw();
