@@ -5,12 +5,33 @@ import Image from "next/image";
 import { Calendar, ArrowRight } from "lucide-react";
 import type { NewsItem } from "@/lib/news";
 
+/**
+ * The grid fits the number of items, rather than always being three columns.
+ *
+ * A fixed md:grid-cols-3 renders one published item as a card in the left
+ * third with two thirds of empty page beside it — which reads as something
+ * having failed to load. That was survivable when this section sat near the
+ * footer; it is the third thing on the home page now.
+ *
+ * The row is also capped and centred, because three cards' worth of width
+ * shared between one or two makes for uncomfortably wide cards: a lone card
+ * stretched across 1280px is not a fix for a lone card in a third of it.
+ *
+ * Four or more items wrap onto a second row of three, which is why the cap
+ * only applies below three.
+ */
+export function gridFor(count: number): string {
+  if (count <= 1) return "mx-auto max-w-md grid-cols-1";
+  if (count === 2) return "mx-auto max-w-3xl grid-cols-1 sm:grid-cols-2";
+  return "grid-cols-1 md:grid-cols-3";
+}
+
 export default function NewsCards({ items }: { items: NewsItem[] }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <div className="grid grid-cols-1 gap-6 md:grid-cols-3" ref={ref}>
+    <div className={`grid gap-6 ${gridFor(items.length)}`} ref={ref}>
       {items.map(({ date, category, title, excerpt, link, image }, i) => {
         const Wrapper = link ? "a" : "div";
         const wrapperProps = link
@@ -45,10 +66,20 @@ export default function NewsCards({ items }: { items: NewsItem[] }) {
                 )}
               </div>
               <div className="flex flex-1 flex-col p-6">
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-slate-500">
-                  <Calendar size={13} />
-                  {date || "Upcoming"}
-                </div>
+                {/* A BLANK DATE SHOWS NOTHING, not "Upcoming".
+                    Defaulting an empty cell to "Upcoming" made the site assert
+                    something the sheet had not said: the teaching-excellence
+                    awarding has already happened, its date is simply unknown,
+                    and the card announced it as a future event. Staff who mean
+                    "upcoming" can type it — the fallback items do exactly that
+                    — but an empty cell means unknown, and unknown is best said
+                    by saying nothing. */}
+                {date && (
+                  <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-slate-500">
+                    <Calendar size={13} />
+                    {date}
+                  </div>
+                )}
                 <h3 className="mt-2 text-lg font-bold leading-snug text-[#1B2A4A]">
                   {title}
                 </h3>
