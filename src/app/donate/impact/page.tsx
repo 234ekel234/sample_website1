@@ -5,6 +5,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ArrowRight, Landmark, Sparkles } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
+import YearInReview from "@/components/sections/donate/YearInReview";
 import { getFundUpdates, groupByFund } from "@/lib/fund-updates";
 import { formatSheetDate } from "@/lib/sheet-date";
 
@@ -31,6 +32,13 @@ export default async function FundUpdatesPage() {
         }
         lede="Every fund the Foundation holds exists to do something specific at the Academy. This is the record of what each one has accomplished."
       />
+
+      {/* Above the per-fund timeline, and independent of it. The timeline is
+          only as full as what staff have published to the sheet; these counts
+          are the Foundation's own published record and stand whether or not a
+          single fund update exists — including in the empty state below, which
+          would otherwise leave this page saying nothing at all. */}
+      <YearInReview />
 
       <section className="bg-white py-20">
         <div className="mx-auto max-w-5xl px-6">
