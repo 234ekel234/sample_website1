@@ -1,18 +1,25 @@
-import { PROFESSORIAL_CHAIRS } from "@/lib/chairs";
+import { getChairs } from "@/lib/chairs";
 
 // The roll of endowed chairs, as an honour wall.
 //
 // A SERVER COMPONENT ON PURPOSE. It renders a static list and nothing here
 // animates or responds to a click, so there is no reason to ship 161 names to
 // the browser twice — once as HTML and again as a client-component payload.
+// Being a server component is also what lets it await the sheet directly.
 //
-// NO COUNT IN THE HEADING. The report's own heading says 160 while its list
-// runs to 161 entries (see src/lib/chairs.ts). Printing a number above a roll
-// that disagrees with it invites the one reader who counts, and that reader is
-// usually a trustee. The figure appears where it is safe to state — the "160
-// professorial chairs endowed" tile on /donate/impact, which cites the report's
-// own total rather than counting this array.
-export default function ChairsRoll() {
+// The names come from the `Chairs` tab of the content spreadsheet, so PMAFI
+// adds a chair by adding a row. See src/lib/chairs.ts for the fallback.
+//
+// NO COUNT IN THE HEADING, AND NOT ONLY BECAUSE OF THE 160/161 DISCREPANCY.
+// Now that staff edit the roll, a hardcoded figure above a live list would go
+// wrong the first time somebody adds a chair — the heading would have to be
+// found and changed by a developer, which is the exact coupling this change
+// exists to remove. The figure appears where it is safe to state: the "160
+// professorial chairs endowed" tile on /donate/impact, which cites the 2025
+// report's own total as a matter of record for that year.
+export default async function ChairsRoll() {
+  const chairs = await getChairs();
+
   return (
     <section className="relative overflow-hidden bg-[#0a1628] py-24">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
@@ -37,7 +44,7 @@ export default function ChairsRoll() {
         </div>
 
         <ul className="grid grid-cols-1 gap-x-8 gap-y-2.5 sm:grid-cols-2 lg:grid-cols-3">
-          {PROFESSORIAL_CHAIRS.map((chair) => (
+          {chairs.map((chair) => (
             <li
               key={chair}
               className="flex items-baseline gap-2.5 text-sm leading-relaxed text-slate-300"

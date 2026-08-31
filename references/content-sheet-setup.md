@@ -332,6 +332,52 @@ keeps dates as. Fixed 2026-08-31; dates now display as written whether the cell
 is formatted as a date or as plain text. Free text like `Upcoming` still passes
 through untouched.
 
+## The "Chairs" tab — the roll of endowed professorial chairs
+
+Also in the **same spreadsheet**, on a tab named **`Chairs`**. It fills the
+honour wall on `/programs` — *"Endowed in Their Names"*.
+
+### One column, and that is the whole design
+
+| Column | Header | Notes |
+|---|---|---|
+| A | `Chair` | The chair's name exactly as it should appear on the page, e.g. `Bangko Sentral ng Pilipinas Chair in Finance`. One per row, starting at row 2 |
+
+**There is no amount column, and there must never be one.** The annual report
+prints what several chairs cost beside the names of who endowed them. A name is
+the acknowledgment the donor was promised; the sum is not, and publishing the
+two together is exactly what `/donate/status` withholds behind a reference code.
+Anything typed into column B is ignored by the site.
+
+### Adding, removing, reordering
+
+- **Add a chair** — add a row. It appears within a minute.
+- **Remove one** — delete the row, or clear the cell. Blank rows are skipped.
+- **Order** — the page lists them in sheet order, so sorting the sheet sorts the
+  page. The seeded order is the annual report's own.
+
+### If the tab is empty or unreachable
+
+The site falls back to the roll as published at 31 December 2025, held in
+`src/lib/chairs.ts`. An honour wall that silently empties itself would be worse
+than one a few months out of date. This means **an empty tab does not clear the
+page** — to remove every chair you would have to ask a developer, which is
+deliberate.
+
+### Seeding it
+
+`references/chairs-sheet.tsv` holds the 161 chairs from the 2025 annual report
+with the header row. File → Import → Upload → *Replace current sheet* with the
+`Chairs` tab active, separator Tab.
+
+> **Two open questions for PMAFI.** The report's heading says 160 chairs while
+> its list runs to 161 entries — `BGen Dionardo b Carlos ’88` and `PBeg Dionardo
+> B Carlos` both appear. And several names look like typos in the report itself
+> (`Conjuangco`, `Profirio`, `Nichols A Driz`). None were "corrected" here:
+> guessing at the spelling of a benefactor's name is a worse error than
+> reproducing the Foundation's own. Both are now fixable in the sheet without a
+> developer.
+
 ## What this does not cover
 
 Page text across About, Programs, Donate and the Contact FAQ, along with the

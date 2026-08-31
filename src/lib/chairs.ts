@@ -1,14 +1,26 @@
-// The professorial chairs endowed at the Academy, as PMAFI publishes them.
+// The professorial chairs endowed at the Academy.
 //
-// WHY THIS IS THE STRONGEST ARGUMENT ON THE PAGE: a chair is named for whoever
-// endowed it, so this list IS the recognition. Someone weighing whether to
-// endow one can see exactly what their name would look like and whose company
-// it would keep — which no amount of persuasive copy achieves.
+// THE LIST BELONGS TO PMAFI, NOT TO THIS FILE. Chairs are endowed as gifts
+// arrive, so the roll changes without a developer being involved. It is read
+// from the \`Chairs\` tab of the content spreadsheet — one chair per row in
+// column A, exactly as it should appear on the page — and staff add a chair by
+// adding a row. Guide: references/content-sheet-setup.md.
 //
-// NO AMOUNTS, EVER. The 2025 annual report prints what several of these cost
-// and who paid in the same table. That pairing is what /donate/status withholds
-// behind a reference code and what is blurred out of the cheque photograph on
-// /donate. A name is the acknowledgment the donor was promised; the sum is not.
+// The array below is the FALLBACK, not the source. It is the roll as PMAFI
+// published it at 31 December 2025, and it renders when the sheet is empty or
+// briefly unreachable — the same bargain content.ts strikes everywhere else,
+// because an honour wall that silently empties itself is worse than one that is
+// a few months out of date.
+//
+// WHY THE FALLBACK IS NOT SIMPLY DELETED once the sheet is filled: this list
+// took a careful transcription out of a PDF, and it is the only copy that is
+// version-controlled. See the provenance notes below before editing it.
+//
+// NO AMOUNTS, EVER. The 2025 annual report prints what several of these chairs
+// cost and who paid, in the same table. That pairing is what /donate/status
+// withholds behind a reference code and what is blurred out of the cheque
+// photograph on /donate. A name is the acknowledgment the donor was promised;
+// the sum is not. The sheet has one column for the same reason.
 //
 // SOURCE: PMAFI Annual Report 2025, pp.7-10, "PMAFI PROFESSORIAL CHAIRS (160),
 // As of 31 December 2025". Transcribed from the PDF rather than retyped.
@@ -26,8 +38,13 @@
 // tally that disagrees with the roll beneath it is the one thing worse than
 // having no tally at all.
 
-/** Chair names exactly as the Foundation publishes them, in report order. */
-export const PROFESSORIAL_CHAIRS: string[] = [
+import { readRange } from "@/lib/sheets";
+
+/** Tab name, and the column the chair names live in. */
+const CHAIRS_RANGE = "Chairs!A2:A";
+
+/** The roll as published at 31 December 2025. Fallback only — see above. */
+export const FALLBACK_CHAIRS: string[] = [
   "AFPMBAI Chair in Management",
   "MGen Ramon E Montano Chair",
   "Pres Fidel V Ramos Chair in Leadership",
@@ -190,3 +207,41 @@ export const PROFESSORIAL_CHAIRS: string[] = [
   "Sen Joseph Victor Ejercito Chair",
   "Admiral Ronnie Gil L Gavan Chair",
 ];
+
+/**
+ * Parse sheet rows into chair names. Exported for testing.
+ *
+ * A blank row is skipped rather than rendered as an empty bullet: a staff
+ * member who deletes a chair usually clears the cell instead of removing the
+ * row, and a gap in a spreadsheet should not become a gap in an honour wall.
+ */
+export function parseChairs(rows: unknown[][]): string[] {
+  const chairs: string[] = [];
+  for (const row of rows) {
+    const name = String(row[0] ?? "").trim();
+    if (name) chairs.push(name);
+  }
+  return chairs;
+}
+
+/**
+ * The chairs to display, newest sheet content first choice.
+ *
+ * Returns FALLBACK_CHAIRS when the sheet is missing, unreachable or empty.
+ * Unlike fund updates — where an empty feed must render an honest empty state
+ * rather than invent an achievement — every name here is already a matter of
+ * public record in PMAFI's own annual report, so showing the last known good
+ * roll states nothing that was not already true.
+ */
+export async function getChairs(): Promise<string[]> {
+  const sheetId = process.env.CONTENT_SHEET_ID;
+  if (!sheetId) return FALLBACK_CHAIRS;
+
+  try {
+    const rows = await readRange(sheetId, CHAIRS_RANGE, { revalidate: 60 });
+    const chairs = parseChairs(rows);
+    return chairs.length > 0 ? chairs : FALLBACK_CHAIRS;
+  } catch {
+    return FALLBACK_CHAIRS;
+  }
+}
