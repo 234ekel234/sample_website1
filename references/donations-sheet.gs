@@ -29,9 +29,26 @@
  * spreadsheet-bound script is what allows the custom menu.
  *
  * ── DAILY USE ────────────────────────────────────────────────────────────────
- *   Add a row for a gift once it has been verified. Click the Reference cell,
- *   then **PMAFI → Generate reference for selected cells**. Never type one by
- *   hand, and never copy the row above and edit the digits.
+ *   NORMAL CASE — a donor filled in the donation form. Check the transfer
+ *   arrived against PMAFI's bank record, then on the `Donation Reports` tab
+ *   select the row (or several) and click
+ *   **PMAFI → Log selected report(s) to Donations**.
+ *
+ *   That copies the five fields the website needs into the log in the right
+ *   order, mints the reference, sets the status to Received, and writes the
+ *   reference back beside the report so the same gift cannot be logged twice.
+ *   Nothing is verified for you — a person still decides the money arrived.
+ *
+ *   BY HAND — a gift that never came through the form (a cheque handed over at
+ *   an event, say). Add a row to `Donations` yourself, click the Reference
+ *   cell, then **PMAFI → Generate reference for selected cells**. Never type a
+ *   reference by hand, and never copy the row above and edit the digits.
+ *
+ *   NEVER type a gift into `Donation Reports`. That tab belongs to the form,
+ *   which writes each response to the row after the last one IT wrote — so a
+ *   hand-typed row sits in space the form still considers free and gets
+ *   overwritten by the next submission. `Donations` is a plain tab and is safe
+ *   to type into. (PMAFI lost membership rows this way in August 2026.)
  *
  *   THEN EMAIL THE DONOR THE REFERENCE. Nothing here is automated — the code is
  *   minted in this sheet and reaches the donor only because somebody sends it.
@@ -41,6 +58,37 @@
 
 // ── CONFIG ───────────────────────────────────────────────────────────────────
 var TAB_NAME = 'Donations';
+
+/** The donation form's linked responses sheet — the unverified queue. */
+var REPORTS_TAB_NAME = 'Donation Reports';
+
+/**
+ * Where each field of a report is found, by HEADER TEXT rather than position.
+ *
+ * The responses sheet's layout belongs to the FORM: add a question and every
+ * column after it shifts one to the right. Fixed positions would then copy a
+ * phone number into the Amount column, and the row would either be skipped by
+ * the site or logged as a gift of nothing. Matching is case-insensitive and
+ * substring-based, so the full question text is fine.
+ */
+var REPORT_HEADERS = {
+  email: 'email',
+  name: 'full name',
+  date: 'date sent',
+  amount: 'amount',
+  fund: 'fund'
+};
+
+/**
+ * Column written back into the responses sheet recording what a report became.
+ *
+ * ADDING A COLUMN TO THE RIGHT IS SAFE; adding a ROW is not. A form writes only
+ * its own columns, and only into the new row it creates, so a column past the
+ * end of the form's block is never touched. This is what stops the same gift
+ * being logged twice — the far more likely mistake once two people are working
+ * the queue.
+ */
+var LOGGED_HEADER = 'Logged reference';
 
 /** Must match src/lib/funds.ts. Anything else still works, but only if the
  *  Fund Updates tab spells it identically. */
@@ -65,8 +113,180 @@ var REF_LENGTH = 6;
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('PMAFI')
+    .addItem('Log selected report(s) to Donations', 'logSelectedReports')
     .addItem('Generate reference for selected cells', 'generateReferences')
     .addToUi();
+}
+
+/**
+ * Turn selected rows of `Donation Reports` into verified rows in `Donations`.
+ *
+ * ── WHY THIS EXISTS ──────────────────────────────────────────────────────────
+ * The two tabs do not share a shape and never will: the report is whatever the
+ * form asks (timestamp, phone, transaction number, dedication, permission to
+ * acknowledge), while the log is the seven fields the website reads. Copying by
+ * hand means picking five non-adjacent columns out of eleven, pasting them in a
+ * different order, minting a reference and typing a status — per gift, by
+ * someone who has done it forty times that morning.
+ *
+ * Every one of those steps is a chance to put an amount in the fund column, and
+ * the failure is silent: the site skips the row, and the donor is told their
+ * reference does not match, which reads as the Foundation having lost their
+ * money.
+ *
+ * ── WHAT IT DOES NOT DO ──────────────────────────────────────────────────────
+ * It does not verify the gift. Only PMAFI's bank record can do that, and a
+ * person must still check the transfer arrived before logging it. This command
+ * is the transcription, not the judgement.
+ *
+ * It does not email the donor. The reference reaches them only because somebody
+ * sends it — see references/donation-acknowledgment-email.md.
+ */
+function logSelectedReports() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ui = SpreadsheetApp.getUi();
+  var sheet = ss.getActiveSheet();
+
+  if (sheet.getName() !== REPORTS_TAB_NAME) {
+    ui.alert('Switch to the "' + REPORTS_TAB_NAME + '" tab and select the row(s) to log.');
+    return;
+  }
+  var range = sheet.getActiveRange();
+  if (!range) {
+    ui.alert('Select the row (or rows) to log first.');
+    return;
+  }
+
+  var log = ss.getSheetByName(TAB_NAME);
+  if (!log) {
+    ui.alert('No "' + TAB_NAME + '" tab found. Run setUpDonationsTab first.');
+    return;
+  }
+
+  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var col = {
+    email: findHeader_(headers, REPORT_HEADERS.email),
+    name: findHeader_(headers, REPORT_HEADERS.name),
+    date: findHeader_(headers, REPORT_HEADERS.date),
+    amount: findHeader_(headers, REPORT_HEADERS.amount),
+    fund: findHeader_(headers, REPORT_HEADERS.fund)
+  };
+  var missing = [];
+  for (var key in col) if (col[key] < 0) missing.push(REPORT_HEADERS[key]);
+  if (missing.length) {
+    // Loud, not silent. A renamed question is recoverable; a mis-mapped column
+    // that reaches the log as a real gift is not.
+    ui.alert(
+      'Could not find these columns in "' + REPORTS_TAB_NAME + '":\n\n  ' +
+      missing.join('\n  ') +
+      '\n\nA form question was probably renamed. Nothing has been logged.'
+    );
+    return;
+  }
+
+  var loggedCol = ensureLoggedColumn_(sheet, headers);
+  var used = existingReferences_(log);
+  var added = 0;
+  var skipped = [];
+
+  var first = range.getRow();
+  for (var i = 0; i < range.getNumRows(); i++) {
+    var rowNumber = first + i;
+    if (rowNumber === 1) continue; // the header row, selected by a stray click
+
+    var values = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn()).getValues()[0];
+
+    var already = String(values[loggedCol - 1] || '').trim();
+    if (already) {
+      skipped.push('Row ' + rowNumber + ' — already logged as ' + already);
+      continue;
+    }
+
+    var email = String(values[col.email] || '').trim();
+    var amount = parseAmount_(values[col.amount]);
+    if (!email || isNaN(amount)) {
+      // The site skips rows missing either, so logging one would create a gift
+      // that exists in the sheet and nowhere else.
+      skipped.push('Row ' + rowNumber + ' — needs ' + (!email ? 'an email' : 'a usable amount'));
+      continue;
+    }
+
+    var reference = uniqueReference_(used);
+    used[reference.toUpperCase()] = true;
+
+    log.appendRow([
+      reference,
+      email,
+      String(values[col.name] || '').trim(),
+      normalizeDate_(values[col.date]),
+      amount,
+      matchFund_(values[col.fund]),
+      STATUSES[0] // Received — it has arrived and been verified, nothing more
+    ]);
+    // appendRow ignores the column formats set by setUpDonationsTab, and a
+    // reference left as a general-format value can be reinterpreted.
+    log.getRange(log.getLastRow(), 1).setNumberFormat('@');
+    log.getRange(log.getLastRow(), 4).setNumberFormat('yyyy-mm-dd');
+
+    sheet.getRange(rowNumber, loggedCol).setValue(reference);
+    added++;
+  }
+
+  ui.alert(
+    'Logged ' + added + ' gift' + (added === 1 ? '' : 's') + ' to "' + TAB_NAME + '".' +
+    (skipped.length ? '\n\nNot logged:\n  ' + skipped.join('\n  ') : '') +
+    (added ? '\n\nNow email each donor their reference — until you do, the gift is invisible to the person who made it.' : '')
+  );
+}
+
+/** Index of the first header containing `needle`, or -1. */
+function findHeader_(headers, needle) {
+  var want = String(needle).toLowerCase();
+  for (var i = 0; i < headers.length; i++) {
+    if (String(headers[i]).toLowerCase().indexOf(want) !== -1) return i;
+  }
+  return -1;
+}
+
+/** The 1-based "Logged reference" column, created at the far right if absent. */
+function ensureLoggedColumn_(sheet, headers) {
+  var found = findHeader_(headers, LOGGED_HEADER.toLowerCase());
+  if (found !== -1) return found + 1;
+  var col = sheet.getLastColumn() + 1;
+  sheet.getRange(1, col).setValue(LOGGED_HEADER).setFontWeight('bold');
+  return col;
+}
+
+/** "₱5,000.00" and "5000" and 5000 all mean the same gift. */
+function parseAmount_(value) {
+  if (typeof value === 'number') return value;
+  var cleaned = String(value || '').replace(/[^0-9.]/g, '');
+  return cleaned === '' ? NaN : Number(cleaned);
+}
+
+/** A Date becomes yyyy-mm-dd; anything else is passed through as typed. */
+function normalizeDate_(value) {
+  if (Object.prototype.toString.call(value) === '[object Date]' && !isNaN(value)) {
+    return Utilities.formatDate(value, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  }
+  return String(value || '').trim();
+}
+
+/**
+ * The form's answer text reduced to a canonical fund name.
+ *
+ * The form offers "General Fund — use it wherever it is needed most"; the log
+ * and the Fund Updates tab must both say "General Fund", because the website
+ * joins a donor's gift to their fund's updates by matching those strings.
+ * An unrecognised answer is passed through rather than dropped — see
+ * canonicalFund() in src/lib/funds.ts, which does the same on the way in.
+ */
+function matchFund_(value) {
+  var text = String(value || '').trim();
+  for (var i = 0; i < FUNDS.length; i++) {
+    if (text.toLowerCase().indexOf(FUNDS[i].toLowerCase()) === 0) return FUNDS[i];
+  }
+  return text;
 }
 
 /** Build the Donations tab, or bring an existing one up to spec. */

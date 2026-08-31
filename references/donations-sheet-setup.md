@@ -59,6 +59,44 @@ there before acknowledging a gift publicly.
 
 ## Part 2 — Staff guide (for PMAFI)
 
+### The normal way: log a report in one click
+
+When a donor has filled in the donation form, do **not** copy the columns across
+by hand. Once you have checked the transfer arrived against PMAFI's bank record:
+
+1. Go to the **`Donation Reports`** tab.
+2. Select the row — or several rows, they can be done together.
+3. **PMAFI → Log selected report(s) to Donations.**
+
+That copies the email, name, date, amount and fund into `Donations` in the order
+the website expects, mints a random reference, sets the status to **Received**,
+and writes the reference back into a *Logged reference* column beside the report
+so the same gift cannot be logged twice.
+
+**It does not verify anything.** A person still decides the money arrived; this
+only saves the transcription. And it does not email anybody — see below.
+
+Why it exists: the two tabs do not share a shape and never will. The report is
+whatever the form asks (timestamp, phone, transaction number, dedication,
+permission to acknowledge); the log is the seven fields the website reads.
+Copying by hand means picking five non-adjacent columns out of eleven and
+pasting them in a different order, per gift, forty times in a morning. Put an
+amount in the fund column and the site skips the row silently — and the donor is
+told their reference does not match, which reads as PMAFI having lost their gift.
+
+### The other way: a gift that never came through the form
+
+A cheque handed over at an event, say. Add the row to `Donations` yourself using
+the columns below, then click the Reference cell and use **PMAFI → Generate
+reference for selected cells**.
+
+**Never type a gift into `Donation Reports`.** That tab belongs to the form,
+which writes each response to the row after the last one *it* wrote — so a row
+you type sits in space the form still considers free, and the next submission
+overwrites it. `Donations` is a plain tab and is safe to type into.
+
+### The columns in `Donations`
+
 One row per donation. Add a row once a gift has been **verified** — a donor sees
 nothing until it is logged.
 
