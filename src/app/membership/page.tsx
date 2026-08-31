@@ -173,7 +173,7 @@ export default async function MembershipPage() {
           href="#join"
           className={cn(
             buttonVariants({ size: "lg" }),
-            "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
+            "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white"
           )}
         >
           Apply for Membership
@@ -222,7 +222,7 @@ export default async function MembershipPage() {
               href="/membership/id"
               className={cn(
                 buttonVariants(),
-                "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#A07830] hover:text-white"
+                "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#8A6A22] hover:text-white"
               )}
             >
               Create my ID
@@ -365,7 +365,7 @@ export default async function MembershipPage() {
               rel="noopener noreferrer"
               className={cn(
                 buttonVariants({ size: "lg" }),
-                "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white hover:shadow-[0_12px_40px_-8px_rgba(200,169,81,0.5)]"
+                "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white hover:shadow-[0_12px_40px_-8px_rgba(200,169,81,0.5)]"
               )}
             >
               Apply for Membership

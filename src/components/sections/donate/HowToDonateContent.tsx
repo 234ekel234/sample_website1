@@ -117,7 +117,7 @@ export default function HowToDonateContent({
                   href={donationFormUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-6 py-3 text-sm font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
+                  className="group inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-6 py-3 text-sm font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white"
                 >
                   Tell us about your gift
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />

@@ -60,7 +60,7 @@ export default async function FundUpdatesPage() {
                 href="/donate"
                 className={cn(
                   buttonVariants(),
-                  "group mt-7 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#A07830] hover:text-white"
+                  "group mt-7 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#8A6A22] hover:text-white"
                 )}
               >
                 See ways to give
@@ -150,7 +150,7 @@ export default async function FundUpdatesPage() {
               href="/donate/status"
               className={cn(
                 buttonVariants(),
-                "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#A07830] hover:text-white"
+                "shrink-0 bg-[#C8A951] font-semibold text-[#0a1628] hover:bg-[#8A6A22] hover:text-white"
               )}
             >
               View my donations

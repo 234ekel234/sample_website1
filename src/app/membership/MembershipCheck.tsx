@@ -194,7 +194,7 @@ export default function MembershipCheck({
               behind them. */}
           <a
             href="/membership#join"
-            className="group mt-4 inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#A07830] hover:text-white"
+            className="group mt-4 inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#8A6A22] hover:text-white"
           >
             Apply for Membership
             <ArrowDown className="h-4 w-4 transition-transform group-hover:translate-y-0.5" />

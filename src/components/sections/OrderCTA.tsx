@@ -59,7 +59,7 @@ export default function SupportCTA() {
             href="/donate"
             className={cn(
               buttonVariants({ size: "lg" }),
-              "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white hover:shadow-[0_12px_40px_-8px_rgba(200,169,81,0.5)]"
+              "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white hover:shadow-[0_12px_40px_-8px_rgba(200,169,81,0.5)]"
             )}
           >
             Support PMAFI

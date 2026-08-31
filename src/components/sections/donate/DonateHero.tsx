@@ -21,7 +21,7 @@ export default function DonateHero() {
         href="#ways-to-give"
         className={cn(
           buttonVariants({ size: "lg" }),
-          "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#A07830] hover:text-white"
+          "group bg-[#C8A951] px-8 font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white"
         )}
       >
         See Ways to Give

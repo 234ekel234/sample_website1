@@ -105,7 +105,7 @@ export default async function DirectGiving() {
           <div className="flex shrink-0 flex-col gap-2 sm:items-end">
             <a
               href={`mailto:${email}`}
-              className="inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-colors hover:bg-[#A07830] hover:text-white"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-5 py-2.5 text-sm font-semibold text-[#0a1628] transition-colors hover:bg-[#8A6A22] hover:text-white"
             >
               <Mail className="h-4 w-4" />
               {email}

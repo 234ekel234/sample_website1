@@ -482,7 +482,7 @@ export default function DigitalIdGenerator({
           type="button"
           onClick={download}
           disabled={!canDownload}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#C8A951] px-5 py-3 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#A07830] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#C8A951] px-5 py-3 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#8A6A22] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Download className="h-4 w-4" />
           Download ID (PNG)
