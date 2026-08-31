@@ -17,6 +17,7 @@ import {
 import MembershipCheck from "./MembershipCheck";
 import DuesPayment from "./DuesPayment";
 import PageHero from "@/components/ui/PageHero";
+import FullClasses from "@/components/sections/membership/FullClasses";
 import { getContent, hasPaymentDetails } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -181,7 +182,7 @@ export default async function MembershipPage() {
       </PageHero>
 
       {/* Status check.
-          The `check` anchor is load-bearing: the navbar's "Check My Status" and
+          The `check` anchor is load-bearing: the navbar's "Check Membership Status" and
           the FAQ assistant both link to /membership#check. Without it the nav
           offered no route to this at all — the dropdown said only "Join PMAFI",
           which names the bottom half of a page whose top half is this. */}
@@ -307,6 +308,8 @@ export default async function MembershipPage() {
           </div>
         </div>
       </section>
+
+      <FullClasses />
 
       {/* How to join.
           The `join` anchor is load-bearing: the hero's "Apply for Membership"
