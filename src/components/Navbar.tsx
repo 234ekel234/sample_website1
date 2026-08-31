@@ -33,7 +33,7 @@ const links: NavLink[] = [
       // entry in the bar, so a member looking for the status check found a label
       // describing the one thing they had already done. Donate has surfaced its
       // equivalent as "My Donations" all along.
-      { label: "Check My Status", href: "/membership#check" },
+      { label: "Check Membership Status", href: "/membership#check" },
       { label: "Digital Member ID", href: "/membership/id" },
     ],
   },

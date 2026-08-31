@@ -77,7 +77,7 @@ const FALLBACK: FaqEntry[] = [
     answer:
       "Look yourself up on the membership page by email, or by name if you are not sure which address the Foundation has on file. It shows your current standing — Active, being verified, or Lapsed. Your details stay private; only your own record is ever shown.",
     keywords: ["status", "standing", "active", "lapsed", "pending", "check", "verify"],
-    linkLabel: "Check your status",
+    linkLabel: "Check membership status",
     // Straight to the form. Answering "how do I check my status" and then
     // landing the visitor at the top of the page leaves them to find it.
     linkHref: "/membership#check",

@@ -90,7 +90,7 @@ export default function MembershipCheck({
           disabled={pending}
           className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#1B2A4A] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#0a1628] disabled:opacity-60"
         >
-          {pending ? "Checking…" : "Check my status"}
+          {pending ? "Checking…" : "Check membership status"}
         </button>
       </form>
 
