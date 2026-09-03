@@ -20,12 +20,12 @@ import Image from "next/image";
  * identifiable faces" of the eight PMAFI supplied. That describes a DIFFERENT
  * frame. The file here is byte-identical to PMAFI-MEBERSHIP CAMPAIGN 2025.jpg,
  * which is shot from the side and in which a number of cadets face the camera;
- * the from-behind frame is PMAFI-PMA CLASS 2025.jpg, and nothing on the site
- * currently uses it. So the reason given for choosing this one was never true
- * of it. Swapping the two is a live editorial change to this page and is
+ * the from-behind frame is PMAFI-PMA CLASS 2025.jpg, which the home page's
+ * AtWork band carries. So the reason given for choosing this one was never
+ * true of it. Swapping the two is a live editorial change to this page and is
  * PMAFI's call, not a silent fix — but if the intent really was the frame with
  * the fewest identifiable faces, this page is doing the opposite of what it
- * says, and the better frame is sitting unused.
+ * says, and the frame that would satisfy it is one page away.
  *
  * It also says something the parade ground could not: this is the Foundation
  * itself, at the Academy, in front of the cadets it exists to serve.
@@ -35,11 +35,11 @@ import Image from "next/image";
  * and high windows along the top with the Corps seated low, so anchoring to the
  * top would keep the ceiling and cut the cadets. Splitting the loss keeps them.
  *
- * No other page carries a frame from this visit, so a visitor going
- * home → About does not meet the same photograph twice. (This line previously
- * said the home page HERO carried the other frame. It does not and did not:
- * the hero uses the seal at 6% opacity, and Hero.tsx records that a photograph
- * was tried there and dropped.)
+ * The home page's AtWork band carries the OTHER frame from this same visit, so
+ * a visitor going home → About meets the occasion twice but never the same
+ * photograph. (This line previously said the home page HERO carried it. It
+ * does not and did not: the hero uses the seal at 6% opacity, and Hero.tsx
+ * records that a photograph was tried there and dropped.)
  */
 export default function AcademyBand() {
   return (

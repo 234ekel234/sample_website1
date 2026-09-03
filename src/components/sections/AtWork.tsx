@@ -6,7 +6,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 /**
- * Three of PMAFI's own photographs, between the numbers and the appeal.
+ * Six of PMAFI's own photographs, between the numbers and the appeal.
+ *
+ * SIX, IN TWO ROWS OF THREE, is close to the ceiling this material supports.
+ * The client folders hold about thirty files, but most are extra frames of the
+ * same handful of occasions — four of the PAF call, four of the Coast Guard
+ * visit, several of one cheque handover — and each occasion may appear once.
+ * A few are disqualified outright rather than merely repetitive; see the note
+ * in AGENTS.md about what is in those folders.
  *
  * WHY IT SITS HERE AND NOT HIGHER UP. The page alternates backgrounds —
  * dark · white · slate · white · dark · slate · dark — and News is already
@@ -47,11 +54,12 @@ interface Frame {
    * visible inside the photograph itself — the EXIF is stripped from every
    * file PMAFI sent, so they all carry only the timestamp of the day they were
    * delivered, and elsewhere in the drop the filenames are demonstrably wrong
-   * about the year. Only the golf tournament dates itself, on the board the
-   * players are standing beside. The other two get no date rather than a
-   * guessed one, so exactly one card carries a date line today. That is the
-   * honest result of the rule, not an oversight: a plausible date published
-   * under the Foundation's name is worse than a blank.
+   * about the year. Two frames date themselves: the golf tournament from the
+   * board the players stand beside, and the corps assembly from the welcome
+   * slide behind the lectern. The other four get no date rather than a guessed
+   * one, so two of six cards carry a date line. That is the honest result of
+   * the rule, not an oversight: a plausible date published under the
+   * Foundation's name is worse than a blank.
    */
   date?: string;
 }
@@ -66,11 +74,43 @@ const frames: Frame[] = [
     // PMAFI — see references/pmafi-information-request.md.
   },
   {
+    src: "/chairman-afp-chief.jpg",
+    alt: "The Foundation's Chairman standing with the Chief of Staff of the Armed Forces of the Philippines before the AFP seal.",
+    caption:
+      "The Chairman with the Chief of Staff of the Armed Forces of the Philippines.",
+    // Deliberately undated: nothing in the frame carries one.
+  },
+  {
     src: "/pma-supt-turnover.jpg",
     alt: "The Corps of Cadets on parade at Fort del Pilar during the turnover of command of the Philippine Military Academy.",
     caption:
       "The turnover of command at the Academy, with the Corps on parade at Fort del Pilar.",
     // Deliberately undated: nothing in the frame carries one.
+  },
+  {
+    src: "/pma-corps-assembly.jpg",
+    alt: "Cadets of the Philippine Military Academy seated in the assembly hall as the Foundation's Board of Trustees addresses them.",
+    caption:
+      "Before the Corps of Cadets at Fort del Pilar, on the Board's annual visit.",
+    // The welcome slide behind the lectern reads "15 November 2024". This is the
+    // frame shot from BEHIND the seated cadets — /about's AcademyBand carries
+    // the side-on one from the same assembly, so the two pages show different
+    // photographs, and this is the one where the hall reads as a crowd rather
+    // than as portraits.
+    date: "November 2024",
+  },
+  {
+    src: "/gift-presentation.jpg",
+    alt: "Alumni of the Academy presenting a cheque to officers of the Philippine Military Academy Foundation.",
+    caption: "A gift presented to the Foundation by alumni of the Academy.",
+    // REDACTED BEFORE EXPORT, and not by cropping. The cheque in frame is a
+    // real personal one, and the table carried a Metrobank slip with a MICR
+    // line plus filled forms. Both regions were destroyed at source resolution
+    // and the export taken afterwards, so the detail is absent from the
+    // shipped pixels rather than hidden under anything CSS could lift — the
+    // same standard /donate's handover photo is held to. The edges are
+    // feathered so it reads as foreground defocus instead of a censor bar.
+    // Deliberately undated: nothing legible in the frame carries one.
   },
   {
     src: "/golf-tournament.jpg",
