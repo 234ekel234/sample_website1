@@ -12,11 +12,19 @@ import Image from "next/image";
  *
  * This is PMAFI's own photograph of its Board of Trustees addressing the Corps
  * on its annual visit, 15 November 2024, at 2048x1365 — the size the band
- * actually needs. Of the eight PMAFI supplied it carries the fewest identifiable
- * faces: it is shot from behind the seated cadets, so the hall reads as a crowd
- * rather than as portraits. It is still people at an event, so it rests on
- * PMAFI's own consent for official event photography in a way its predecessor
- * did not.
+ * actually needs. It rests on PMAFI's own consent for official event
+ * photography, in a way its predecessor did not.
+ *
+ * A CORRECTION, because this comment used to claim otherwise. It said this
+ * frame "is shot from behind the seated cadets" and so "carries the fewest
+ * identifiable faces" of the eight PMAFI supplied. That describes a DIFFERENT
+ * frame. The file here is byte-identical to PMAFI-MEBERSHIP CAMPAIGN 2025.jpg,
+ * which is shot from the side and in which a number of cadets face the camera;
+ * the from-behind frame is PMAFI-PMA CLASS 2025.jpg, and the home page's
+ * AtWork section is what uses it. So the two pages do show different
+ * photographs, which is what the rest of this comment wanted — but the reason
+ * given for choosing this one was never true of it. Swapping the two frames is
+ * a live editorial change to this page and is PMAFI's call, not a silent fix.
  *
  * It also says something the parade ground could not: this is the Foundation
  * itself, at the Academy, in front of the cadets it exists to serve.
@@ -26,8 +34,11 @@ import Image from "next/image";
  * and high windows along the top with the Corps seated low, so anchoring to the
  * top would keep the ceiling and cut the cadets. Splitting the loss keeps them.
  *
- * The home page hero uses a different frame from the same visit — deliberately,
- * so a visitor going home → About does not meet the same photograph twice.
+ * The home page's AtWork section uses the other frame from the same visit —
+ * deliberately, so a visitor going home → About does not meet the same
+ * photograph twice. (This line previously said the home page HERO carried that
+ * frame. It does not and did not: the hero uses the seal at 6% opacity, and
+ * Hero.tsx records that a photograph was tried there and dropped.)
  */
 export default function AcademyBand() {
   return (
