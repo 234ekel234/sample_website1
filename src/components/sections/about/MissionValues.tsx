@@ -45,33 +45,44 @@ export default function MissionValues() {
           transition={{ duration: 0.6 }}
           className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-2"
         >
+          {/* PMAFI'S OWN WORDS, VERBATIM — DO NOT REWRITE THESE TWO.
+              Supplied by PMAFI on 2026-09-03 as sections 1.2 (Vision) and 1.3
+              (Mission or Purpose) of its governing document. What stood here
+              before was written on the Foundation's behalf: plausible, in the
+              house style, and not theirs. A vision and a mission are formally
+              adopted statements, so the site publishes them as adopted rather
+              than paraphrased.
+
+              That includes leaving the grammar alone. "assist the PMA improve"
+              reads as though a "to" is missing, and it is what the document
+              says; tidying it would make this our sentence again. Any change
+              here needs PMAFI to change the document first.
+
+              The invented headlines above each statement are gone rather than
+              reworded — "Strengthening PMA's Capacity to Lead" was our
+              headline sitting on top of their text, which is the same problem
+              in a smaller font. The eyebrow carries the label and the
+              statement carries itself. */}
           <div className="rounded-2xl bg-[#0a1628] p-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-[#C8A951]">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-[#C8A951]">
               Our Mission
-            </p>
-            <h3 className="mt-3 text-2xl font-bold text-white">
-              Strengthening PMA&apos;s Capacity to Lead
             </h3>
-            <p className="mt-4 leading-relaxed text-slate-300">
-              To support the Philippine Military Academy in its mission of
-              developing officers of integrity, competence, and character —
-              through resource mobilization, institutional development, and
-              community partnerships.
+            <p className="mt-4 text-lg leading-relaxed text-slate-200">
+              To contribute to scholastic progress and national security and
+              development, and assist the PMA improve the quality of its
+              instruction in pursuit of character building, academic
+              excellence, military skills proficiency and physical development.
             </p>
           </div>
 
           <div className="rounded-2xl border-2 border-[#C8A951]/30 bg-white p-10">
-            <p className="text-xs font-bold uppercase tracking-widest text-gold-ink">
+            <h3 className="text-xs font-bold uppercase tracking-widest text-gold-ink">
               Our Vision
-            </p>
-            <h3 className="mt-3 text-2xl font-bold text-[#1B2A4A]">
-              A World-Class Military Academy
             </h3>
-            <p className="mt-4 leading-relaxed text-slate-600">
-              A Philippine Military Academy fully equipped with modern
-              facilities, excellent academic programs, and robust support
-              systems — producing officers dedicated to God, country, and
-              people.
+            <p className="mt-4 text-lg leading-relaxed text-slate-600">
+              A respectable, highly dedicated and financially stable Foundation,
+              strongly committed to the enhancement of the quality of education
+              and character development at the Philippine Military Academy.
             </p>
           </div>
         </motion.div>
