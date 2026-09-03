@@ -18,47 +18,69 @@ import { ArrowRight } from "lucide-react";
  *
  * NO CAPTION HERE NAMES ANYBODY, and that follows /donate rather than
  * inventing a rule — its cheque handover caption "stays general rather than
- * restating the name". It matters more on this page than on that one. Two of
- * these three are certificate presentations, the certificates carry the
- * recipient's name and rank, and Next will serve a large enough derivative to
- * read them. A photograph of an official event is one thing; a caption naming
- * the recipient turns it into a published record of a named individual, which
- * is a different thing and not ours to publish.
+ * restating the name". These are posed photographs of official occasions in
+ * which serving officers are identifiable, and one of them is somebody's
+ * retirement-season turnover of command. A photograph of an official event is
+ * one thing; a caption attaching names to the faces in it is a different
+ * thing, and not ours to publish on the Foundation's behalf.
  *
- * THE CORPS FRAME IS THE ONE SHOT FROM BEHIND THE CADETS. PMAFI supplied two
- * frames of the same November 2024 assembly. /about's AcademyBand uses the
- * front-facing one, so this takes the other — a genuinely different photograph
- * rather than the same room twice, and the one where the hall reads as a crowd
- * instead of as portraits.
+ * THE SOURCES ARE THE SECOND PMAFI DROP, not the eight-file set the rest of
+ * the site draws on — see the gitignored client folder. The originals stay out
+ * of the repo, as that folder's exclude note requires; only these crops ship.
  *
- * The dates come off the welcome slide in the photographs themselves, which
- * reads 15 November 2024. PMAFI's filenames say 2025 and are wrong; captioning
- * from the filename would have published the wrong year.
+ * ONE OF THE THREE IS SMALL AND THAT IS THE CEILING, NOT A CHOICE.
+ * pma-supt-turnover.jpg comes from an 854x641 original, so it exports at
+ * 854x569 and no larger — upscaling would add bytes and no detail. At this
+ * card's width it is asked for roughly 800 device pixels, which it just meets.
+ * If these cards are ever widened, that frame is the one that breaks first,
+ * and the fix is a bigger original from PMAFI rather than a bigger export.
  */
 
 interface Frame {
   src: string;
   alt: string;
   caption: string;
+  /**
+   * Month and year, on its own line beneath the caption.
+   *
+   * OPTIONAL BECAUSE THE EVIDENCE IS. Every date here is read off something
+   * visible inside the photograph itself — the EXIF is stripped from every
+   * file PMAFI sent, so they all carry only the timestamp of the day they were
+   * delivered, and elsewhere in the drop the filenames are demonstrably wrong
+   * about the year. Only the golf tournament dates itself, on the board the
+   * players are standing beside. The other two get no date rather than a
+   * guessed one, so exactly one card carries a date line today. That is the
+   * honest result of the rule, not an oversight: a plausible date published
+   * under the Foundation's name is worse than a blank.
+   */
+  date?: string;
 }
 
 const frames: Frame[] = [
   {
-    src: "/pma-corps-assembly.jpg",
-    alt: "Cadets of the Philippine Military Academy seated in the assembly hall as the Foundation's Board of Trustees addresses them.",
+    src: "/courtesy-call-paf.jpg",
+    alt: "Trustees of the Philippine Military Academy Foundation standing with the Commanding General of the Philippine Air Force during a courtesy call.",
     caption:
-      "Before the Corps of Cadets at Fort del Pilar, on the Board's annual visit, November 2024.",
+      "Trustees of the Foundation on a courtesy call to the Philippine Air Force.",
+    // Deliberately undated: nothing in the frame carries one. Outstanding from
+    // PMAFI — see references/pmafi-information-request.md.
   },
   {
-    src: "/teaching-excellence-award.jpg",
-    alt: "An instructor of the Philippine Military Academy receiving a certificate of recognition from officers of the Foundation.",
+    src: "/pma-supt-turnover.jpg",
+    alt: "The Corps of Cadets on parade at Fort del Pilar during the turnover of command of the Philippine Military Academy.",
     caption:
-      "Recognising teaching excellence — the Foundation's certificate presented at the Academy.",
+      "The turnover of command at the Academy, with the Corps on parade at Fort del Pilar.",
+    // Deliberately undated: nothing in the frame carries one.
   },
   {
-    src: "/donation-handover.jpg",
-    alt: "Alumni of the Academy presenting a donation cheque to the Philippine Military Academy Foundation.",
-    caption: "A gift from alumni of the Academy, presented to the Foundation.",
+    src: "/golf-tournament.jpg",
+    alt: "Players beside the tournament board at the Foundation's first invitational golf tournament, Camp Aguinaldo Golf Course.",
+    caption:
+      "The Foundation's first invitational golf tournament, at Camp Aguinaldo.",
+    // The tournament board in the frame reads "Camp Aguinaldo Golf Course,
+    // May 26, 2026". Month only, to match the format the other cards would
+    // use — the day adds nothing a caption needs.
+    date: "May 2026",
   },
 ];
 
@@ -90,7 +112,7 @@ export default function AtWork() {
         </motion.div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {frames.map(({ src, alt, caption }, i) => (
+          {frames.map(({ src, alt, caption, date }, i) => (
             <motion.figure
               key={src}
               initial={{ opacity: 0, y: 30 }}
@@ -111,8 +133,25 @@ export default function AtWork() {
                   sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 400px"
                 />
               </div>
-              <figcaption className="px-5 py-4 text-sm leading-relaxed text-slate-600">
-                {caption}
+              {/* The date sits on its own line rather than inside the prose,
+                  so the three cards line up whether or not a given frame can
+                  be dated. Buried in the sentence it read as a fact about one
+                  photograph; on its own line it reads as a field the section
+                  keeps, and an absent one is visibly absent rather than a
+                  sentence that happens to stop early.
+
+                  slate-500 is the floor for muted text on white here — 400
+                  fails AA, and these pages hold Lighthouse accessibility at
+                  100. */}
+              <figcaption className="px-5 py-4">
+                <p className="text-sm leading-relaxed text-slate-600">
+                  {caption}
+                </p>
+                {date && (
+                  <p className="mt-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                    {date}
+                  </p>
+                )}
               </figcaption>
             </motion.figure>
           ))}
