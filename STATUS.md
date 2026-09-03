@@ -78,7 +78,7 @@ in August 2026. The roster is now the union of two tabs:
 | Tab | Written by | ID card? |
 |---|---|---|
 | `Membership Applications` | The form | Yes |
-| `Manual Members` | Staff, by hand. No form ever writes to it | **No** |
+| `Manual Members` | Staff, by hand. No form ever writes to it | Yes |
 
 Both are read through the same header-based mapper, so the manual tab needs
 only headers containing "name", "email", "category", "status", "pma class" and
@@ -193,8 +193,10 @@ rate-limited per client address.
 carried from the start ("a member who never used the form has no row, and adding
 one by hand means writing into a sheet the form also appends to") stopped being
 theoretical in August 2026 and is answered by the `Manual Members` tab above.
-What remains true is that a hand-typed row proves less than a submitted one,
-which is why it cannot mint an ID card.
+A hand-typed row still proves less than a submitted one, but that no longer
+gates the ID card: PMAFI settled on 2026-08-31 that the address on a manual row
+is the member's own, and the gate proves an address is *on* the roster rather
+than that the visitor owns it either way. See the manual-members note above.
 
 **Rate limiting is per-instance.** It runs in module memory, so on serverless it
 resets on a cold start. It stops realistic abuse, not a determined attacker.
