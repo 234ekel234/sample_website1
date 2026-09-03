@@ -19,8 +19,19 @@
 // below is used, so the assistant always works.
 //
 // DELIBERATELY ABSENT: nothing here states a phone number, bank account, GCash
-// number, dues amount or BIR status. Those are unconfirmed, so the answers point
-// to the contact channel instead of guessing.
+// number, dues amount or BIR status — but for two DIFFERENT reasons, and they
+// must not be collapsed back into one.
+//
+// The bank account, the GCash number and the dues are CONFIRMED and published;
+// hasPaymentDetails() is true and /donate and /membership print them. They stay
+// out of this file only because they live in the content sheet, and repeating
+// them here would give staff two places to update and one to forget.
+//
+// The phone number and the BIR donee status are genuinely still unconfirmed.
+// Those answers point to the contact channel instead of guessing.
+//
+// This comment used to call all five "unconfirmed". Left that way it invites
+// the next editor to relax the contact-channel hedge on the wrong ones.
 
 import { readRange } from "@/lib/sheets";
 
@@ -110,7 +121,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Where does my donation go?",
     answer:
-      "Contributions are channeled into the Foundation's core program areas — facilities and modernization, academic excellence and endowment, leadership formation, and partnerships with the alumni community.",
+      "Contributions are channeled into the Foundation's core program areas — facilities and modernization, academic excellence and endowment, leadership formation, and partnerships and alumni engagement.",
     keywords: ["donation", "where", "spent", "used", "funds", "money", "goes"],
     linkLabel: "See our programs",
     linkHref: "/programs",
@@ -164,7 +175,7 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "What programs does the Foundation support?",
     answer:
-      "The Foundation works across four strategic areas: facilities and modernization, academic excellence and endowment, leadership formation, and partnerships with the alumni community.",
+      "The Foundation works across four strategic areas: facilities and modernization, academic excellence and endowment, leadership formation, and partnerships and alumni engagement.",
     keywords: ["programs", "projects", "areas", "work", "activities", "initiatives"],
     linkLabel: "Explore the programs",
     linkHref: "/programs",

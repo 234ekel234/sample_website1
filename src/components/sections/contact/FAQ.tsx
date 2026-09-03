@@ -20,7 +20,14 @@ const faqs = [
   },
   {
     q: "How do I make a donation?",
-    a: "Email us and we'll share the Foundation's official bank transfer and e-wallet details. Every gift is acknowledged once our team has received and recorded it, and you can check its progress any time on the donation status page.",
+    // NOT "email us and we'll share the details" any more. That was written
+    // when the bank and GCash details were still outstanding; they are
+    // confirmed and published now, so hasPaymentDetails() is true and /donate
+    // prints them. Sending a donor away to wait for an email containing what
+    // the next page already shows is a round trip for nothing — and it
+    // contradicted faq.ts's answer to this same question for weeks, which is
+    // exactly the drift the note above this list warns about.
+    a: "The Donate page carries the Foundation's bank transfer and GCash details along with the steps to follow. Every gift is acknowledged once our team has received and recorded it, and you can check its progress any time on the donation status page.",
   },
   {
     q: "Are donations to PMAFI tax-deductible?",
