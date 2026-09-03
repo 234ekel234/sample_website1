@@ -252,9 +252,131 @@ describe("findMemberByName", () => {
     expect((await findMemberByName("Ana Reyes")).kind).toBe("ambiguous");
   });
 
-  it("does not match a near miss", async () => {
+  it("forgives a misspelling, including a swapped pair of letters", async () => {
     const { findMemberByName } = await load();
-    for (const typed of ["Juan Cruze", "Jon Dela Cruz", "Juan"]) {
+    for (const typed of ["Juan Cruze", "Juan Dela Curz", "Maria Pina"]) {
+      expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("found");
+    }
+  });
+
+  it("closes up or opens out spacing", async () => {
+    // "Dela Cruz" and "Delacruz" are the same surname written two ways, and the
+    // roster holds whichever the applicant typed on the day.
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Juan Delacruz")).kind).toBe("found");
+  });
+
+  it("gives no leeway on a short word", async () => {
+    // One edit is the whole distance between Lim and Kim, Sy and Ty, Ang and
+    // Ong — different families, not spellings of one name.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "l@e.com", "Antonio Lim", "l@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Antonio Kim")).kind).toBe("none");
+  });
+
+  it("does not match a name that has drifted too far", async () => {
+    const { findMemberByName } = await load();
+    for (const typed of ["Jon Dela Crus", "Ricardo Villanueva", "Juan"]) {
+      expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("none");
+    }
+  });
+
+  it("refuses a misspelling that sits between two real members", async () => {
+    // Probing must get a shrug, never a correction naming the closest member.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "a@e.com", "Ricardo Villanueva", "a@e.com", "Regular", "1988", "Active"),
+      row("2026-03-02", "b@e.com", "Ricarda Villanueva", "b@e.com", "Regular", "1990", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Ricardo Villanueba")).kind).toBe("found");
+    expect((await findMemberByName("Ricarde Villanueva")).kind).toBe("ambiguous");
+  });
+
+  it("answers a correctly spelled name before any near neighbour", async () => {
+    // Tier order again: a real member must never lose their own record to
+    // somebody whose name is one letter away.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "a@e.com", "Ricardo Villanueva", "a@e.com", "Regular", "1988", "Active"),
+      row("2026-03-02", "b@e.com", "Ricarda Villanueva", "b@e.com", "Regular", "1990", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    const r = await findMemberByName("Ricarda Villanueva");
+    expect(r.kind).toBe("found");
+    if (r.kind === "found") expect(r.member.name).toBe("Ricarda Villanueva");
+  });
+
+  // The member who cannot remember which email they used is also the member who
+  // does not know which of their names PMAFI wrote down.
+  it("finds a member who leaves out a middle name the roster holds", async () => {
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "j@e.com", "Juan Ponce Dela Cruz", "j@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    for (const typed of ["Juan Dela Cruz", "Juan Cruz", "Cruz, Juan Ponce"]) {
+      expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("found");
+    }
+  });
+
+  it("finds a member who types more names than the roster holds", async () => {
+    // Staff typed "Maria Santos" on the manual tab; she signs herself
+    // "Maria Luisa Reyes Santos". Neither of them is wrong.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "m@e.com", "Maria Santos", "m@e.com", "Regular", "1990", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    const r = await findMemberByName("Maria Luisa Reyes Santos");
+    expect(r.kind).toBe("found");
+    if (r.kind === "found") expect(r.member.name).toBe("Maria Santos");
+  });
+
+  it("ignores a middle initial and a generational suffix", async () => {
+    // "Jose P. Santos" is on the roster. Three spellings of one man.
+    const { findMemberByName } = await load();
+    for (const typed of ["Jose Santos", "Jose Perez Santos", "Jose P. Santos Jr."]) {
+      expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("found");
+    }
+  });
+
+  it("still refuses a partial name that fits more than one member", async () => {
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "a@e.com", "Juan Ponce Dela Cruz", "a@e.com", "Regular", "1988", "Active"),
+      row("2026-03-02", "b@e.com", "Juan Miguel Dela Cruz", "b@e.com", "Regular", "1990", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Juan Dela Cruz")).kind).toBe("ambiguous");
+  });
+
+  it("answers an exact name exactly, even when it is a partial of another", async () => {
+    // Tier order is load-bearing: "Juan Cruz" is a member in his own right and
+    // must not be lost in a tie with "Juan Ponce Cruz".
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "a@e.com", "Juan Cruz", "a@e.com", "Regular", "1988", "Active"),
+      row("2026-03-02", "b@e.com", "Juan Ponce Cruz", "b@e.com", "Regular", "1990", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    const r = await findMemberByName("Juan Cruz");
+    expect(r.kind).toBe("found");
+    if (r.kind === "found") expect(r.member.name).toBe("Juan Cruz");
+  });
+
+  it("never resolves a lone surname, however rare", async () => {
+    // One word can name a person only by being the sole match, which is exactly
+    // the enumeration the containment tier must not open up.
+    readRange.mockResolvedValue([
+      HEADER,
+      row("2026-03-01", "z@e.com", "Bartolome Zaragoza", "z@e.com", "Regular", "1988", "Active"),
+    ]);
+    const { findMemberByName } = await load();
+    for (const typed of ["Zaragoza", "Bartolome", "Zaragoza Jr."]) {
       expect((await findMemberByName(typed)).kind, `typed: ${typed}`).toBe("none");
     }
   });

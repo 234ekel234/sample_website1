@@ -502,6 +502,149 @@ function nameKey(value: string): string {
   return normalizeName(value).split(" ").filter(Boolean).sort().join(" ");
 }
 
+/**
+ * Generational suffixes. They are part of a name but not what distinguishes one
+ * member from another, and half the roster carries them only sometimes — the
+ * same man is "Juan Cruz Jr." on the form and "Juan Cruz" on the manual tab.
+ */
+const NAME_SUFFIXES = new Set(["jr", "sr", "ii", "iii", "iv", "vi"]);
+
+/**
+ * The words a name is actually distinguished by: single letters and
+ * generational suffixes removed.
+ *
+ * INITIALS ARE DROPPED RATHER THAN MATCHED. A roster row usually carries a
+ * middle initial ("Jose P. Santos") and the member typing their name supplies
+ * either the whole middle name, or nothing, or the initial — three spellings of
+ * one fact. Treating the initial as a distinguishing word would make two of
+ * those three fail. Dropping it costs nothing real: "Juan D. Cruz" and "Juan R.
+ * Cruz" both fold to `juan cruz`, so a search for either returns two matches and
+ * therefore `ambiguous`, which reveals nothing and sends them to the email
+ * lookup. Exact matching still runs first, so anyone who types the initial the
+ * way the roster holds it is answered precisely.
+ */
+function coreTokens(value: string): string[] {
+  const words = normalizeName(value)
+    .split(" ")
+    .filter((w) => w.length > 1 && !NAME_SUFFIXES.has(w));
+  return [...new Set(words)];
+}
+
+/** Whether every word of `inner` appears in `outer`. */
+function isSubset(inner: string[], outer: Set<string>): boolean {
+  return inner.every((w) => outer.has(w));
+}
+
+/** A name with its spaces closed up, so "Dela Cruz" == "Delacruz". */
+function squashName(value: string): string {
+  return normalizeName(value).replace(/\s+/g, "");
+}
+
+/**
+ * Optimal string alignment distance: insertions, deletions, substitutions and
+ * SWAPPED ADJACENT LETTERS, which plain Levenshtein charges double. A swap is
+ * the commonest typo there is — "Cruz" for "Curz" — and counting it as two
+ * edits would spend the whole budget below on one slip of the fingers.
+ */
+function editDistance(a: string, b: string): number {
+  const rows: number[][] = [];
+  for (let i = 0; i <= a.length; i++) rows.push(new Array(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) rows[i][0] = i;
+  for (let j = 0; j <= b.length; j++) rows[0][j] = j;
+
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      rows[i][j] = Math.min(
+        rows[i - 1][j] + 1,
+        rows[i][j - 1] + 1,
+        rows[i - 1][j - 1] + cost
+      );
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) {
+        rows[i][j] = Math.min(rows[i][j], rows[i - 2][j - 2] + 1);
+      }
+    }
+  }
+  return rows[a.length][b.length];
+}
+
+/**
+ * How far one word may drift from another and still be the same word.
+ *
+ * SHORT WORDS GET NO LEEWAY AT ALL, and that is the load-bearing line. One edit
+ * turns Lim into Kim, Sy into Ty, Ang into Ong — Filipino surnames that are not
+ * variants of each other but different families, and there are many of each on a
+ * roster this size. Longer words are the opposite: the more letters a name has,
+ * the more ways to mistype it and the less likely two real names sit a letter
+ * apart, so "Zaragoza" can absorb two edits where "Cruz" absorbs none.
+ */
+function wordAllowance(a: string, b: string): number {
+  const shortest = Math.min(a.length, b.length);
+  if (shortest <= 3) return 0;
+  if (shortest <= 6) return 1;
+  return 2;
+}
+
+/** Distance between two words, or Infinity if they are too far apart to be one. */
+function wordCost(a: string, b: string): number {
+  if (a === b) return 0;
+  const allowance = wordAllowance(a, b);
+  if (allowance === 0 || Math.abs(a.length - b.length) > allowance) return Infinity;
+  const d = editDistance(a, b);
+  return d <= allowance ? d : Infinity;
+}
+
+/**
+ * The total edits allowed across a whole name. Two, so a member gets one badly
+ * mistyped word or two lightly mistyped ones — never a name that has drifted in
+ * every part, which is no longer a spelling of the name they typed.
+ */
+const SPELLING_BUDGET = 2;
+
+/**
+ * Cheapest way to pair every word of `few` with a distinct word of `many`,
+ * or Infinity if no pairing comes in under `budget`.
+ *
+ * Distinct is what makes this an assignment rather than a search: "Juan Juan"
+ * must not satisfy a roster "Juan Ponce" by matching one word twice.
+ */
+function pairingCost(few: string[], many: string[], budget: number): number {
+  let best = Infinity;
+
+  const walk = (i: number, used: number, spent: number) => {
+    if (spent >= best) return;
+    if (i === few.length) {
+      best = spent;
+      return;
+    }
+    for (let j = 0; j < many.length; j++) {
+      if (used & (1 << j)) continue;
+      const cost = wordCost(few[i], many[j]);
+      if (cost === Infinity || spent + cost > budget) continue;
+      walk(i + 1, used | (1 << j), spent + cost);
+    }
+  };
+
+  walk(0, 0, 0);
+  return best;
+}
+
+/** At most this many words per name, so the pairing above stays cheap. */
+const MAX_WORDS = 8;
+
+/**
+ * How far a typed name is from a member's, counting both missing words and
+ * misspelled ones. Infinity when they are not the same name at all.
+ */
+function spellingCost(typed: string[], roster: string[]): number {
+  if (typed.length < 2 || roster.length < 2) return Infinity;
+  const a = typed.slice(0, MAX_WORDS);
+  const b = roster.slice(0, MAX_WORDS);
+  return a.length <= b.length
+    ? pairingCost(a, b, SPELLING_BUDGET)
+    : pairingCost(b, a, SPELLING_BUDGET);
+}
+
 export type NameLookup =
   | { kind: "found"; member: MemberRecord }
   | { kind: "ambiguous" }
@@ -515,10 +658,43 @@ export type NameLookup =
  * one guess, and picking the first would show the wrong person their own
  * record. "ambiguous" sends them to the email lookup, which is unique.
  *
- * Matching is exact-after-folding, then word-set. It is NOT fuzzy on purpose:
- * an edit-distance match that accepts a near-miss would let someone probing
- * "Juan Cruz" land on a real "Juan Cruze", which is enumeration with extra
- * steps.
+ * Matching runs in tiers, each tried only if the one before it found nothing,
+ * so a precise spelling is always answered precisely:
+ *
+ *   1. exact after folding — "María Peña" == "maria pena"
+ *   2. word-set — "Cruz, Juan" == "Juan Cruz"
+ *   3. spacing — "Delacruz" == "Dela Cruz"
+ *   4. containment — every word of one name appears in the other
+ *   5. spelling — words may be mistyped, within the budget above
+ *
+ * TIER 3 IS WHAT LETS A MEMBER OMIT THEIR MIDDLE NAME. The roster holds a
+ * person's name however it was typed on the day: the form asks for a full name
+ * and gets "Juan Ponce Dela Cruz", staff type "Juan Dela Cruz" on the manual
+ * tab, and the member searching later supplies whichever they think of. Requiring
+ * the whole string failed exactly the members who could not remember which email
+ * they registered under — the people this lookup exists for. Containment runs in
+ * both directions for the same reason: the roster is as likely to hold the
+ * shorter name as the visitor is to type it.
+ *
+ * TIER 5 FORGIVES SPELLING, and it is the one tier that can match a name the
+ * visitor did not type. That is a real cost, taken deliberately: PMAFI's roster
+ * is typed by hand from application forms and receipts, so the misspelling is at
+ * least as often on the sheet as in the search box, and a member cannot correct
+ * a spelling they cannot see. What keeps it from becoming a directory:
+ *
+ *   - the budget is TWO edits across the whole name, and short words get none
+ *     (see wordAllowance) — a probe cannot walk the alphabet through a surname;
+ *   - both sides still need at least two distinguishing words, so a lone
+ *     surname never resolves to whoever happens to be the only Cruz;
+ *   - only the CLOSEST members are returned, and if two sit equally close the
+ *     answer is `ambiguous` — a near-miss between real people is refused rather
+ *     than resolved, so probing gets a shrug, not a correction;
+ *   - the tier runs last, so nobody who spells their name the way the roster
+ *     holds it is ever handed somebody else's record by it.
+ *
+ * A match here is still the roster's own row, never an invented one, and the
+ * status check prints the name it matched (see MembershipCheck.tsx) so a member
+ * can see at once if it found the wrong person.
  */
 export async function findMemberByName(name: string): Promise<NameLookup> {
   const typed = normalizeName(name);
@@ -530,6 +706,35 @@ export async function findMemberByName(name: string): Promise<NameLookup> {
   if (matches.length === 0) {
     const key = nameKey(name);
     matches = members.filter((m) => nameKey(m.name) === key);
+  }
+  if (matches.length === 0) {
+    const squashed = squashName(name);
+    matches = members.filter((m) => squashName(m.name) === squashed);
+  }
+
+  const typedCore = coreTokens(name);
+  if (matches.length === 0 && typedCore.length >= 2) {
+    const typedSet = new Set(typedCore);
+    matches = members.filter((m) => {
+      const core = coreTokens(m.name);
+      if (core.length < 2) return false;
+      return isSubset(core, typedSet) || isSubset(typedCore, new Set(core));
+    });
+  }
+
+  // Last resort: the closest spellings, and only if nothing above matched.
+  if (matches.length === 0 && typedCore.length >= 2) {
+    let closest = Infinity;
+    for (const m of members) {
+      const cost = spellingCost(typedCore, coreTokens(m.name));
+      if (cost === Infinity || cost > closest) continue;
+      if (cost < closest) {
+        closest = cost;
+        matches = [m];
+      } else {
+        matches.push(m);
+      }
+    }
   }
 
   if (matches.length === 0) return { kind: "none" };

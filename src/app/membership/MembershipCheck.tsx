@@ -96,8 +96,8 @@ export default function MembershipCheck({
 
       {mode === "name" && state.status === "idle" && (
         <p className="mt-2 text-xs text-slate-500">
-          Enter your name as PMAFI has it on record — accents, punctuation and
-          word order don&apos;t matter.
+          Accents, punctuation, word order, spelling and a missing middle name
+          don&apos;t matter — first and last name is usually enough.
         </p>
       )}
 
@@ -169,6 +169,21 @@ export default function MembershipCheck({
         </div>
       )}
 
+      {/* WHOSE RECORD THIS IS, spelled out, and only on the name path.
+          The panels above greet a member by their first name alone, which was
+          enough while a name had to be typed exactly. It is not enough now that
+          the lookup forgives spelling and missing middle names: the closest
+          member to "Maria Santos" may well be Mario Santos, and "Welcome back,
+          Mario" reads as a typo rather than as the wrong person's standing.
+          Printing the matched name in full lets the member catch it themselves —
+          the check that no amount of care in the matching can do for them. */}
+      {mode === "name" && state.status === "found" && (
+        <p className="mt-2 text-xs text-slate-500">
+          Showing the record for <strong>{state.name}</strong>. Not you? Check
+          using your email address instead.
+        </p>
+      )}
+
       {state.status === "notfound" && (
         <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
@@ -206,12 +221,12 @@ export default function MembershipCheck({
         <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
             <Users className="h-5 w-5 text-[#C8A951]" />
-            More than one member shares that name.
+            More than one member matches that name.
           </p>
           <p className="mt-1 text-sm text-slate-600">
             We can&apos;t tell which record is yours, and we won&apos;t guess.
-            Please check using the email address on your membership instead —
-            switch to <strong>By email</strong> above.
+            Try adding your middle name, or check using the email address on
+            your membership instead — switch to <strong>By email</strong> above.
           </p>
         </div>
       )}
