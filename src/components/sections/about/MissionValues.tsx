@@ -3,6 +3,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ShieldCheck, Star, Flag, Heart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MISSION, VISION } from "@/lib/foundation";
 
 const values = [
   {
@@ -45,33 +46,21 @@ export default function MissionValues() {
           transition={{ duration: 0.6 }}
           className="mb-16 grid grid-cols-1 gap-8 md:grid-cols-2"
         >
-          {/* PMAFI'S OWN WORDS, VERBATIM — DO NOT REWRITE THESE TWO.
-              Supplied by PMAFI on 2026-09-03 as sections 1.2 (Vision) and 1.3
-              (Mission or Purpose) of its governing document. What stood here
-              before was written on the Foundation's behalf: plausible, in the
-              house style, and not theirs. A vision and a mission are formally
-              adopted statements, so the site publishes them as adopted rather
-              than paraphrased.
+          {/* PMAFI's adopted statements, from src/lib/foundation.ts — the one
+              copy, so /about and the home page band cannot drift apart. The
+              rules about not rewording them live there.
 
-              That includes leaving the grammar alone. "assist the PMA improve"
-              reads as though a "to" is missing, and it is what the document
-              says; tidying it would make this our sentence again. Any change
-              here needs PMAFI to change the document first.
-
-              The invented headlines above each statement are gone rather than
-              reworded — "Strengthening PMA's Capacity to Lead" was our
-              headline sitting on top of their text, which is the same problem
-              in a smaller font. The eyebrow carries the label and the
-              statement carries itself. */}
+              The invented headlines that used to sit above each are gone
+              rather than reworded: "Strengthening PMA's Capacity to Lead" was
+              our headline on top of their text, the same problem in a smaller
+              font. The eyebrow carries the label, the statement carries
+              itself. */}
           <div className="rounded-2xl bg-[#0a1628] p-10">
             <h3 className="text-xs font-bold uppercase tracking-widest text-[#C8A951]">
               Our Mission
             </h3>
             <p className="mt-4 text-lg leading-relaxed text-slate-200">
-              To contribute to scholastic progress and national security and
-              development, and assist the PMA improve the quality of its
-              instruction in pursuit of character building, academic
-              excellence, military skills proficiency and physical development.
+              {MISSION}
             </p>
           </div>
 
@@ -79,11 +68,7 @@ export default function MissionValues() {
             <h3 className="text-xs font-bold uppercase tracking-widest text-gold-ink">
               Our Vision
             </h3>
-            <p className="mt-4 text-lg leading-relaxed text-slate-600">
-              A respectable, highly dedicated and financially stable Foundation,
-              strongly committed to the enhancement of the quality of education
-              and character development at the Philippine Military Academy.
-            </p>
+            <p className="mt-4 text-lg leading-relaxed text-slate-600">{VISION}</p>
           </div>
         </motion.div>
 
