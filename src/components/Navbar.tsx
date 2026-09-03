@@ -128,20 +128,27 @@ export default function Navbar() {
     >
       <nav
         ref={navRef}
-        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4"
+        className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5"
       >
-        <Link href="/" className="flex items-center gap-3">
-          <LogoMark className="h-10 w-10 shrink-0 drop-shadow-sm" />
+        <Link href="/" className="flex items-center gap-3.5">
+          <LogoMark className="h-14 w-14 shrink-0 drop-shadow-sm sm:h-16 sm:w-16" />
           <span className="flex flex-col leading-tight">
             <span
-              className={`text-xl font-bold tracking-tight transition-colors ${
+              className={`text-2xl font-bold tracking-tight transition-colors sm:text-3xl ${
                 scrolled ? "text-[#1B2A4A]" : "text-white"
               }`}
             >
               PMAFI
             </span>
+            {/* THE FOUNDATION'S NAME STEPS ASIDE BETWEEN 1024 AND 1280px, and
+                only there. It is 37 characters of letter-spaced caps — wider
+                than the six nav links put together — and at lg the bar is
+                already within a few pixels of full when both are shown at this
+                size. Below lg the links are behind the hamburger, so there is
+                room; above xl there is room for everything. Dropping to the
+                mark and "PMAFI" is what the logo is for. */}
             <span
-              className={`text-[10px] font-medium uppercase tracking-[0.14em] transition-colors ${
+              className={`text-[10px] font-medium uppercase tracking-[0.14em] transition-colors sm:text-[11px] lg:hidden xl:block ${
                 scrolled ? "text-[#C8A951]" : "text-[#C8A951]/80"
               }`}
             >
@@ -150,7 +157,7 @@ export default function Navbar() {
           </span>
         </Link>
 
-        <ul className="hidden items-center gap-7 lg:flex">
+        <ul className="hidden items-center gap-6 lg:flex xl:gap-8">
           {links.map(({ label, href, children }) =>
             children ? (
               <li
@@ -164,11 +171,11 @@ export default function Navbar() {
                   aria-haspopup="true"
                   aria-expanded={menu === label}
                   onClick={() => setMenu(menu === label ? null : label)}
-                  className={`group relative inline-flex items-center gap-1 text-sm font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
+                  className={`group relative inline-flex items-center gap-1 text-base font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
                 >
                   {label}
                   <ChevronDown
-                    size={14}
+                    size={16}
                     className={`transition-transform duration-200 ${
                       menu === label ? "rotate-180" : ""
                     }`}
@@ -182,7 +189,7 @@ export default function Navbar() {
                     not reach them. `invisible` also drops them from the tab
                     order while closed. */}
                 <div
-                  className={`absolute left-1/2 top-full z-50 w-56 -translate-x-1/2 pt-3 transition-opacity duration-200 ${
+                  className={`absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 pt-4 transition-opacity duration-200 ${
                     menu === label
                       ? "visible opacity-100"
                       : "invisible opacity-0"
@@ -194,7 +201,7 @@ export default function Navbar() {
                         <Link
                           href={child.href}
                           onClick={() => setMenu(null)}
-                          className="block px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#1B2A4A]"
+                          className="block px-4 py-2.5 text-[15px] font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-[#1B2A4A]"
                         >
                           {child.label}
                         </Link>
@@ -207,7 +214,7 @@ export default function Navbar() {
               <li key={href}>
                 <Link
                   href={href}
-                  className={`group relative text-sm font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
+                  className={`group relative text-base font-medium transition-colors hover:text-[#C8A951] ${linkColor}`}
                 >
                   {label}
                   <span className="absolute -bottom-1 left-0 h-0.5 w-full origin-left scale-x-0 bg-[#C8A951] transition-transform duration-300 group-hover:scale-x-100" />
@@ -221,7 +228,7 @@ export default function Navbar() {
           href="/donate"
           className={cn(
             buttonVariants(),
-            "hidden bg-[#C8A951] font-semibold text-[#0a1628] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white lg:inline-flex"
+            "hidden h-11 bg-[#C8A951] px-5 text-base font-semibold text-[#0a1628] shadow-[0_4px_16px_-4px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white lg:inline-flex"
           )}
         >
           Support Us
@@ -233,13 +240,13 @@ export default function Navbar() {
           className={`lg:hidden ${scrolled ? "text-[#1B2A4A]" : "text-white"}`}
           onClick={() => setOpen(!open)}
         >
-          {open ? <X size={24} /> : <Menu size={24} />}
+          {open ? <X size={28} /> : <Menu size={28} />}
         </button>
       </nav>
 
       {open && (
-        <div className="border-t border-slate-100 bg-white px-6 py-4 lg:hidden">
-          <ul className="flex flex-col gap-4">
+        <div className="border-t border-slate-100 bg-white px-6 py-5 lg:hidden">
+          <ul className="flex flex-col gap-5">
             {links.map(({ label, href, children }) => (
               <li key={href}>
                 {children ? (
@@ -247,7 +254,7 @@ export default function Navbar() {
                     {/* slate-500, not 400: this sits on white, where 400 is
                         2.56:1 and fails AA. It escaped the Lighthouse run only
                         because the audit never opens the mobile menu. */}
-                    <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+                    <p className="text-sm font-semibold uppercase tracking-widest text-slate-500">
                       {label}
                     </p>
                     <ul className="mt-2 flex flex-col gap-3 border-l border-slate-200 pl-4">
@@ -255,7 +262,7 @@ export default function Navbar() {
                         <li key={child.href}>
                           <Link
                             href={child.href}
-                            className="text-sm font-medium text-slate-700 hover:text-[#C8A951]"
+                            className="text-base font-medium text-slate-700 hover:text-[#C8A951]"
                             onClick={() => setOpen(false)}
                           >
                             {child.label}
@@ -267,7 +274,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     href={href}
-                    className="text-sm font-medium text-slate-700 hover:text-[#C8A951]"
+                    className="text-base font-medium text-slate-700 hover:text-[#C8A951]"
                     onClick={() => setOpen(false)}
                   >
                     {label}
@@ -281,7 +288,7 @@ export default function Navbar() {
             onClick={() => setOpen(false)}
             className={cn(
               buttonVariants(),
-              "mt-4 w-full bg-[#C8A951] text-[#0a1628] font-semibold hover:bg-[#8A6A22] hover:text-white"
+              "mt-5 h-11 w-full bg-[#C8A951] text-base text-[#0a1628] font-semibold hover:bg-[#8A6A22] hover:text-white"
             )}
           >
             Support Us

@@ -64,7 +64,7 @@ export default function PageHero({
   children,
 }: PageHeroProps) {
   return (
-    <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-[#0a1628] pt-20">
+    <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-[#0a1628] pt-28">
       {/* Depth wash */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_-10%,#16294d_0%,#0a1628_45%,#070f1d_100%)]" />
 

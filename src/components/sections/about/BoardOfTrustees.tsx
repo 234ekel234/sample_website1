@@ -24,7 +24,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 export default function BoardOfTrustees() {
   return (
-    <section id="board" className="scroll-mt-24 bg-slate-50 py-24">
+    <section id="board" className="scroll-mt-28 bg-slate-50 py-24">
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-14 text-center">
           <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">

@@ -186,7 +186,7 @@ export default async function MembershipPage() {
           the FAQ assistant both link to /membership#check. Without it the nav
           offered no route to this at all — the dropdown said only "Join PMAFI",
           which names the bottom half of a page whose top half is this. */}
-      <section id="check" className="scroll-mt-24 bg-white py-20">
+      <section id="check" className="scroll-mt-28 bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="text-center">
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
@@ -315,7 +315,7 @@ export default async function MembershipPage() {
           The `join` anchor is load-bearing: the hero's "Apply for Membership"
           scrolls here rather than opening the form, so that the fee and the
           pay-first ordering are read before the form is. */}
-      <section id="join" className="scroll-mt-24 bg-white py-20">
+      <section id="join" className="scroll-mt-28 bg-white py-20">
         <div className="mx-auto max-w-3xl px-6">
           <div className="mb-12 text-center">
             <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">

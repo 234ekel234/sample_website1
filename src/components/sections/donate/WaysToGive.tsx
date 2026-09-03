@@ -54,7 +54,7 @@ export default function WaysToGive() {
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
   return (
-    <section id="ways-to-give" className="scroll-mt-24 bg-white py-24" ref={ref}>
+    <section id="ways-to-give" className="scroll-mt-28 bg-white py-24" ref={ref}>
       <div className="mx-auto max-w-7xl px-6">
         <div className="mb-14 text-center">
           <p className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-gold-ink">
