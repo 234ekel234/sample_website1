@@ -47,7 +47,29 @@ export default function Hero() {
   const mounted = useSyncExternalStore(neverChanges, onClient, onServer);
 
   return (
-    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a1628]">
+    /* py-32 IS NAVBAR CLEARANCE, NOT TASTE, and it must not go below the
+       height of the bar.
+
+       The navbar is `fixed` and transparent over this section, so nothing in
+       the layout reserves room for it — this padding is the only thing that
+       does. The section had none at all, which survived only while the bar was
+       short: at h-10 it was about 72px and the centred content happened to
+       clear it. Sizing the seal up took the bar to ~96px on mobile and ~104px
+       from sm, and the first line in here is the gold "Philippine Military
+       Academy Foundation, Inc." eyebrow, which then slid underneath and
+       collided with the navbar's own wordmark. It looked like duplicated text
+       in the bar; it was this section showing through.
+
+       The padding is SYMMETRIC because `items-center` centres within the
+       padding box: equal top and bottom keeps the content optically centred in
+       the viewport, while top-only padding would shove it half the padding
+       below centre on every screen tall enough not to need it.
+
+       128px against a ~104px bar leaves 24px of margin. Anything that makes
+       the bar taller again — a larger seal, a third line of brand text — has
+       to be checked against this number, on a short viewport where the content
+       overflows rather than a desktop one where it never reaches the top. */
+    <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#0a1628] py-32">
       {/* Deep base gradient for richness */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_-10%,#16294d_0%,#0a1628_45%,#070f1d_100%)]" />
 
