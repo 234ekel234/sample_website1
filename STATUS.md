@@ -34,7 +34,7 @@ since August is resolved.
 
 | Route | State |
 |---|---|
-| `/` | ✅ hero, pillars, programs, impact, Chairman's message, news, CTA |
+| `/` | ✅ hero, pillars, programs, impact, Chairman's message, news, **a three-photo "Foundation at Work" band**, CTA |
 | `/about` | ✅ story, mission, vision, values, **Board of Trustees** (`#board`) |
 | `/programs` | ✅ plus **the roll of endowed chairs**, read from the `Chairs` tab |
 | `/membership` | ✅ status check by email **or name**, apply, ₱3,000 published, and the **28 classes at 100% membership** |
