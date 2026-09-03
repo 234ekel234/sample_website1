@@ -16,7 +16,7 @@ export const boardMembers: BoardMember[] = [
     name: "Leo Angelo D. Leuterio",
     role: "Chairman",
     pmaClass: "PMA '88",
-    image: "/board/leuterio.png",
+    image: "/board/leuterio.jpg",
     highlights: [
       "PhD units in PASA, Bicol University",
       "Masters in Management (Industrial Relations), UP",

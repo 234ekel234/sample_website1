@@ -55,23 +55,23 @@ export default function ChairmansMessageContent({
           >
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-[#16294d] to-[#0a1628] shadow-lg">
               {/*
-                SIZE IS A JUDGEMENT CALL HERE, NOT AN OPTIMUM. Every board
-                portrait is 195x195 — thumbnail size — so on a retina screen any
-                frame past ~100px is already enlarging, and every pixel of width
-                after that is bought with sharpness: 240px is roughly 2x, this
-                320px is roughly 3.3x.
+                320px WAS A COMPROMISE AND IS NOW SIMPLY THE SIZE. The other
+                board portraits are 195x195 — thumbnail size, soft past about
+                100px on a retina screen — and this frame sat at 320 anyway,
+                because a portrait that reads as small undersells the person in
+                it and softness is at least honest about the source.
 
-                It sits at 320 because a portrait that reads as small undersells
-                the person in it, and of the two faults that is the worse one.
-                Softness is at least honest about the source.
+                PMAFI supplied the Chairman's portrait at full size on
+                2026-09-03 (1261x1600, cropped square to 800x800), so whoever
+                the sheet names is sharp here as long as it is him. Anyone else
+                falls back to a 195px file and the old compromise returns, which
+                is why the frame stays where it is rather than growing to suit
+                one photograph.
 
                 What is NOT negotiable is the square. The frame was once 4:5,
                 and `object-cover` threw away a fifth of the width to reach that
                 shape before enlarging what survived — paying twice. Square uses
                 every pixel the file has.
-
-                Only a larger original actually fixes this; it is on the
-                information request as Priority 3.
               */}
               <div className="relative aspect-square">
                 {portrait && (

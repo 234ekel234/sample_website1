@@ -8,7 +8,9 @@ export default function BoardMemberCard({
   member: BoardMember;
   featured?: boolean;
 }) {
-  // Source photos are 195×195px, so avatars stay at/below that to remain crisp.
+  // Source photos are 195×195px — except the Chairman's, which PMAFI supplied at
+  // full size on 2026-09-03 — so avatars stay at/below 195 to remain crisp. The
+  // one large file costs nothing here: `sizes` caps what the browser fetches.
   const avatar = featured ? "h-40 w-40" : "h-32 w-32";
 
   return (
