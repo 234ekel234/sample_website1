@@ -131,15 +131,26 @@ const CONTENT_RANGE = "Content!A2:B";
  */
 const FALLBACK: SiteContent = {
   chairman: {
-    // PMAFI's President, who now carries the home page message. The key names
-    // stay chairman.* because they are the content sheet's contract — see
-    // ChairmansMessage.tsx. Portrait and heading both derive from these two
-    // values, so this fallback stays internally consistent on its own.
-    name: "Bartolome Vicente O. Bacarro",
-    title: "President, PMAFI",
+    // PMAFI's Chairman carries the home page message. It was the President's
+    // between 2026-08-27 and 2026-09-03; the key names stay chairman.* through
+    // either arrangement because they are the content sheet's contract — see
+    // ChairmansMessage.tsx.
+    //
+    // The name must stay spelled as board-data.ts spells it. Portrait and
+    // heading both derive from these two values, and a name that fails to match
+    // renders NO photo rather than the wrong one — correct, but silent.
+    name: "Leo Angelo D. Leuterio",
+    title: "Chairman, PMAFI",
+    // STILL PLACEHOLDER WORDING — PMAFI has not supplied a real message. The
+    // second paragraph points at what a visitor can actually DO here rather
+    // than restating the Foundation's purpose, which the hero and /about
+    // already carry. It names no figures on purpose: dues and fund minimums
+    // are printed only where hasPaymentDetails() allows it, and free text in
+    // the sheet would walk straight around that gate.
     body: [
       "We cannot deny that what we are today, we owe in part to the Philippine Military Academy. The Foundation exists so that the next generation of cadets inherits an Academy even stronger than the one that shaped us.",
-      "Through your membership and support, PMAFI sustains the faculty, facilities, and programs that keep the PMA a true center of academic excellence and character formation. Every contribution is an investment in the leaders who will serve and defend our nation.",
+      "This site is how that work now reaches you. Apply for membership, check your standing at any time against our records, and download your own digital member ID. Give to a professorial chair or to the endowment, and follow what your gift has funded — all of it here, whenever it suits you.",
+      "Whether you are an alumnus, a member of the faculty, or a friend of the Academy, begin here. Every membership taken up and every gift recorded on this site is an investment in the leaders who will serve and defend our nation.",
     ],
   },
   contact: {
