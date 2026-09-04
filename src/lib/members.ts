@@ -645,6 +645,30 @@ function spellingCost(typed: string[], roster: string[]): number {
     : pairingCost(b, a, SPELLING_BUDGET);
 }
 
+/**
+ * The digits of a PMA class, or "" if there are none.
+ *
+ * The roster writes this field however it was typed on the day — the fixtures
+ * alone carry "PMA Class 1988", "1995" and blank — so the year is extracted
+ * rather than matched. A visitor typing "Class of '88" is doing the same thing
+ * from the other side.
+ */
+function classDigits(raw: string): string {
+  return raw.replace(/\D/g, "");
+}
+
+/** Whether a roster row's class is the one asked for, tolerating '88 for 1988. */
+function sameClass(rosterClass: string, wanted: string): boolean {
+  const held = classDigits(rosterClass);
+  // A member with no class on file can never be narrowed to. That is correct:
+  // the field cannot confirm what the roster does not know, and guessing would
+  // hand out the very record the ambiguity was protecting.
+  if (!held || !wanted) return false;
+  if (held.length === 4 && wanted.length === 2) return held.slice(2) === wanted;
+  if (held.length === 2 && wanted.length === 4) return wanted.slice(2) === held;
+  return held === wanted;
+}
+
 export type NameLookup =
   | { kind: "found"; member: MemberRecord }
   | { kind: "ambiguous" }
@@ -657,6 +681,15 @@ export type NameLookup =
  * between them — showing both would hand a stranger two people's standings off
  * one guess, and picking the first would show the wrong person their own
  * record. "ambiguous" sends them to the email lookup, which is unique.
+ *
+ * `classYear` is the way out of that for a member who cannot use the email path
+ * — the roster holds a misspelling of their name, or they have forgotten which
+ * address they registered under. It is asked for ONLY after a name has already
+ * come back ambiguous, and it narrows without disclosing: the visitor supplies
+ * the year and we never show one. The alternative people reach for — listing
+ * the near matches to choose from — answers a guessed name with real members'
+ * names, which is a roster directory with a friendly face on it. See the tail
+ * of this function for why a wrong year and an unhelpful one look identical.
  *
  * Matching runs in tiers, each tried only if the one before it found nothing,
  * so a precise spelling is always answered precisely:
@@ -696,7 +729,10 @@ export type NameLookup =
  * status check prints the name it matched (see MembershipCheck.tsx) so a member
  * can see at once if it found the wrong person.
  */
-export async function findMemberByName(name: string): Promise<NameLookup> {
+export async function findMemberByName(
+  name: string,
+  classYear?: string
+): Promise<NameLookup> {
   const typed = normalizeName(name);
   if (!typed) return { kind: "none" };
 
@@ -738,6 +774,22 @@ export async function findMemberByName(name: string): Promise<NameLookup> {
   }
 
   if (matches.length === 0) return { kind: "none" };
-  if (matches.length > 1) return { kind: "ambiguous" };
-  return { kind: "found", member: matches[0] };
+  if (matches.length === 1) return { kind: "found", member: matches[0] };
+
+  // MORE THAN ONE. A class year can narrow it, and narrowing this way reveals
+  // nothing: the visitor supplies the year, we never show one. Compare that with
+  // listing the candidates for them to pick from, which would answer a guessed
+  // name with real members' names and turn this page into a roster directory.
+  //
+  // 0 AND 2+ BOTH ANSWER `ambiguous`, deliberately. A wrong year has to be
+  // indistinguishable from an unhelpful one, or the field becomes an oracle for
+  // which classes those members belong to — ask 1970, 1971, 1972 and read the
+  // roster off the error messages. The visitor gets the identical shrug either
+  // way, and the rate limit (see lookupMembershipAction) bounds the guessing.
+  const wanted = classDigits(classYear ?? "");
+  if (wanted) {
+    const narrowed = matches.filter((m) => sameClass(m.pmaClass, wanted));
+    if (narrowed.length === 1) return { kind: "found", member: narrowed[0] };
+  }
+  return { kind: "ambiguous" };
 }

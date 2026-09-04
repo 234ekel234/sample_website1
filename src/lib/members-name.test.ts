@@ -252,6 +252,69 @@ describe("findMemberByName", () => {
     expect((await findMemberByName("Ana Reyes")).kind).toBe("ambiguous");
   });
 
+  // The two Ana Reyes rows are PMA 1990 (Active Regular) and 2001 (Lapsed
+  // Affiliate) — a shared name separated only by class year.
+  describe("narrowing an ambiguous name by PMA class", () => {
+    it("resolves to the one member in that class", async () => {
+      const { findMemberByName } = await load();
+      const r = await findMemberByName("Ana Reyes", "1990");
+      expect(r.kind).toBe("found");
+      if (r.kind === "found") {
+        expect(r.member.standing).toBe("Active");
+        expect(r.member.category).toBe("Regular");
+      }
+    });
+
+    it("picks the other one for the other year", async () => {
+      const { findMemberByName } = await load();
+      const r = await findMemberByName("Ana Reyes", "2001");
+      expect(r.kind).toBe("found");
+      if (r.kind === "found") expect(r.member.standing).toBe("Lapsed");
+    });
+
+    it("reads a two-digit year and a decorated one the same way", async () => {
+      const { findMemberByName } = await load();
+      for (const typed of ["90", "'90", "Class of 1990", "PMA 1990"]) {
+        const r = await findMemberByName("Ana Reyes", typed);
+        expect(r.kind, `typed: ${typed}`).toBe("found");
+        if (r.kind === "found") expect(r.member.standing).toBe("Active");
+      }
+    });
+
+    // THE ORACLE TEST. A year belonging to neither of them must come back
+    // `ambiguous` — the same answer an empty year gives. If a wrong year said
+    // "none" instead, the field would report which classes those members are
+    // NOT in, and a prober could read the roster off the difference.
+    it("answers a wrong year with the same shrug as no year at all", async () => {
+      const { findMemberByName } = await load();
+      const none = await findMemberByName("Ana Reyes");
+      const wrong = await findMemberByName("Ana Reyes", "1975");
+      expect(wrong.kind).toBe("ambiguous");
+      expect(wrong.kind).toBe(none.kind);
+    });
+
+    it("cannot narrow to a member whose class the roster does not hold", async () => {
+      // Two Jose Santos, neither with a class on file. The field has nothing to
+      // confirm against, so it must not resolve on an empty match.
+      readRange.mockResolvedValue([
+        HEADER,
+        row("2026-03-01", "a@e.com", "Jose Santos", "a@e.com", "Regular", "", "Active"),
+        row("2026-03-02", "b@e.com", "Jose Santos", "b@e.com", "Regular", "", "Lapsed"),
+      ]);
+      const { findMemberByName } = await load();
+      expect((await findMemberByName("Jose Santos", "1988")).kind).toBe("ambiguous");
+      expect((await findMemberByName("Jose Santos", "")).kind).toBe("ambiguous");
+    });
+
+    it("leaves an unambiguous name alone, wrong year or not", async () => {
+      // The year is a tie-breaker, never a second gate. A member who spells
+      // their name the way the roster holds it is found regardless.
+      const { findMemberByName } = await load();
+      expect((await findMemberByName("Juan Dela Cruz", "1988")).kind).toBe("found");
+      expect((await findMemberByName("Juan Dela Cruz", "1902")).kind).toBe("found");
+    });
+  });
+
   it("forgives a misspelling, including a swapped pair of letters", async () => {
     const { findMemberByName } = await load();
     for (const typed of ["Juan Cruze", "Juan Dela Curz", "Maria Pina"]) {

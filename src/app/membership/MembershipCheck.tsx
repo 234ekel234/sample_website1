@@ -217,6 +217,19 @@ export default function MembershipCheck({
         </div>
       )}
 
+      {/* AMBIGUOUS ASKS FOR A CLASS YEAR — IT NEVER LISTS THE CANDIDATES.
+          Showing the near matches to pick from is the obvious UX and it is the
+          one thing this page must not do: names are public, standings are not,
+          so answering a guessed name with real members' names turns a status
+          check into a roster directory. The visitor supplies the year instead;
+          the roster never shows one, and a wrong year returns this same panel
+          rather than saying so, which is what stops the field being used to
+          read class years off the roster one guess at a time.
+
+          A SEPARATE FORM, not another field on the one above. React 19 resets
+          an uncontrolled form after an action resolves, so the name typed on
+          the first pass would be gone; carrying it in a hidden input from the
+          action's own state is what makes the second submission self-contained. */}
       {state.status === "ambiguous" && (
         <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5">
           <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
@@ -225,8 +238,41 @@ export default function MembershipCheck({
           </p>
           <p className="mt-1 text-sm text-slate-600">
             We can&apos;t tell which record is yours, and we won&apos;t guess.
-            Try adding your middle name, or check using the email address on
-            your membership instead — switch to <strong>By email</strong> above.
+            Add your PMA class or batch year and we&apos;ll try again.
+          </p>
+
+          <form action={action} className="mt-4 flex flex-col gap-3 sm:flex-row">
+            <input type="hidden" name="mode" value="name" />
+            <input type="hidden" name="name" value={state.name} />
+            <input
+              type="text"
+              name="classYear"
+              required
+              inputMode="numeric"
+              aria-label="Your PMA class or batch year"
+              placeholder="e.g. 1988"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-500 focus:border-[#C8A951] focus:ring-2 focus:ring-[#C8A951]/30 sm:w-44"
+            />
+            <button
+              type="submit"
+              disabled={pending}
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#1B2A4A] px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#0a1628] disabled:opacity-60"
+            >
+              {pending ? "Checking…" : "Try again"}
+            </button>
+          </form>
+
+          <p className="mt-3 text-xs text-slate-500">
+            Not a PMA graduate, or this still isn&apos;t finding you? Check with
+            the email address on your membership — switch to{" "}
+            <strong>By email</strong> above — or{" "}
+            <a
+              href={`mailto:${contactEmail}?subject=Membership%20status%20enquiry`}
+              className="font-medium text-gold-ink underline underline-offset-2"
+            >
+              email us
+            </a>{" "}
+            and we&apos;ll look it up for you.
           </p>
         </div>
       )}

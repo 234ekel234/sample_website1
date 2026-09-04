@@ -126,8 +126,15 @@ export async function checkMembershipAction(
 
 export type MembershipLookupState =
   | MembershipCheckState
-  /** Two or more members share the name — we cannot safely pick one. */
-  | { status: "ambiguous" };
+  /**
+   * Two or more members share the name — we cannot safely pick one.
+   *
+   * `name` is echoed back so the follow-up form can resubmit it alongside a PMA
+   * class year. It is the visitor's own input coming home, never anything read
+   * off the roster; the roster's answer to an ambiguous name is still nothing
+   * at all.
+   */
+  | { status: "ambiguous"; name: string };
 
 /**
  * Best-effort caller identity for throttling.
@@ -173,9 +180,12 @@ export async function lookupMembershipAction(
     };
   }
 
+  // Supplied only on the second pass, after an ambiguous name asked for it.
+  const classYear = String(formData.get("classYear") ?? "").trim();
+
   let result;
   try {
-    result = await findMemberByName(name);
+    result = await findMemberByName(name, classYear);
   } catch (err) {
     console.error("Membership name lookup failed:", err);
     return {
@@ -185,7 +195,7 @@ export async function lookupMembershipAction(
     };
   }
 
-  if (result.kind === "ambiguous") return { status: "ambiguous" };
+  if (result.kind === "ambiguous") return { status: "ambiguous", name };
   // Reuse the email path's "not found" shape; the empty email keeps the UI's
   // apply-instead prompt working without inventing an address.
   if (result.kind === "none") return { status: "notfound", email: "" };
