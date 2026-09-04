@@ -52,13 +52,24 @@ export interface MemberRecord {
    * "form" — they submitted the membership form, so the row is theirs and the
    * address on it was typed by them.
    *
-   * "manual" — staff added them to the `Manual Members` tab. The row asserts a
-   * membership, but nobody proved the address belongs to the person named: a
-   * staff member typed both. **This is why manual members cannot mint a digital
-   * ID card** (see checkMembershipForIdAction). They can check their standing,
-   * which reveals only what PMAFI already told them; they cannot obtain a PNG
-   * bearing the Foundation's seal on the strength of an address somebody else
-   * entered on their behalf.
+   * "manual" — staff added them to the `Manual Members` tab, typing both the
+   * name and the address.
+   *
+   * **This decides no access.** It briefly gated the digital ID card, on the
+   * argument that nobody had shown a hand-typed address belonged to the person
+   * named. PMAFI settled it on 2026-08-31: the address on a manual row is the
+   * member's own, asked for so the member can be reached, not invented for
+   * them. Roughly half the roster is manual, so the refusal locked out a large
+   * share of the membership for no gain the gate could actually deliver — it
+   * proves an address is ON the roster, never that the visitor owns it, and
+   * that was equally true for form members. Closing it needs real sign-in
+   * (Phase 3, Module A). See the note above `checkMembershipAction` in
+   * `app/membership/actions.ts` for the full reasoning.
+   *
+   * What it is still for: recording which tab a member came from, which an
+   * admin view would want the day one exists. It is populated and tested, and a
+   * manual member who later submits the form is promoted to "form" by group
+   * rather than by winning row.
    */
   source: "form" | "manual";
 }
