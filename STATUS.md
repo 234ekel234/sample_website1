@@ -90,6 +90,29 @@ name. `/membership/id`, which mints a card bearing the Foundation's seal,
 accepts an **email only** — names are public, so allowing one to mint a card
 would make the credential forgeable by anyone who can read.
 
+**A shared name is resolved by asking for a PMA class year, never by listing
+the candidates.** Two members can genuinely share a name, and a member whose
+name the roster misspells — or who has forgotten which address they registered
+under — used to hit "more than one match" and be told to switch to the email
+tab, the one thing they could not do. They are now asked for their class year,
+which narrows the tie and resolves it when exactly one member survives. The
+obvious alternative, showing the near matches to pick from, is permanently out
+of bounds: names are public and standings are not, so answering a guessed name
+with real members' names would make the status check a roster directory. The
+visitor supplies the year; the roster never shows one. Three rules keep the
+field from becoming its own leak, all covered in `members-name.test.ts`:
+
+- **A wrong year and an unhelpful one return the identical answer** —
+  `ambiguous`, never "not found". Otherwise the field reports which classes
+  those members are *not* in, and the roster can be read off the difference.
+- **A member with no class on file can never be narrowed to.** An empty roster
+  value must not match an empty query.
+- **The year is a tie-breaker, not a second gate.** An unambiguous name still
+  resolves with a wrong year, or none at all.
+
+Guessing the year itself is bounded only by the per-IP rate limit below. It is
+a narrowing factor, not a secret, and the design accepts that.
+
 **Manual members mint cards on the same terms as everyone else.** They briefly
 could not: staff type both the name and the address on a hand-added row, so the
 argument ran that nobody had shown the address belonged to the person named.
@@ -152,9 +175,20 @@ mistake shows stale content rather than an empty page. Staff guide:
 
 The FAQ assistant is a floating widget on every page — keyword matching with a
 confidence threshold, suggested questions, and a clean hand-off to the contact
-page when nothing matches. No AI, no ongoing cost. The answer set is now **33
+page when nothing matches. No AI, no ongoing cost. The answer set is **32
 entries**, meeting the 25–40 recommendation; what remains is PMAFI reviewing the
-wording.
+wording. (This file said 33 until 2026-09-05; the array has held 32 throughout.)
+
+**There are two FAQs, and they drift.** The assistant's set is `src/lib/faq.ts`;
+`/contact` has its own seven-question list in `contact/FAQ.tsx`. Several
+questions appear in both, so **an answer changed in one has to be changed in the
+other**. Checked 2026-09-05 and one had gone stale the moment the payment
+details landed: `/contact` was still telling donors to email for bank and
+e-wallet details that `/donate` now publishes, while the assistant answered the
+same question correctly. Both now point at the Donate page. Note the asymmetry
+that lets them drift: the `FAQ` sheet tab overrides the **assistant's** answers
+only, so staff can fix one of these without a developer and the other not at
+all — the contact list is code and needs a deploy.
 
 ## Content drawn from the 2025 annual report
 
@@ -187,7 +221,9 @@ card. Closing it requires logins.
 Name lookup deliberately does **not** extend to the ID generator. The two
 lookups are separate server actions so the ID path has no name branch to reach.
 The name path returns neither the matched address nor the class year, and is
-rate-limited per client address.
+rate-limited per client address. It now *accepts* a class year to break a tie,
+which does not change that — the year travels inwards only, and no lookup ever
+answers with one.
 
 **The form is no longer the only way onto the roster** — the caveat this file
 carried from the start ("a member who never used the form has no row, and adding
@@ -256,7 +292,8 @@ top of this list for months, are **done**.
    to a faculty-development update instead.
 5. **Phone number, social URLs** — hidden rather than invented.
 6. **BIR donee status** — no page claims tax deductibility until confirmed.
-7. **FAQ sign-off** — 33 answers now written; PMAFI has not reviewed the wording.
+7. **FAQ sign-off** — 32 assistant answers plus 7 on `/contact`; PMAFI has not
+   reviewed the wording of either.
 8. **Two annual-report details, both fixable in the sheet** — whether Dionardo B
    Carlos endowed two chairs or is listed twice (the report's heading says 160,
    its list runs to 161), and the odd spellings reproduced rather than guessed
