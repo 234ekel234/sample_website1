@@ -40,16 +40,28 @@ today", and for the pending items it means "stay hidden".
 | 2 | `chairman.name` | LEO ANGELO D. LEUTERIO |
 | 3 | `chairman.title` | Chairman, PMAFI |
 | 4 | `chairman.body` | *(the message — see note below)* |
-| 5 | `contact.email` | PMAFI_PMA@yahoo.com |
-| 6 | `contact.phone` | *(blank until confirmed)* |
-| 7 | `contact.address` | Fort del Pilar, Baguio City, Philippines |
-| 8 | `social.facebook` | *(blank until confirmed)* |
-| 9 | `social.instagram` | *(blank until confirmed)* |
-| 10 | `payment.bank.name` | *(blank until confirmed)* |
-| 11 | `payment.bank.account_name` | *(blank until confirmed)* |
-| 12 | `payment.bank.account_number` | *(blank until confirmed)* |
-| 13 | `payment.gcash.name` | *(blank until confirmed)* |
-| 14 | `payment.gcash.number` | *(blank until confirmed)* |
+| 5 | `president.name` | BARTOLOME VICENTE O. BACARRO |
+| 6 | `president.title` | President, PMAFI |
+| 7 | `president.body` | *(the message — see note below)* |
+| 8 | `contact.email` | PMAFI_PMA@yahoo.com |
+| 9 | `contact.phone` | *(blank until confirmed)* |
+| 10 | `contact.address` | Fort del Pilar, Baguio City, Philippines |
+| 11 | `social.facebook` | *(blank until confirmed)* |
+| 12 | `social.instagram` | *(blank until confirmed)* |
+| 13 | `payment.bank.name` | *(blank until confirmed)* |
+| 14 | `payment.bank.account_name` | *(blank until confirmed)* |
+| 15 | `payment.bank.account_number` | *(blank until confirmed)* |
+| 16 | `payment.gcash.name` | *(blank until confirmed)* |
+| 17 | `payment.gcash.number` | *(blank until confirmed)* |
+
+**Row numbers are for convenience only** — the sheet is read as key/value
+pairs, so a key works wherever it sits and rows may be added in any order. The
+one thing that matters is that column A matches the key exactly.
+
+**An existing sheet does not need rebuilding to add the President.** Append the
+three `president.*` rows at the bottom; until they exist the site shows its
+built-in defaults for that message, exactly as it did before the rows were
+recognised.
 
 ### 4. Share it with the service account
 
@@ -86,9 +98,20 @@ nothing to publish and nothing to deploy.
 
 | Key | What it changes |
 |---|---|
-| `chairman.name` | The Chairman's name under the message on the home page |
-| `chairman.title` | The title shown beneath the name |
+| `chairman.name` | The name under the **first** message on the home page |
+| `chairman.title` | The title shown beneath that name |
 | `chairman.body` | The message itself. For more than one paragraph, leave a **blank line** between them. |
+| `president.name` | The name under the **second** message on the home page |
+| `president.title` | The title shown beneath that name |
+| `president.body` | The second message. Blank lines between paragraphs, same as above. |
+
+The home page carries **two** messages, and each set of three rows controls one
+of them. The heading above each ("Message from the Chairman", "Message from the
+President") and the portrait beside it are both worked out from the `name` and
+`title` rows — so changing who signs a message is those two rows and nothing
+else. **Spell the name the way it appears on the Board of Trustees page**: if it
+does not match a trustee there, the message runs without a photograph rather
+than beside the wrong face.
 | `contact.email` | The email shown on the Contact page, in the footer, on the Donate page, and in the chat widget |
 | `contact.phone` | A phone number. **Leave blank and no phone is shown anywhere** — nothing is invented. |
 | `contact.address` | The address in the footer |

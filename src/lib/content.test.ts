@@ -8,6 +8,7 @@ import { hasPaymentDetails, type SiteContent } from "@/lib/content";
 
 const EMPTY: SiteContent = {
   chairman: { name: "", title: "", body: [] },
+  president: { name: "", title: "", body: [] },
   contact: { email: "", phone: "", address: "" },
   social: { facebook: "", instagram: "" },
   payment: {
