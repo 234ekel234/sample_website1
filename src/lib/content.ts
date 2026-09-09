@@ -17,6 +17,7 @@
 //
 // Recognised keys (any missing key falls back to the value in FALLBACK below):
 //   chairman.name         chairman.title        chairman.body
+//   president.name        president.title       president.body
 //   contact.email         contact.phone         contact.address
 //   social.facebook        social.instagram
 //   payment.bank.name     payment.bank.account_name
@@ -30,8 +31,8 @@
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
 // They gate whether the figures are PRINTED: see hasPaymentDetails() below.
 //
-// `chairman.body` holds the whole message; separate paragraphs with a blank
-// line. Everything else is a single line of plain text.
+// `chairman.body` and `president.body` each hold a whole message; separate
+// paragraphs with a blank line. Everything else is a single line of plain text.
 //
 // FAIL-SAFE BY DESIGN: if the sheet is unreachable, a key is missing, or a cell
 // is blank, the site renders the FALLBACK value rather than an empty section.
@@ -40,13 +41,34 @@
 
 import { readRange } from "@/lib/sheets";
 
+/**
+ * A signed message on the home page: who is speaking, their office, and what
+ * they say.
+ *
+ * There are two of these and the shape is shared because nothing about a
+ * message depends on WHICH office signs it — the heading, the portrait and the
+ * byline are all derived from `name` and `title` (see LeadershipMessage.tsx).
+ * Adding a third officer later is a key prefix and a fallback, not new markup.
+ */
+export interface LeadershipMessage {
+  name: string;
+  title: string;
+  /** Paragraphs, already split. */
+  body: string[];
+}
+
 export interface SiteContent {
-  chairman: {
-    name: string;
-    title: string;
-    /** Paragraphs, already split. */
-    body: string[];
-  };
+  /**
+   * THE KEY PREFIXES ARE OFFICES, THE FIELDS ARE SLOTS. `chairman` is the
+   * first message on the page and `president` the second; each carries
+   * whoever its sheet rows name, which need not be the office in the field
+   * name — the prefixes are the content sheet's contract (column A is matched
+   * by exact string) and renaming one detaches the section from the cells
+   * staff edit. See ChairmansMessage's history: it carried the President's
+   * message for a week under the chairman.* keys and nothing had to change.
+   */
+  chairman: LeadershipMessage;
+  president: LeadershipMessage;
   contact: {
     email: string;
     /** Empty until PMAFI confirms — callers must hide rather than guess. */
@@ -130,27 +152,45 @@ const CONTENT_RANGE = "Content!A2:B";
  * unconfigured sheet is a no-op rather than a regression.
  */
 const FALLBACK: SiteContent = {
+  // BOTH MESSAGES ARE STILL PLACEHOLDER WORDING — PMAFI has supplied neither.
+  // They are written to say DIFFERENT things, because two messages that both
+  // restate the Foundation's purpose read as one message printed twice: the
+  // Chairman welcomes and points at what a visitor can do here, the President
+  // covers the work itself and how it is accounted for. Whoever replaces them
+  // should keep that division rather than let both drift onto the same ground.
+  //
+  // Neither names a figure, on purpose: dues and fund minimums are printed only
+  // where hasPaymentDetails() allows it, and free text in the sheet would walk
+  // straight around that gate.
+  //
+  // Each name must stay spelled as board-data.ts spells it. Portrait and
+  // heading both derive from the name and title, and a name that fails to match
+  // renders NO photo rather than the wrong one — correct, but silent.
   chairman: {
-    // PMAFI's Chairman carries the home page message. It was the President's
-    // between 2026-08-27 and 2026-09-03; the key names stay chairman.* through
-    // either arrangement because they are the content sheet's contract — see
-    // ChairmansMessage.tsx.
-    //
-    // The name must stay spelled as board-data.ts spells it. Portrait and
-    // heading both derive from these two values, and a name that fails to match
-    // renders NO photo rather than the wrong one — correct, but silent.
+    // PMAFI's Chairman carries the first message. It was the President's
+    // between 2026-08-27 and 2026-09-03, under these same chairman.* keys —
+    // see the note on SiteContent above.
     name: "Leo Angelo D. Leuterio",
     title: "Chairman, PMAFI",
-    // STILL PLACEHOLDER WORDING — PMAFI has not supplied a real message. The
-    // second paragraph points at what a visitor can actually DO here rather
-    // than restating the Foundation's purpose, which the hero and /about
-    // already carry. It names no figures on purpose: dues and fund minimums
-    // are printed only where hasPaymentDetails() allows it, and free text in
-    // the sheet would walk straight around that gate.
     body: [
       "We cannot deny that what we are today, we owe in part to the Philippine Military Academy. The Foundation exists so that the next generation of cadets inherits an Academy even stronger than the one that shaped us.",
       "This site is how that work now reaches you. Apply for membership, check your standing at any time against our records, and download your own digital member ID. Give to a professorial chair or to the endowment, and follow what your gift has funded — all of it here, whenever it suits you.",
       "Whether you are an alumnus, a member of the faculty, or a friend of the Academy, begin here. Every membership taken up and every gift recorded on this site is an investment in the leaders who will serve and defend our nation.",
+    ],
+  },
+  president: {
+    // "President, PMAFI" rather than the full board-data role, which reads
+    // "President & Chairman, Executive Committee". The heading is derived from
+    // the text before the first comma, so the fuller title would render as
+    // "Message from the President & Chairman" directly beneath the actual
+    // Chairman's message. The portrait is resolved from the NAME, so shortening
+    // the title here costs nothing.
+    name: "Bartolome Vicente O. Bacarro",
+    title: "President, PMAFI",
+    body: [
+      "The Academy's needs are specific, and so is our work. The Foundation funds professorial chairs so that cadets are taught by the best minds we can bring to Fort del Pilar, supports faculty pursuing doctorates, and helps meet the facility and modernisation needs that a modern officer corps is trained in.",
+      "None of it happens without the alumni, families and friends who fund it, and none of it should happen unaccounted for. Every gift is designated to a fund and recorded, and this site lets a donor see for themselves what that fund has since paid for.",
+      "That accountability is the promise behind every peso entrusted to us. If you have given before, thank you — and if you are considering it, look at the programmes we support and judge us by them.",
     ],
   },
   contact: {
@@ -212,6 +252,35 @@ const FALLBACK: SiteContent = {
 function pick(map: Map<string, string>, key: string, fallback: string): string {
   const value = map.get(key)?.trim();
   return value ? value : fallback;
+}
+
+/**
+ * Read one signed message from `<prefix>.name` / `.title` / `.body`.
+ *
+ * The three keys are picked INDEPENDENTLY, each against its own fallback,
+ * which is what lets staff correct a title without retyping the message. The
+ * body is the only multi-line value in the sheet: paragraphs are separated by
+ * a blank line, and a body that is blank or whitespace falls back whole rather
+ * than rendering an empty message under a real byline.
+ */
+function pickMessage(
+  map: Map<string, string>,
+  prefix: string,
+  fallback: LeadershipMessage
+): LeadershipMessage {
+  const body = map.get(`${prefix}.body`)?.trim();
+  const paragraphs = body
+    ? body
+        .split(/\n\s*\n/)
+        .map((p) => p.trim())
+        .filter(Boolean)
+    : [];
+
+  return {
+    name: pick(map, `${prefix}.name`, fallback.name),
+    title: pick(map, `${prefix}.title`, fallback.title),
+    body: paragraphs.length > 0 ? paragraphs : fallback.body,
+  };
 }
 
 /**
@@ -370,19 +439,9 @@ export async function getContent(): Promise<SiteContent> {
     map.set(key, String(raw ?? ""));
   }
 
-  const body = map.get("chairman.body")?.trim();
-
   return {
-    chairman: {
-      name: pick(map, "chairman.name", FALLBACK.chairman.name),
-      title: pick(map, "chairman.title", FALLBACK.chairman.title),
-      body: body
-        ? body
-            .split(/\n\s*\n/)
-            .map((p) => p.trim())
-            .filter(Boolean)
-        : FALLBACK.chairman.body,
-    },
+    chairman: pickMessage(map, "chairman", FALLBACK.chairman),
+    president: pickMessage(map, "president", FALLBACK.president),
     contact: {
       email: pick(map, "contact.email", FALLBACK.contact.email),
       phone: pick(map, "contact.phone", FALLBACK.contact.phone),

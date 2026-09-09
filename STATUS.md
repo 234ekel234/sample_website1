@@ -15,7 +15,7 @@ this file — see the separate working notes.
 |---|---|
 | **Code** | Complete for everything currently scoped |
 | **Verified end to end** | Membership lookup, digital ID gating, donation lookup, news and chairs read from the content sheet |
-| **Blocked on** | Content from PMAFI — the Chairman's message above all |
+| **Blocked on** | Content from PMAFI — the Chairman's and President's messages above all |
 
 **The payment blocker is cleared.** Bank and GCash details and the ₱3,000 fee
 are in the content sheet and rendering on `/donate` and `/membership`, so the
@@ -34,7 +34,7 @@ since August is resolved.
 
 | Route | State |
 |---|---|
-| `/` | ✅ hero, pillars, programs, impact, Chairman's message, news, **PMAFI's adopted Mission and Vision**, **a six-photo "Foundation at Work" band**, CTA |
+| `/` | ✅ hero, pillars, programs, impact, **the Chairman's and President's messages**, news, **PMAFI's adopted Mission and Vision**, **a six-photo "Foundation at Work" band**, CTA |
 | `/about` | ✅ story, mission, vision, values, **Board of Trustees** (`#board`) |
 | `/programs` | ✅ plus **the roll of endowed chairs**, read from the `Chairs` tab |
 | `/membership` | ✅ status check by email **or name**, apply, ₱3,000 published, and the **28 classes at 100% membership** |
@@ -166,7 +166,7 @@ mistake shows stale content rather than an empty page. Staff guide:
 
 | Tab | Drives | Notes |
 |---|---|---|
-| `Content` | Chairman's message, contact details, socials, bank and GCash, dues, finance contact, donation form link | Key/value |
+| `Content` | The Chairman's and President's messages, contact details, socials, bank and GCash, dues, finance contact, donation form link | Key/value |
 | `News` | The home page's News & Announcements | Moved here 2026-08-31 from a standalone sheet that had never been shared with the service account, so the feed silently served samples for months |
 | `Fund updates` | `/donate/impact` and the updates shown in a donor's own lookup | |
 | `Chairs` | The roll of endowed chairs on `/programs` | One column. There is deliberately no place to put an amount |
@@ -274,9 +274,13 @@ the real gift before deciding what to do with it.
 In the order they unblock the most. Payment details and dues, which sat at the
 top of this list for months, are **done**.
 
-1. **Chairman's message** — still the fabricated placeholder, now copied into
-   the `Content` tab where it reads as though it were approved. The single most
-   misleading thing on the site.
+1. **The Chairman's message and the President's message** — both still
+   fabricated placeholders, and the Chairman's is copied into the `Content` tab
+   where it reads as though it were approved. The single most misleading thing
+   on the site, and as of the second message there is now twice as much of it,
+   under two officers' names and photographs. Three sheet rows each
+   (`chairman.*`, `president.*`); replacing one without the other leaves the
+   page half approved and half invented, with nothing on it to say which.
 2. **`contact.email` is the wrong address.** The sheet holds
    `pmafi.web@gmail.com`, so the footer, contact page and chat widget all
    publish the Google account that owns the Forms rather than PMAFI's official
