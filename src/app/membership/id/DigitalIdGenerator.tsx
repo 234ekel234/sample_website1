@@ -98,6 +98,25 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
+/**
+ * A member's name, made safe for a download filename.
+ *
+ * Folds accents rather than stripping them, so Peña becomes Pena instead of
+ * Pea. Everything else that is not a letter or digit collapses to a single
+ * hyphen, which covers the spaces, commas and full stops ordinary in a roster
+ * name ("Cruz, Juan A."). Falls back to a generic name for the pathological
+ * case of a name with nothing alphanumeric in it at all — a download called
+ * "PMAFI-Member-ID-.png" looks broken.
+ */
+function fileSlug(name: string): string {
+  const folded = name
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return folded || "Member";
+}
+
 function roundRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -153,13 +172,19 @@ function fitFont(
 /** The verified member this card is for. Supplied by the roster, never typed. */
 export interface VerifiedMember {
   /**
-   * The number printed on the card, already derived (see lib/member-id.ts).
+   * The member's derived number (see lib/member-id.ts).
    *
-   * THIS USED TO BE THE EMAIL, hashed here. Taking the finished number instead
-   * means the generator never needs the address at all, which is what lets the
-   * demo name path issue a card carrying the member's real number without
-   * their email reaching the browser. The email path computes the same value
-   * from the address the visitor typed, so both routes print one number.
+   * CURRENTLY SUPPLIED AND NOT PRINTED. The card carried it as "MEMBER NO."
+   * until PMAFI's own numbering scheme exists — the string is ours, not the
+   * Foundation's, so a card bearing their seal should not assert it. The field
+   * stays on this type because the derivation is still correct and still
+   * exercised: both routes compute the same number for the same member, which
+   * is the property that has to hold before the line can come back.
+   *
+   * It is also why this is a number rather than the email it is derived from.
+   * Hashing here would mean the generator needed the address, and the demo name
+   * path has no address to give it — deriving server-side lets that path issue
+   * a correct card without an email ever reaching the browser.
    */
   memberId: string;
   name: string;
@@ -177,7 +202,9 @@ export default function DigitalIdGenerator({
   member: VerifiedMember;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { memberId, name, category, standing, pmaClass, memberSince } = member;
+  // `member.memberId` is deliberately NOT destructured — nothing on the card
+  // prints it while the number is deferred. See the note beside MEMBER SINCE.
+  const { name, category, standing, pmaClass, memberSince } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   /** Set when a chosen file could not be decoded. Cleared on the next attempt. */
@@ -240,7 +267,10 @@ export default function DigitalIdGenerator({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const { sans, mono } = siteFonts();
+    // `mono` is not pulled out any more: the member number was the only thing
+    // set in it. siteFonts() still resolves both, so restoring that line needs
+    // no change here.
+    const { sans } = siteFonts();
 
     ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0);
     ctx.clearRect(0, 0, CARD_W, CARD_H);
@@ -384,21 +414,31 @@ export default function DigitalIdGenerator({
     ctx.font = `500 13px ${sans}`;
     ctx.fillText(`as of ${issued}`, tx + pillW + 14, pillY + 23);
 
-    // ID, joining year, and the date this copy was generated.
+    // Joining year, or the date this copy was generated.
+    //
+    // NO MEMBER NUMBER, FOR NOW. The card used to print "MEMBER NO." above this
+    // — `PMAFI-` and eight hex characters derived from the member's email. It
+    // was removed deliberately: PMAFI has never supplied a numbering scheme (it
+    // is on the information request), so that string was ours, and a card
+    // bearing the Foundation's seal should not carry an identifier the
+    // Foundation does not issue. A member quoting it to staff would be quoting
+    // a number nobody at PMAFI can look up.
+    //
+    // The derivation is still there and still used — `memberId` names the
+    // downloaded file, and the demo name path exists partly to return the right
+    // one — so restoring the line is a fillText away once PMAFI supplies a real
+    // scheme. Do not restore it before then.
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = `600 12px ${sans}`;
-    ctx.fillText("MEMBER NO.", tx, py + 196);
     // BOTH DATES NOW, not one or the other. The joining year and the day this
     // copy was generated answer different questions — how long they have been a
     // member, and how stale the standing above is — and the card previously
     // dropped the second whenever it knew the first, which is precisely the
     // case for almost every member.
-    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 248);
+    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 196);
     ctx.fillStyle = "#ffffff";
-    ctx.font = `600 24px ${mono}`;
-    ctx.fillText(memberId, tx, py + 226);
     ctx.font = `500 19px ${sans}`;
-    ctx.fillText(memberSince || issued, tx, py + 278);
+    ctx.fillText(memberSince || issued, tx, py + 226);
 
     // Footer note. No "scan to verify" claim: there is nothing to scan, and
     // nothing on the site could verify it yet. Scan-to-verify needs a lookup
@@ -414,7 +454,7 @@ export default function DigitalIdGenerator({
     // re-runs the draw once the webfonts arrive, and canvas reads the font at
     // fillText time rather than reacting to it later.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seal, photo, displayName, category, memberId, issued, standing, pmaClass, memberSince, fontsReady]);
+  }, [seal, photo, displayName, category, issued, standing, pmaClass, memberSince, fontsReady]);
 
   useEffect(() => {
     draw();
@@ -487,7 +527,12 @@ export default function DigitalIdGenerator({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `PMAFI-Member-ID-${memberId}.png`;
+      // NAMED FOR THE MEMBER, not numbered. The filename used to carry the
+      // member number, which put an identifier PMAFI does not issue into
+      // something the member keeps, forwards and is asked for by name. A
+      // downloads folder is also the one place the string would outlive the
+      // card, so it goes with the line on the card rather than after it.
+      a.download = `PMAFI-Member-ID-${fileSlug(displayName)}.png`;
       a.click();
       // Revoking in the same task can cancel the download before the browser
       // has finished reading the blob — Firefox in particular. Hold the URL
