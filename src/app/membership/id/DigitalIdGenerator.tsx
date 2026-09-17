@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Upload, Download, IdCard } from "lucide-react";
 import { SITE_HOST } from "@/lib/site";
 
@@ -98,32 +98,6 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-// Deterministic short ID so the same name always yields the same number.
-/**
- * Stable member number.
- *
- * Derived from the EMAIL, not the name. The email is the roster's key: it is
- * unique by definition, and correcting a typo or adding a middle initial to a
- * member's name no longer silently reissues them a different number.
- *
- * Uses the full 32-bit digest. Truncating to six hex characters gave a 24-bit
- * space, where a roster of ~3,300 members carries a 27.7% chance that two of
- * them share a number. At 32 bits that falls to 0.13%.
- *
- * NOT PMAFI's own scheme — the Foundation has never supplied one, and it is on
- * the information request. This only guarantees the number is consistent for a
- * given member.
- */
-function idFromEmail(email: string): string {
-  const s = email.trim().toLowerCase();
-  let h = 2166136261;
-  for (let i = 0; i < s.length; i++) {
-    h ^= s.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return `PMAFI-${(h >>> 0).toString(16).toUpperCase().padStart(8, "0")}`;
-}
-
 function roundRect(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -178,8 +152,16 @@ function fitFont(
 
 /** The verified member this card is for. Supplied by the roster, never typed. */
 export interface VerifiedMember {
-  /** Roster key — the member number is derived from this, so it stays stable. */
-  email: string;
+  /**
+   * The number printed on the card, already derived (see lib/member-id.ts).
+   *
+   * THIS USED TO BE THE EMAIL, hashed here. Taking the finished number instead
+   * means the generator never needs the address at all, which is what lets the
+   * demo name path issue a card carrying the member's real number without
+   * their email reaching the browser. The email path computes the same value
+   * from the address the visitor typed, so both routes print one number.
+   */
+  memberId: string;
   name: string;
   /** PMA class or batch. Blank rows simply omit the line. */
   pmaClass: string;
@@ -195,7 +177,7 @@ export default function DigitalIdGenerator({
   member: VerifiedMember;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const { email, name, category, standing, pmaClass, memberSince } = member;
+  const { memberId, name, category, standing, pmaClass, memberSince } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   /** Set when a chosen file could not be decoded. Cleared on the next attempt. */
@@ -216,7 +198,6 @@ export default function DigitalIdGenerator({
   }, []);
 
   const displayName = name.trim();
-  const memberId = useMemo(() => idFromEmail(email), [email]);
   const issued = new Date().toLocaleDateString("en-PH", {
     day: "numeric",
     month: "long",

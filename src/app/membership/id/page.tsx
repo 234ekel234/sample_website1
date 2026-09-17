@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import IdGate from "./IdGate";
 import PageHero from "@/components/ui/PageHero";
+import { idByNameEnabled } from "@/lib/demo-flags";
+import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Digital Member ID | PMAFI",
@@ -10,7 +12,12 @@ export const metadata: Metadata = {
     "Confirm your PMAFI membership, add a photo, and download your digital member ID — generated from the Philippine Military Academy Foundation's own records.",
 };
 
-export default function DigitalIdPage() {
+export default async function DigitalIdPage() {
+  // Read on the server, passed down for RENDERING only — the action checks the
+  // flag itself, because a prop is not a security boundary. See demo-flags.ts.
+  const byName = idByNameEnabled();
+  const { forms } = await getContent();
+
   return (
     <main>
       {/* Hero */}
@@ -27,7 +34,7 @@ export default function DigitalIdPage() {
       {/* Generator */}
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <IdGate />
+          <IdGate byName={byName} correctionFormUrl={forms.correction} />
 
           <div className="mt-10 text-center">
             <Link

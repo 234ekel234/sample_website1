@@ -25,7 +25,7 @@
 //   payment.gcash.name    payment.gcash.number
 //   dues.regular          dues.associate        dues.affiliate
 //   finance.email         finance.phone         finance.name
-//   form.donation
+//   form.donation         form.correction
 //
 // The dues values are free text, so staff control the wording as well as the
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
@@ -108,14 +108,25 @@ export interface SiteContent {
     /** e.g. "Ask for the Treasurer". Omitted when blank. */
     name: string;
   };
-  /**
-   * Public link to the "Tell us about your donation" Google Form
-   * (references/donation-form.gs). Blank until PMAFI creates it, and the
-   * donate page then keeps asking donors to email their details instead —
-   * which is what it has always done, so nothing breaks by leaving it unset.
-   */
   forms: {
+    /**
+     * Public link to the "Tell us about your donation" Google Form
+     * (references/donation-form.gs). Blank until PMAFI creates it, and the
+     * donate page then keeps asking donors to email their details instead —
+     * which is what it has always done, so nothing breaks by leaving it unset.
+     */
     donation: string;
+    /**
+     * Public link to the "Correct my membership record" Google Form
+     * (references/correction-form.gs).
+     *
+     * The digital ID prints the roster's spelling of a member's name and does
+     * not let them edit it — an editable name is the forgeable credential the
+     * gate exists to prevent. So the fix has to be a request to staff, and
+     * this is where it goes. Blank hides the control entirely rather than
+     * rendering a dead link, the same way `donation` does.
+     */
+    correction: string;
   };
 }
 
@@ -246,6 +257,7 @@ const FALLBACK: SiteContent = {
   },
   forms: {
     donation: "",
+    correction: "",
   },
 };
 
@@ -482,6 +494,7 @@ export async function getContent(): Promise<SiteContent> {
     },
     forms: {
       donation: pick(map, "form.donation", FALLBACK.forms.donation),
+      correction: pick(map, "form.correction", FALLBACK.forms.correction),
     },
   };
 }

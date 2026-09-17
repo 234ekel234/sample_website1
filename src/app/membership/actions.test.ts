@@ -208,3 +208,120 @@ describe("the digital ID gate — checkMembershipAction", () => {
     expect(state.status).toBe("error");
   });
 });
+
+// ---------------------------------------------------------------------------
+// The demo name path for the ID card.
+//
+// This action exists to be switched OFF. These tests pin the two properties
+// that make it safe to have written at all: it refuses unless the flag is set,
+// and even when set it does not hand over the address behind the name.
+// ---------------------------------------------------------------------------
+
+function idNameForm(name: string, classYear?: string) {
+  const fd = new FormData();
+  fd.set("name", name);
+  if (classYear) fd.set("classYear", classYear);
+  return fd;
+}
+
+describe("demoIdByNameAction — the flag", () => {
+  it("refuses when DEMO_ID_BY_NAME is unset", async () => {
+    delete process.env.DEMO_ID_BY_NAME;
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    const { demoIdByNameAction } = await load();
+
+    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+
+    expect(state.status).toBe("error");
+    // The roster must not even be consulted — a disabled path does no lookup.
+    expect(findMemberByName).not.toHaveBeenCalled();
+  });
+
+  it("refuses for any value other than exactly \"true\"", async () => {
+    // Fail-closed: a half-configured variable leaves the gate shut rather than
+    // ajar. "TRUE", "1" and "yes" are all the shapes someone types by reflex.
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    for (const value of ["TRUE", "1", "yes", "on", "false", ""]) {
+      process.env.DEMO_ID_BY_NAME = value;
+      const { demoIdByNameAction } = await load();
+      const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+      expect(state.status, `value ${JSON.stringify(value)} must not enable`).toBe("error");
+    }
+    delete process.env.DEMO_ID_BY_NAME;
+  });
+});
+
+describe("demoIdByNameAction — enabled", () => {
+  beforeEach(() => {
+    process.env.DEMO_ID_BY_NAME = "true";
+  });
+
+  it("mints a card without returning the member's email", async () => {
+    // The whole point of deriving the number server-side: the card carries the
+    // member's real ID while the address that produced it stays on the server.
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    const { demoIdByNameAction } = await load();
+
+    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+
+    expect(state.status).toBe("found");
+    expect(JSON.stringify(state)).not.toContain("juan@example.com");
+    expect(JSON.stringify(state)).not.toContain("@");
+  });
+
+  it("issues the same number the email path would", async () => {
+    // A member who finds themselves by name must not get a different card from
+    // the one they would get by email — same person, same credential.
+    const { idFromEmail } = await import("@/lib/member-id");
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    const { demoIdByNameAction } = await load();
+
+    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+
+    if (state.status !== "found") throw new Error("expected found");
+    expect(state.memberId).toBe(idFromEmail("juan@example.com"));
+  });
+
+  it("asks for a class year on an ambiguous name and never lists candidates", async () => {
+    findMemberByName.mockResolvedValue({ kind: "ambiguous" });
+    const { demoIdByNameAction } = await load();
+
+    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+
+    expect(state.status).toBe("ambiguous");
+    // Only the visitor's own input comes home; no roster name is echoed.
+    expect(JSON.stringify(state)).not.toContain("1988");
+  });
+
+  it("passes the class year through as a tie-break", async () => {
+    findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
+    const { demoIdByNameAction } = await load();
+
+    await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz", "1988"));
+
+    expect(findMemberByName).toHaveBeenCalledWith("Juan Dela Cruz", "1988");
+  });
+
+  it("rate-limits repeated lookups from one connection", async () => {
+    findMemberByName.mockResolvedValue({ kind: "none" });
+    const { demoIdByNameAction } = await load();
+
+    let limited = false;
+    for (let i = 0; i < 20; i++) {
+      const s = await demoIdByNameAction({ status: "idle" }, idNameForm(`Guess Number ${i}`));
+      if (s.status === "error") {
+        limited = true;
+        break;
+      }
+    }
+    expect(limited).toBe(true);
+  });
+
+  it("does not fall back to a card when the roster read fails", async () => {
+    findMemberByName.mockRejectedValue(new Error("sheets down"));
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    const { demoIdByNameAction } = await load();
+    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    expect(state.status).toBe("error");
+  });
+});

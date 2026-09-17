@@ -20,7 +20,7 @@ const EMPTY: SiteContent = {
   },
   dues: { regular: "", associate: "", affiliate: "" },
   finance: { email: "", phone: "", name: "" },
-  forms: { donation: "" },
+  forms: { donation: "", correction: "" },
 };
 
 const withPayment = (p: Partial<SiteContent["payment"]>): SiteContent => ({
