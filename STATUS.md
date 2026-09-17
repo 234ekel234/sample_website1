@@ -254,6 +254,7 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `DRIVE_PHOTOS_FOLDER_ID` | — | — | **deliberately unset.** Would let staff type `handover.jpg` instead of pasting a share link, but needs the Drive API enabled and the folder shared with the service account — roughly ten minutes of setup that only pays off past ~40 photographs. PMAFI chose links (2026-08-31). The resolver is built and tested; setting this variable is the only switch, and existing link rows keep working |
 | `DONATIONS_SHEET_ID` | — | — | optional; falls back to `MEMBERS_SHEET_ID` |
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries |
+| `DEMO_ID_BY_NAME` | — | **Preview only** | **Temporary demo relaxation — must never be set on Production.** Lets `/membership/id` mint a card from a name instead of an email. Names are public, so this makes the card forgeable by anyone who can read one, and it returns the class year and joining year the status check deliberately withholds. Only the exact string `true` enables it. Remove it when the demo is over |
 
 ---
 

@@ -7,6 +7,8 @@ import {
   type MemberRecord,
 } from "@/lib/members";
 import { rateLimit } from "@/lib/rate-limit";
+import { idByNameEnabled } from "@/lib/demo-flags";
+import { idFromEmail } from "@/lib/member-id";
 
 export type MembershipCheckState =
   | { status: "idle" }
@@ -86,6 +88,120 @@ export async function checkMembershipAction(
   const found = await lookupByEmail(formData);
   if (found.kind === "state") return found.state;
   return foundState(found.email, found.member);
+}
+
+// ---------------------------------------------------------------------------
+// DEMO ONLY — minting an ID card from a NAME.
+//
+// This is a deliberate, temporary relaxation of the rule the rest of this file
+// exists to hold: the ID path is email-only, and there is no name branch inside
+// checkMembershipAction for anyone to reach. That is still true. This is a
+// SEPARATE action that refuses to do anything unless DEMO_ID_BY_NAME is set,
+// so the property survives the demo — turn the flag off and this function is
+// inert, rather than the email path having acquired a mode it now has to
+// defend.
+//
+// WHAT IT GIVES UP, stated plainly because a future reader will find this and
+// wonder: names are public, so a card mintable by name is forgeable by anyone
+// who can read one. See demo-flags.ts. It belongs on a preview deployment.
+//
+// WHAT IT STILL WON'T DO:
+//   · No listing. An ambiguous name gets the same class-year follow-up the
+//     status check uses; the candidates are never shown, demo or not.
+//   · No email. The card's number is derived from the member's stored address
+//     SERVER-SIDE and only the number is returned, so a name still cannot be
+//     turned into an address — the harvesting the status check guards against
+//     stays guarded here.
+//   · No skipping the rate limit, which is what bounds working through a list
+//     of plausible alumni names.
+// ---------------------------------------------------------------------------
+
+/**
+ * What the ID generator needs, with the member number already computed.
+ *
+ * `memberId` rather than `email`: the card only ever used the address to derive
+ * the number, so returning the number alone gives the card everything it needs
+ * and gives the browser nothing it doesn't.
+ */
+export type IdCardState =
+  | { status: "idle" }
+  | { status: "error"; message: string }
+  | { status: "notfound" }
+  | { status: "ambiguous"; name: string }
+  | {
+      status: "found";
+      memberId: string;
+      name: string;
+      category: string;
+      standing: "Active" | "Lapsed" | "Pending";
+      pmaClass: string;
+      memberSince: string;
+    };
+
+export async function demoIdByNameAction(
+  _prev: IdCardState,
+  formData: FormData
+): Promise<IdCardState> {
+  // THE CHECK THAT MATTERS. The page also reads the flag to decide whether to
+  // render the name form, but that is a rendering decision; a server action is
+  // a public endpoint and anyone can post to it. This is the one that decides.
+  if (!idByNameEnabled()) {
+    return {
+      status: "error",
+      message: "Please confirm your membership using your email address.",
+    };
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  if (name.length < 3) {
+    return {
+      status: "error",
+      message: "Please enter your full name as it appears on your membership.",
+    };
+  }
+
+  // Same budget as the status check's name path, under its own key so the two
+  // cannot be used to top each other up.
+  const limit = rateLimit(`member-id-by-name:${await clientKey()}`, 12, 10 * 60 * 1000);
+  if (!limit.ok) {
+    return {
+      status: "error",
+      message:
+        "Too many lookups from this connection. Please wait a few minutes, or continue with your email address instead.",
+    };
+  }
+
+  const classYear = String(formData.get("classYear") ?? "").trim();
+
+  let result;
+  try {
+    result = await findMemberByName(name, classYear);
+  } catch (err) {
+    console.error("Demo ID name lookup failed:", err);
+    return {
+      status: "error",
+      message:
+        "We couldn't check your membership right now. Please try again shortly, or contact us if it persists.",
+    };
+  }
+
+  if (result.kind === "ambiguous") return { status: "ambiguous", name };
+  if (result.kind === "none") return { status: "notfound" };
+
+  const m = result.member;
+  return {
+    status: "found",
+    // Derived here, from the roster's own key, and the key itself stays put.
+    memberId: idFromEmail(m.email),
+    name: m.name,
+    category: m.category,
+    standing: m.standing,
+    // Returned, unlike on the status check — the card prints both, so there is
+    // no way to issue one without them. This is the cost the flag buys and the
+    // reason it does not belong on production.
+    pmaClass: m.pmaClass,
+    memberSince: m.memberSince,
+  };
 }
 
 // ---------------------------------------------------------------------------

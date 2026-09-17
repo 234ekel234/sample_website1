@@ -122,6 +122,26 @@ than beside the wrong face.
 | `payment.bank.account_number` | Account number |
 | `payment.gcash.name` | GCash account name |
 | `payment.gcash.number` | GCash number |
+| `form.correction` | Link to the **"Correct my membership record"** form. Blank hides the "Request a correction" control on the member ID page. |
+
+### The correction form (`form.correction`)
+
+Paste the public link to the **"Correct my membership record"** form
+(`references/correction-form.gs`) here and the digital member ID page offers
+*"Request a correction"* to a member whose name is recorded wrongly. Leave it
+blank and the control is hidden entirely — no dead link, same as
+`form.donation`.
+
+Why it matters: the ID card prints the member's name exactly as the roster
+holds it and does not let the visitor edit it, because a card that says whatever
+was typed into it is a forgeable credential carrying the Foundation's seal. That
+is the right trade, but it means a misspelled row has no way out — and roughly
+half the roster is typed by hand, so misspellings are ordinary. This is the way
+out.
+
+Requests go to a person; the site never writes to the roster. The service
+account holds read-only access to the spreadsheet on purpose, and that stays
+true.
 
 ### The donation form (`form.donation`)
 
