@@ -231,6 +231,29 @@ The report itself is in `references/` and **must never be committed** — pages
 
 ---
 
+## What the ID card does not claim
+
+**The card no longer prints `MEMBER SINCE`** (2026-09-19). That slot shows
+`ISSUED` and the generation date for every member.
+
+There is no "member since" question on the application form, so the year came
+from the row's `Timestamp`. On a form row that is the submission date and means
+what it says. On a `Manual Members` row it is whatever staff typed —
+unvalidated, sometimes blank — and roughly half the roster is manual, so the
+card was asserting a joining year it had no basis for across a large share of
+the membership. A blank one was worse than a gap: the slot relabelled itself to
+`ISSUED`, so the card changed shape rather than showing an obviously missing
+field.
+
+Restoring it needs a joining year that means something — a column staff fill in
+deliberately, not the timestamp reused for a second purpose. The value is still
+derived, still returned by both actions and still tested, so nothing has to be
+rebuilt when that exists; it is one `fillText`.
+
+The `as of <date>` stamp beside the standing is untouched and must stay.
+
+---
+
 ## Keeping members' contact details current
 
 **The ID page asks for a current email address and mobile number.** PMAFI's
@@ -282,19 +305,25 @@ Re-running one mints a second form with a different link and strands the
 responses already collected on the first, so a question added to a generator
 after its form was built has to be added to the live form by hand.
 
-**Neither of these two forms has been built yet.** Checked against the content
-sheet on 2026-09-19: it holds `form.donation` and nothing else, so there is no
-`form.correction` and no `form.contact` key — both controls on `/membership/id`
-are hidden, exactly as a blank key is meant to make them. This corrects a note
-that stood here saying the mobile-number question added to
-`correction-form.gs` on 2026-09-19 had to be added to a live form by hand:
-there is no live form to add it to, and running the generator once produces it
-with the question already in place. The hand-editing rule above applies from
-then on, not now.
+**Both forms were built on 2026-09-19**, having never existed before that day —
+the content sheet had held `form.donation` and nothing else, so both controls
+on `/membership/id` were hidden exactly as a blank key is meant to make them.
 
-Running both generators is a ~2 minute job in the `pmafi.web@gmail.com`
-account, and it is the last thing standing between the ID page and its two
-prompts. It is **not** blocked on PMAFI.
+| Key | Form | Email question |
+|---|---|---|
+| `form.contact` | Contact update | `entry.1486247649` |
+| `form.correction` | Correct my record | `entry.1281028009` |
+
+Both `.gs` files now carry their form's edit and public links in the header and
+are **records rather than scripts to run** — re-running either mints a second
+form and strands the responses on the first. Each prefill template was checked
+through `applyPrefill` before being published: the address is encoded in when a
+member is known, and the token is stripped to empty when it is not.
+
+**The hand-editing rule is live from here.** The contact form's questions were
+already revised after creation — the email made optional, the PMA class year
+made required, both lookup captions rewritten — because a member does not need
+their email to get a card and most reach the page by name with that box empty.
 
 ---
 
