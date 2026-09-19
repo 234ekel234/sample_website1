@@ -33,25 +33,30 @@
  * name change rather than a misspelling — they can ask by email when they
  * review the request.
  *
- * ── STATE: NOT YET BUILT (checked 2026-09-19) ────────────────────────────────
- * The content sheet has NO `form.correction` key, so this form has never been
- * created and the ID page hides the "Request a correction" control entirely.
- * Run this file once and the mobile-number question below comes with it — there
- * is nothing to add by hand.
+ * ── STATE: BUILT ON 2026-09-19. DO NOT RUN THIS FILE AGAIN ───────────────────
+ * The form exists:
+ *   edit   https://docs.google.com/forms/d/1d0AR1wNtBIyQV8vSf6Ndi4rI-d992kjTA2J_MbkIaaU/edit
+ *   public https://docs.google.com/forms/d/e/1FAIpQLScxrggANQyW1paFhNZ1bS4dRz_VYWc59PTg3ucWHMkg7J2DyA/viewform
  *
- * ── ONCE IT EXISTS, DO NOT RE-RUN THIS ───────────────────────────────────────
+ * Its email question is entry.1281028009, which is what the prefill template in
+ * the content sheet under `form.correction` substitutes into. Everything below
+ * is now a RECORD of what was created, not a thing to run — change the live
+ * form by hand and mirror the change here.
+ *
+ * ── WHY RE-RUNNING WOULD BE DESTRUCTIVE ──────────────────────────────────────
  * This file CREATES a form; it does not edit one. Running it again mints a
  * SECOND form with a different link, leaving the responses already collected
  * behind on the first and breaking the link in the content sheet.
  *
- * So a question added to this file AFTER the form has been built has to be
- * added to the live form by hand: open the EDIT link, add the question with
- * exactly the title used here, and drag it into the same position. The
- * responses sheet gains a column and nothing else changes. Delete the "not yet
- * built" note above when you run this, so the next reader knows which of these
- * two paragraphs applies.
+ * So a question added to this file from now on has to be added to the live form
+ * by hand: open the EDIT link above, add the question with exactly the title
+ * used here, and drag it into the same position. The responses sheet gains a
+ * column and nothing else changes.
  *
- * ── HOW TO RUN (≈1 minute) ───────────────────────────────────────────────────
+ * ── HOW IT WAS RUN, KEPT FOR THE NEXT FORM ───────────────────────────────────
+ * These steps are history for this file. They are left in because the next
+ * generator written here will need them, and because steps 6 and 7 are what
+ * make a form reachable rather than merely existing.
  *   1. Sign in to the pmafi.web@gmail.com Google account.
  *   2. Go to  https://script.google.com  → "New project".
  *   3. Delete the sample code, paste THIS whole file in.
@@ -149,7 +154,8 @@ function createPmafiCorrectionForm() {
     .setTitle('Email address on your membership')
     .setHelpText(
       'The address you registered with, or the one PMAFI has on file for you. ' +
-      'If you are not sure, give us your usual address and we will search.'
+      'If you are not sure, give us the email you use and we will use that ' +
+      'one to find you.'
     )
     .setValidation(emailValidation)
     .setRequired(true);
@@ -276,7 +282,15 @@ function createPmafiCorrectionForm() {
   var seeded = form.createResponse()
     .withItemResponse(emailItem.createResponse(TEMPLATE_SEED))
     .toPrefilledUrl();
-  var template = seeded.replace(encodeURIComponent(TEMPLATE_SEED), EMAIL_TOKEN);
+  // BOTH SPELLINGS OF THE SEED, because Google uses either. Running the
+  // contact-update generator on 2026-09-19 returned the seed with its "@"
+  // UNENCODED — entry.1486247649=prefill.seed@example.com — so looking only for
+  // the percent-encoded form found nothing and the warning below fired on a
+  // form that was otherwise perfectly good. The encoded variant is tried first;
+  // neither string is a substring of the other, so they cannot interfere.
+  var template = seeded
+    .split(encodeURIComponent(TEMPLATE_SEED)).join(EMAIL_TOKEN)
+    .split(TEMPLATE_SEED).join(EMAIL_TOKEN);
 
   Logger.log('EDIT this form:   %s', form.getEditUrl());
   Logger.log('PUBLIC link:      %s', form.getPublishedUrl());

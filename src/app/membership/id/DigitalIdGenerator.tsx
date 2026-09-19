@@ -203,9 +203,10 @@ export default function DigitalIdGenerator({
   member: VerifiedMember;
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  // `member.memberId` is deliberately NOT destructured — nothing on the card
-  // prints it while the number is deferred. See the note beside MEMBER SINCE.
-  const { name, category, standing, pmaClass, memberSince } = member;
+  // `member.memberId` and `member.memberSince` are deliberately NOT
+  // destructured — nothing on the card prints either while they are deferred.
+  // See the note beside ISSUED.
+  const { name, category, standing, pmaClass } = member;
   const [seal, setSeal] = useState<HTMLImageElement | null>(null);
   const [photo, setPhoto] = useState<HTMLImageElement | null>(null);
   /** Set when a chosen file could not be decoded. Cleared on the next attempt. */
@@ -437,15 +438,30 @@ export default function DigitalIdGenerator({
     // is a fillText and a font, once PMAFI supplies a real scheme. Not before.
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = `600 12px ${sans}`;
-    // BOTH DATES NOW, not one or the other. The joining year and the day this
-    // copy was generated answer different questions — how long they have been a
-    // member, and how stale the standing above is — and the card previously
-    // dropped the second whenever it knew the first, which is precisely the
-    // case for almost every member.
-    ctx.fillText(memberSince ? "MEMBER SINCE" : "ISSUED", tx, py + 196);
+    // MEMBER SINCE IS WITHHELD, and this slot prints the generation date for
+    // everybody instead. The card cannot currently say when somebody joined.
+    // There is no "member since" question on the application form, so the year
+    // was derived from the row's Timestamp — which is the submission date on a
+    // form row, but on a `Manual Members` row is whatever a member of staff
+    // typed, unvalidated, and often nothing at all. Roughly half the roster is
+    // manual, so the card was asserting a joining year it had no basis for on a
+    // large share of it, and a blank one silently produced a differently
+    // labelled card rather than an obviously missing field.
+    //
+    // A card that says nothing about joining is honest; one that says 2019
+    // because that is when a row was typed is not. This slot already rendered
+    // ISSUED for every member whose timestamp was missing or unparseable, so
+    // this is that existing path made universal rather than new drawing code.
+    //
+    // TO RESTORE IT the roster needs a joining year that means something — a
+    // column staff fill in deliberately, not a timestamp reused for a second
+    // purpose. `MemberRecord.memberSince` is still derived, still returned by
+    // both actions and still covered by tests, so the value goes on being
+    // exercised while nothing prints it. Restoring the line is a fillText.
+    ctx.fillText("ISSUED", tx, py + 196);
     ctx.fillStyle = "#ffffff";
     ctx.font = `500 19px ${sans}`;
-    ctx.fillText(memberSince || issued, tx, py + 226);
+    ctx.fillText(issued, tx, py + 226);
 
     // Footer note. No "scan to verify" claim: there is nothing to scan, and
     // nothing on the site could verify it yet. Scan-to-verify needs a lookup
@@ -461,7 +477,7 @@ export default function DigitalIdGenerator({
     // re-runs the draw once the webfonts arrive, and canvas reads the font at
     // fillText time rather than reacting to it later.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [seal, photo, displayName, category, issued, standing, pmaClass, memberSince, fontsReady]);
+  }, [seal, photo, displayName, category, issued, standing, pmaClass, fontsReady]);
 
   useEffect(() => {
     draw();
@@ -602,14 +618,10 @@ export default function DigitalIdGenerator({
               <dd className="text-sm font-semibold text-slate-900">{pmaClass}</dd>
             </div>
           )}
-          {memberSince && (
-            <div>
-              <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
-                Member since
-              </dt>
-              <dd className="text-sm font-semibold text-slate-900">{memberSince}</dd>
-            </div>
-          )}
+          {/* No "Member since" row: the card no longer prints it, and this
+              panel exists to show what the card will say. Listing a year here
+              that the card omits would read as a field the member had lost
+              rather than one the Foundation is not yet claiming. */}
         </dl>
 
         <div className="mt-4">

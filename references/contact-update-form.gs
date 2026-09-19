@@ -37,7 +37,24 @@
  * phone number should not need a Google account — and a large share of this
  * roster does not have one.
  *
- * ── HOW TO RUN (≈2 minutes) ──────────────────────────────────────────────────
+ * ── STATE: BUILT ON 2026-09-19. DO NOT RUN THIS FILE AGAIN ───────────────────
+ * The form exists:
+ *   edit   https://docs.google.com/forms/d/1kTIivonfl3QNY0biZclx3KiKPeboVZZflgQnthfb4QE/edit
+ *   public https://docs.google.com/forms/d/e/1FAIpQLSdV5VT82GuLnMSx0j8xN0fClbIn8j7b2uUdiiM64v4TWzKHsw/viewform
+ *
+ * Its email question is entry.1486247649, which the prefill template in the
+ * content sheet under `form.contact` substitutes into. Running this file again
+ * mints a SECOND form with a different link and strands the responses on the
+ * first — change the live form by hand and mirror the change here.
+ *
+ * NOTE THE QUESTIONS BELOW WERE EDITED AFTER THE FORM WAS CREATED: the email
+ * question became optional, the PMA class year became required, and both
+ * lookup captions were rewritten, because a member does not need their email
+ * to get a card and most arrive by the name path with this box empty. Those
+ * were applied to the live form by hand. If this file is ever run to make a
+ * fresh form, it produces the corrected version directly.
+ *
+ * ── HOW IT WAS RUN, KEPT FOR THE NEXT FORM ───────────────────────────────────
  *   1. Sign in to the pmafi.web@gmail.com Google account.
  *   2. Go to  https://script.google.com  → "New project".
  *   3. Delete the sample code, paste THIS whole file in.
@@ -115,19 +132,40 @@ function createPmafiContactUpdateForm() {
   form.addSectionHeaderItem()
     .setTitle('Finding your record')
     .setHelpText(
-      'We look you up by email address, because that is what identifies your ' +
-      'record in the Foundation\'s files.'
+      'Your name and PMA class year are what we look you up by. If you know ' +
+      'the email address on your membership, it helps — but you do not need ' +
+      'it.'
     );
 
+  // NOT REQUIRED, AND THAT IS THE WHOLE POINT. A member does not need to know
+  // their email to get a card: idByNameAction mints one from a name, the name
+  // tab is the default, and the name path deliberately never learns an address
+  // — so IdGate passes an empty string and applyPrefill strips the token,
+  // leaving this box blank for most of the people who reach it.
+  //
+  // It used to be required, captioned "if you came here from your member ID
+  // page this is filled in already". Both halves failed the same member: the
+  // caption is true only of the email path, and requiring the address puts back
+  // exactly the lockout PMAFI removed on 2026-09-19 — most of the roster cannot
+  // say which address the Foundation holds, which is why the name path exists.
+  //
+  // Requiring a guess is also worse than allowing a blank: a member who invents
+  // an address PMAFI never held hands staff a mismatch that looks authoritative,
+  // where an empty box plainly says "match me another way".
   var emailItem = form.addTextItem()
     .setTitle('Email address on your membership')
     .setHelpText(
-      'The address PMAFI has on file for you. If you came here from your ' +
-      'member ID page this is filled in already — leave it as it is.'
+      'Optional. If it is already filled in, leave it as it is. Otherwise ' +
+      'give us the email you actually use, or leave it blank if you are not ' +
+      'sure — your name and class year below are enough to find you.'
     )
-    .setValidation(emailValidation)
-    .setRequired(true);
+    .setValidation(emailValidation);
 
+  // NAME AND CLASS YEAR CARRY THE MATCH NOW, so the class year is required
+  // rather than optional. With the email allowed to be blank, a response with
+  // a common surname and no class year is one nobody can attach to a roster
+  // row — the member believes their details are updated and nothing happens.
+  // This is the same pair findMemberByName() narrows on, for the same reason.
   form.addTextItem()
     .setTitle('Full name')
     .setHelpText(
@@ -138,7 +176,11 @@ function createPmafiContactUpdateForm() {
 
   form.addTextItem()
     .setTitle('PMA class year')
-    .setHelpText('Optional. Four digits, e.g. 1988. Helps us find the right record where two members share a name.');
+    .setHelpText(
+      'Four digits, e.g. 1988 — or the year on your member ID card. It is ' +
+      'what separates two members who share a name.'
+    )
+    .setRequired(true);
 
   // ---- The details ----
   form.addPageBreakItem()
@@ -179,7 +221,15 @@ function createPmafiContactUpdateForm() {
   var seeded = form.createResponse()
     .withItemResponse(emailItem.createResponse(TEMPLATE_SEED))
     .toPrefilledUrl();
-  var template = seeded.replace(encodeURIComponent(TEMPLATE_SEED), EMAIL_TOKEN);
+  // BOTH SPELLINGS OF THE SEED, because Google uses either. This form was
+  // generated on 2026-09-19 and came back with the "@" UNENCODED —
+  // entry.1486247649=prefill.seed@example.com — so looking only for the
+  // percent-encoded form found nothing and the warning below fired on a form
+  // that was otherwise perfectly good. The encoded variant is tried first;
+  // neither string is a substring of the other, so they cannot interfere.
+  var template = seeded
+    .split(encodeURIComponent(TEMPLATE_SEED)).join(EMAIL_TOKEN)
+    .split(TEMPLATE_SEED).join(EMAIL_TOKEN);
 
   Logger.log('EDIT this form:    %s', form.getEditUrl());
   Logger.log('PUBLIC link:       %s', form.getPublishedUrl());
