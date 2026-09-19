@@ -7,7 +7,6 @@ import {
   type MemberRecord,
 } from "@/lib/members";
 import { rateLimit } from "@/lib/rate-limit";
-import { idByNameEnabled } from "@/lib/demo-flags";
 import { idFromEmail } from "@/lib/member-id";
 
 export type MembershipCheckState =
@@ -91,29 +90,41 @@ export async function checkMembershipAction(
 }
 
 // ---------------------------------------------------------------------------
-// DEMO ONLY — minting an ID card from a NAME.
+// MINTING AN ID CARD FROM A NAME.
 //
-// This is a deliberate, temporary relaxation of the rule the rest of this file
-// exists to hold: the ID path is email-only, and there is no name branch inside
-// checkMembershipAction for anyone to reach. That is still true. This is a
-// SEPARATE action that refuses to do anything unless DEMO_ID_BY_NAME is set,
-// so the property survives the demo — turn the flag off and this function is
-// inert, rather than the email path having acquired a mode it now has to
-// defend.
+// THIS WAS A DEMO RELAXATION AND IS NOW THE INTENDED BEHAVIOUR. It ran behind
+// `DEMO_ID_BY_NAME`, off everywhere but a preview deployment, on the reasoning
+// set out below. PMAFI decided on 2026-09-19 that members should be able to get
+// their card from a name alone, on the live site: most of this roster does not
+// know which address the Foundation holds for them, and roughly half of it was
+// typed in by staff, so requiring the email locked out the members least likely
+// to be able to guess it. The flag and `lib/demo-flags.ts` are gone rather than
+// left switched on, because a flag nobody may turn off is not a flag.
 //
-// WHAT IT GIVES UP, stated plainly because a future reader will find this and
-// wonder: names are public, so a card mintable by name is forgeable by anyone
-// who can read one. See demo-flags.ts. It belongs on a preview deployment.
+// WHAT THAT ACCEPTS, recorded because a future reader will find this and wonder
+// whether it was noticed:
+//   · Names are public — alumni lists, reunion programmes, this site's own
+//     /about#board page. So the card is mintable, and therefore forgeable, by
+//     anyone who can read one. It bears the Foundation's seal.
+//   · The card prints the PMA class and the joining year, so this hands out two
+//     facts the /membership status check deliberately withholds.
+// That is the cost of the decision, not an oversight in it. The mitigation is
+// that the card has always stated a standing `as of <date>` rather than a bare
+// one, so it is a dated assertion rather than a standing credential.
 //
-// WHAT IT STILL WON'T DO:
-//   · No listing. An ambiguous name gets the same class-year follow-up the
-//     status check uses; the candidates are never shown, demo or not.
+// WHAT IT STILL WON'T DO — all three predate the decision and none of them was
+// part of it, so do not relax them alongside it:
+//   · No listing. An ambiguous name gets the class-year follow-up the status
+//     check uses; the candidates are never shown.
 //   · No email. The card's number is derived from the member's stored address
 //     SERVER-SIDE and only the number is returned, so a name still cannot be
 //     turned into an address — the harvesting the status check guards against
 //     stays guarded here.
 //   · No skipping the rate limit, which is what bounds working through a list
 //     of plausible alumni names.
+//
+// The email path stays, and stays separate. It is the only lookup that cannot
+// be ambiguous, so a member who does know their address gets the better answer.
 // ---------------------------------------------------------------------------
 
 /**
@@ -138,20 +149,10 @@ export type IdCardState =
       memberSince: string;
     };
 
-export async function demoIdByNameAction(
+export async function idByNameAction(
   _prev: IdCardState,
   formData: FormData
 ): Promise<IdCardState> {
-  // THE CHECK THAT MATTERS. The page also reads the flag to decide whether to
-  // render the name form, but that is a rendering decision; a server action is
-  // a public endpoint and anyone can post to it. This is the one that decides.
-  if (!idByNameEnabled()) {
-    return {
-      status: "error",
-      message: "Please confirm your membership using your email address.",
-    };
-  }
-
   const name = String(formData.get("name") ?? "").trim();
   if (name.length < 3) {
     return {
@@ -177,7 +178,7 @@ export async function demoIdByNameAction(
   try {
     result = await findMemberByName(name, classYear);
   } catch (err) {
-    console.error("Demo ID name lookup failed:", err);
+    console.error("ID name lookup failed:", err);
     return {
       status: "error",
       message:
@@ -197,8 +198,9 @@ export async function demoIdByNameAction(
     category: m.category,
     standing: m.standing,
     // Returned, unlike on the status check — the card prints both, so there is
-    // no way to issue one without them. This is the cost the flag buys and the
-    // reason it does not belong on production.
+    // no way to issue one without them. This is the concrete cost of issuing a
+    // card from a public name, and it is accepted rather than unnoticed: see
+    // the decision note above.
     pmaClass: m.pmaClass,
     memberSince: m.memberSince,
   };

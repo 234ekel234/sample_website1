@@ -38,7 +38,7 @@ since August is resolved.
 | `/about` | ✅ story, mission, vision, values, **Board of Trustees** (`#board`) |
 | `/programs` | ✅ plus **the roll of endowed chairs**, read from the `Chairs` tab |
 | `/membership` | ✅ status check by email **or name**, apply, ₱3,000 published, and the **28 classes at 100% membership** |
-| `/membership/id` | ✅ digital ID generator, gated behind the membership check, **plus prompts to correct a name or update contact details** |
+| `/membership/id` | ✅ digital ID generator, gated behind the membership check — **by name or by email, name first** — plus prompts to correct a name or update contact details |
 | `/donate` | ✅ **can now receive a gift** — Metrobank and GCash details published, plus a photograph of a handover with the amount redacted |
 | `/donate/impact` | ✅ **2025 in counts**, above three published fund updates |
 | `/donate/status` | ✅ email + reference, **verified end to end against a real gift** |
@@ -85,10 +85,25 @@ only headers containing "name", "email", "category", "status", "pma class" and
 "timestamp" — column order is its own business. A missing tab is not an error.
 Template: `references/manual-members-sheet.tsv`.
 
-**Two lookups, deliberately separate.** `/membership` accepts an email or a
-name. `/membership/id`, which mints a card bearing the Foundation's seal,
-accepts an **email only** — names are public, so allowing one to mint a card
-would make the credential forgeable by anyone who can read.
+**A card can be had from a name, and the name tab is the one that opens.**
+`/membership/id` accepts a full name or an email; `/membership` accepts either
+too. This ran behind `DEMO_ID_BY_NAME` on a preview deployment until PMAFI
+settled it on 2026-09-19. The reasoning: most of this roster cannot say which
+address the Foundation holds for them, and about half of it was typed in by
+staff, so leading with the email shut out exactly the members least able to
+guess it.
+
+What that accepts is real and was accepted knowingly. Names are public — alumni
+lists, reunion programmes, this site's own board page — so a card bearing the
+Foundation's seal is now mintable, and therefore forgeable, by anyone who can
+read one; and because the card prints them, the name path hands out the PMA
+class and joining year that the status check withholds. The card has always
+stamped `as of <date>` beside the standing, so it is a dated assertion rather
+than a standing credential, and that is the only mitigation there is.
+
+The email tab remains, because it is the only lookup that cannot be ambiguous:
+a member who knows their address never meets the class-year follow-up, and a
+member whose class the roster does not hold can be found no other way.
 
 **A shared name is resolved by asking for a PMA class year, never by listing
 the candidates.** Two members can genuinely share a name, and a member whose
@@ -318,12 +333,18 @@ same check, so a card cannot assert a membership the roster never granted, but
 it inherits the weakness: someone who knows a member's email can mint their
 card. Closing it requires logins.
 
-Name lookup deliberately does **not** extend to the ID generator. The two
-lookups are separate server actions so the ID path has no name branch to reach.
-The name path returns neither the matched address nor the class year, and is
-rate-limited per client address. It now *accepts* a class year to break a tie,
-which does not change that — the year travels inwards only, and no lookup ever
-answers with one.
+**Name lookup now does extend to the ID generator**, by decision — see the
+membership section above for what that accepts. The three guards that were
+never part of that decision still hold: an ambiguous name gets the class-year
+follow-up and never a list of candidates, no lookup ever returns a member's
+email address, and both name paths are rate-limited per client address. The
+status check additionally withholds the class year; the ID path cannot, because
+the card prints it.
+
+The lookups remain separate server actions. Not as a barrier now, but because
+they return different things — merging them would mean one function whose
+disclosures depend on a caller-supplied mode, which is the shape in which the
+status check quietly acquires the ID path's.
 
 **The form is no longer the only way onto the roster** — the caveat this file
 carried from the start ("a member who never used the form has no row, and adding
@@ -354,7 +375,20 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `DRIVE_PHOTOS_FOLDER_ID` | — | — | **deliberately unset.** Would let staff type `handover.jpg` instead of pasting a share link, but needs the Drive API enabled and the folder shared with the service account — roughly ten minutes of setup that only pays off past ~40 photographs. PMAFI chose links (2026-08-31). The resolver is built and tested; setting this variable is the only switch, and existing link rows keep working |
 | `DONATIONS_SHEET_ID` | — | — | optional; falls back to `MEMBERS_SHEET_ID` |
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries |
-| `DEMO_ID_BY_NAME` | — | **Preview only** | **Temporary demo relaxation — must never be set on Production.** Lets `/membership/id` mint a card from a name instead of an email. Names are public, so this makes the card forgeable by anyone who can read one, and it returns the class year and joining year the status check deliberately withholds. Only the exact string `true` enables it. Remove it when the demo is over |
+
+**`DEMO_ID_BY_NAME` is retired** and no longer read by any code. It is still set
+on Vercel **Preview** and should be deleted (`vercel env rm DEMO_ID_BY_NAME
+preview`) — it now does nothing, and a variable that looks like a switch but
+isn't wired to anything is worse than no variable. A test pins the behaviour so
+that a stale copy of it cannot change the answer either way.
+
+**Preview has no sheet access at all.** `MEMBERS_SHEET_ID`, `CONTENT_SHEET_ID`
+and both `GOOGLE_SERVICE_ACCOUNT_*` variables are set for **Production only**,
+so on a preview deployment every membership lookup returns "We couldn't check
+your membership right now", and the content sheet falls back to shipped copy —
+which means the fabricated Chairman's and President's messages, no payment
+figures, and both the correction and contact-details prompts hidden. Add the
+four to Preview if preview deployments are meant to be demonstrable.
 
 ---
 
