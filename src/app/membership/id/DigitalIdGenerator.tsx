@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Upload, Download, IdCard } from "lucide-react";
 import { SITE_HOST } from "@/lib/site";
+import { presentName } from "@/lib/card-name";
 import { track } from "@/lib/analytics";
 
 /**
@@ -226,7 +227,11 @@ export default function DigitalIdGenerator({
     }
   }, []);
 
-  const displayName = name.trim();
+  // Set as a name rather than as the spreadsheet holds it — the supplied roll
+  // is 7,747 rows of upper case with unpointed initials. Presentation only: the
+  // roster is untouched and normalizeName() folds both spellings identically,
+  // so nothing here can change who a lookup matches. See src/lib/card-name.ts.
+  const displayName = presentName(name);
   const issued = new Date().toLocaleDateString("en-PH", {
     day: "numeric",
     month: "long",
@@ -586,7 +591,9 @@ export default function DigitalIdGenerator({
             <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
               Name
             </dt>
-            <dd className="text-sm font-semibold text-slate-900">{name}</dd>
+            {/* The presented spelling, not the stored one — this panel exists
+                to show what the card will say, so it has to agree with it. */}
+            <dd className="text-sm font-semibold text-slate-900">{displayName}</dd>
           </div>
           <div>
             <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
