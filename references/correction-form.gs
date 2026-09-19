@@ -33,6 +33,17 @@
  * name change rather than a misspelling — they can ask by email when they
  * review the request.
  *
+ * ── IF THIS FORM ALREADY EXISTS, DO NOT RE-RUN THIS ──────────────────────────
+ * This file CREATES a form; it does not edit one. Running it again mints a
+ * SECOND form with a different link, leaving the responses already collected
+ * behind on the first and breaking the link in the content sheet.
+ *
+ * A question added to this file after the form was built — the mobile number
+ * below was added on 2026-09-19 — therefore has to be added to the live form by
+ * hand: open the EDIT link, add a short-answer question titled exactly "Mobile
+ * number", leave it optional, and drag it under the email question. The
+ * responses sheet gains a column and nothing else changes.
+ *
  * ── HOW TO RUN (≈1 minute) ───────────────────────────────────────────────────
  *   1. Sign in to the pmafi.web@gmail.com Google account.
  *   2. Go to  https://script.google.com  → "New project".
@@ -47,6 +58,19 @@
  *   7. Put the public link in the content sheet under the key `form.correction`.
  *      The ID page then shows "Request a correction"; leave it blank and the
  *      control is hidden entirely rather than rendered dead.
+ *
+ * ── OPTIONAL: PREFILL THE EMAIL ──────────────────────────────────────────────
+ * `form.correction` also accepts a PREFILL TEMPLATE, exactly as `form.contact`
+ * does — the public link with the email question pre-addressed, carrying the
+ * literal text PMAFI_EMAIL_HERE where the address belongs. The ID page swaps in
+ * the address the member gave the gate (src/lib/form-prefill.ts), which is
+ * worth doing because staff find the row BY EMAIL and that address is the one
+ * thing on this form that is certainly right — it is the member's NAME that the
+ * record has wrong.
+ *
+ * To build one: open the form → ⋮ menu → "Get pre-filled link" → type
+ * PMAFI_EMAIL_HERE into the email question → "Get link" → copy. The plain link
+ * keeps working either way; the site finds no token and leaves it alone.
  *
  * ── WHAT STAFF DO WITH A RESPONSE ────────────────────────────────────────────
  * Find the member by the email on the request — that is the roster's key, and
@@ -106,6 +130,21 @@ function createPmafiCorrectionForm() {
     )
     .setValidation(emailValidation)
     .setRequired(true);
+
+  // ASKED, NOT REQUIRED — deliberately, and differently from the contact-update
+  // form where the number is the whole point. This form exists because the
+  // Foundation's record of somebody's NAME is wrong, usually through a typo at
+  // our end. Making a member surrender a phone number before we will fix our
+  // own mistake puts the friction on the wrong party, and a member who declines
+  // would be left with a card spelling their name incorrectly. So it is offered
+  // here as a convenience for the reply, and pressed for properly on the
+  // contact-update form, which a member opens by choice.
+  form.addTextItem()
+    .setTitle('Mobile number')
+    .setHelpText(
+      'Optional. The quickest way for us to reach you if we have a question ' +
+      'about the correction. Philippine mobile, e.g. 0917 123 4567.'
+    );
 
   form.addTextItem()
     .setTitle('Name as it currently appears')

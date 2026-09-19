@@ -10,7 +10,17 @@ import {
 } from "@/app/membership/actions";
 import DigitalIdGenerator, { type VerifiedMember } from "./DigitalIdGenerator";
 import { idFromEmail } from "@/lib/member-id";
-import { Search, UserPlus, ArrowRight, ShieldCheck, User, PencilLine } from "lucide-react";
+import { applyPrefill } from "@/lib/form-prefill";
+import { track } from "@/lib/analytics";
+import {
+  Search,
+  UserPlus,
+  ArrowRight,
+  ShieldCheck,
+  User,
+  PencilLine,
+  Phone,
+} from "lucide-react";
 
 const initialState: MembershipCheckState = { status: "idle" };
 const initialIdState: IdCardState = { status: "idle" };
@@ -47,9 +57,11 @@ const initialIdState: IdCardState = { status: "idle" };
 export default function IdGate({
   byName = false,
   correctionFormUrl = "",
+  contactFormUrl = "",
 }: {
   byName?: boolean;
   correctionFormUrl?: string;
+  contactFormUrl?: string;
 }) {
   const [state, action, pending] = useActionState(
     checkMembershipAction,
@@ -65,7 +77,12 @@ export default function IdGate({
   // visitor typed; the name path was handed a number the server already
   // derived from the roster's copy of it. Same member, same number, either way.
   let verified: VerifiedMember | null = null;
+  // Only the email path has one. The demo name path deliberately never returns
+  // an address — that is the property that stops a public name being exchanged
+  // for a private email — so the contact form simply opens unprefilled there.
+  let knownEmail = "";
   if (state.status === "found") {
+    knownEmail = state.email;
     verified = {
       memberId: idFromEmail(state.email),
       name: state.name,
@@ -90,7 +107,14 @@ export default function IdGate({
       <div className="space-y-6">
         <DigitalIdGenerator member={verified} />
         {correctionFormUrl && (
-          <CorrectionPrompt url={correctionFormUrl} name={verified.name} />
+          <CorrectionPrompt
+            url={correctionFormUrl}
+            name={verified.name}
+            email={knownEmail}
+          />
+        )}
+        {contactFormUrl && (
+          <ContactDetailsPrompt url={contactFormUrl} email={knownEmail} />
         )}
       </div>
     );
@@ -248,7 +272,14 @@ export default function IdGate({
               </Link>
               {correctionFormUrl && (
                 <a
-                  href={correctionFormUrl}
+                  // THROUGH applyPrefill EVEN THOUGH THERE IS NOTHING TO FILL
+                  // IN. The lookup just failed, so no address is known here —
+                  // but if the content key holds a prefill template, passing it
+                  // through raw would put the literal text PMAFI_EMAIL_HERE in
+                  // the form's email box and ask the member to delete it.
+                  // Substituting nothing strips the token and leaves the field
+                  // blank, which is what this branch means.
+                  href={applyPrefill(correctionFormUrl, "")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-gold-ink underline-offset-4 hover:underline"
@@ -285,7 +316,78 @@ export default function IdGate({
  * `form.donation`: an unset key leaves the page as it was rather than showing a
  * dead control.
  */
-function CorrectionPrompt({ url, name }: { url: string; name: string }) {
+/**
+ * Asks for a current email address and mobile number, once a card exists.
+ *
+ * WHY HERE. This is the one moment the Foundation knows it is looking at a
+ * real member doing something they wanted to do, rather than at a visitor it
+ * is interrupting. About half the roster was typed in by hand on the Manual
+ * Members tab, where there may be no number at all, and a form member's number
+ * is as old as their application.
+ *
+ * IT ASKS; IT DOES NOT GATE. The card downloads whether or not this is
+ * answered, and nothing here is required. The ID is a membership benefit the
+ * roster already entitles them to, not a trade for personal data — and since
+ * the site cannot verify a number anyway, a member who would rather not give
+ * one would simply type digits, which collects worse data rather than more.
+ *
+ * IT IS A LINK, NOT A FIELD, for the same reason the correction prompt is: the
+ * service account is `spreadsheets.readonly` and must stay so. The details go
+ * to PMAFI's own form, on the same footing as the membership application —
+ * which also keeps the collection PMAFI's rather than the website's, and the
+ * site is still without a privacy policy of its own.
+ *
+ * The email we already hold is prefilled where the content key carries a
+ * template (lib/form-prefill.ts). A plain link works too and simply opens the
+ * form blank; what must never happen is the prompt failing to render a link.
+ */
+function ContactDetailsPrompt({ url, email }: { url: string; email: string }) {
+  const href = applyPrefill(url, email);
+  if (!href) return null;
+
+  return (
+    <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-5">
+      <p className="flex items-center gap-2 text-sm font-semibold text-[#1B2A4A]">
+        <Phone className="h-4 w-4 text-[#C8A951]" />
+        Are your contact details up to date?
+      </p>
+      <p className="mt-1 text-sm text-slate-600">
+        The Foundation uses your email address and mobile number to reach you
+        about membership and Academy news. If either has changed — or we have
+        never had your number — you can give us the current ones here. It takes
+        a moment and is entirely optional; your card is already yours.
+      </p>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => track("contact_details_form_opened")}
+        className="group mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-all hover:border-[#C8A951] hover:bg-slate-50"
+      >
+        Update my contact details
+        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+      </a>
+    </div>
+  );
+}
+
+function CorrectionPrompt({
+  url,
+  name,
+  email,
+}: {
+  url: string;
+  name: string;
+  email: string;
+}) {
+  // Prefilled on the same reasoning as the contact prompt: this form's first
+  // question asks for the address the record is filed under, staff find the row
+  // by it, and that address is the one thing here that is certainly RIGHT — the
+  // member just used it to get through the gate. It is their NAME the record
+  // has wrong. A plain link carries no token and simply opens blank.
+  const href = applyPrefill(url, email);
+  if (!href) return null;
+
   return (
     <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-5">
       <p className="flex items-center gap-2 text-sm font-semibold text-[#1B2A4A]">
@@ -299,7 +401,7 @@ function CorrectionPrompt({ url, name }: { url: string; name: string }) {
         record — then download your card again.
       </p>
       <a
-        href={url}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         className="group mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-all hover:border-[#C8A951] hover:bg-slate-50"

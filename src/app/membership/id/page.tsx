@@ -34,7 +34,11 @@ export default async function DigitalIdPage() {
       {/* Generator */}
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-6xl px-6">
-          <IdGate byName={byName} correctionFormUrl={forms.correction} />
+          <IdGate
+            byName={byName}
+            correctionFormUrl={forms.correction}
+            contactFormUrl={forms.contact}
+          />
 
           <div className="mt-10 text-center">
             <Link

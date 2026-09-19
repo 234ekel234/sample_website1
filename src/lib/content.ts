@@ -25,7 +25,7 @@
 //   payment.gcash.name    payment.gcash.number
 //   dues.regular          dues.associate        dues.affiliate
 //   finance.email         finance.phone         finance.name
-//   form.donation         form.correction
+//   form.donation         form.correction       form.contact
 //
 // The dues values are free text, so staff control the wording as well as the
 // figure — "₱2,000 / year", "₱20,000 one-time", "By arrangement" are all valid.
@@ -127,6 +127,22 @@ export interface SiteContent {
      * rendering a dead link, the same way `donation` does.
      */
     correction: string;
+    /**
+     * Public link to the "Update my contact details" Google Form
+     * (references/contact-update-form.gs), where a member gives PMAFI a
+     * current email address and mobile number.
+     *
+     * A FORM RATHER THAN A FIELD, for the same reason as `correction`: the
+     * site's service account is `spreadsheets.readonly` and must stay that
+     * way. This key may hold either a plain form link or a PREFILL TEMPLATE
+     * carrying `PMAFI_EMAIL_HERE`, which the ID page substitutes with the
+     * address the member already gave the gate — see lib/form-prefill.ts. Both
+     * work; the template just saves them typing it twice, and a mistyped
+     * address here is a contact update staff cannot match to a member.
+     *
+     * Blank hides the prompt entirely, as the other two do.
+     */
+    contact: string;
   };
 }
 
@@ -258,6 +274,7 @@ const FALLBACK: SiteContent = {
   forms: {
     donation: "",
     correction: "",
+    contact: "",
   },
 };
 
@@ -495,6 +512,7 @@ export async function getContent(): Promise<SiteContent> {
     forms: {
       donation: pick(map, "form.donation", FALLBACK.forms.donation),
       correction: pick(map, "form.correction", FALLBACK.forms.correction),
+      contact: pick(map, "form.contact", FALLBACK.forms.contact),
     },
   };
 }
