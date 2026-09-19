@@ -33,16 +33,23 @@
  * name change rather than a misspelling — they can ask by email when they
  * review the request.
  *
- * ── IF THIS FORM ALREADY EXISTS, DO NOT RE-RUN THIS ──────────────────────────
+ * ── STATE: NOT YET BUILT (checked 2026-09-19) ────────────────────────────────
+ * The content sheet has NO `form.correction` key, so this form has never been
+ * created and the ID page hides the "Request a correction" control entirely.
+ * Run this file once and the mobile-number question below comes with it — there
+ * is nothing to add by hand.
+ *
+ * ── ONCE IT EXISTS, DO NOT RE-RUN THIS ───────────────────────────────────────
  * This file CREATES a form; it does not edit one. Running it again mints a
  * SECOND form with a different link, leaving the responses already collected
  * behind on the first and breaking the link in the content sheet.
  *
- * A question added to this file after the form was built — the mobile number
- * below was added on 2026-09-19 — therefore has to be added to the live form by
- * hand: open the EDIT link, add a short-answer question titled exactly "Mobile
- * number", leave it optional, and drag it under the email question. The
- * responses sheet gains a column and nothing else changes.
+ * So a question added to this file AFTER the form has been built has to be
+ * added to the live form by hand: open the EDIT link, add the question with
+ * exactly the title used here, and drag it into the same position. The
+ * responses sheet gains a column and nothing else changes. Delete the "not yet
+ * built" note above when you run this, so the next reader knows which of these
+ * two paragraphs applies.
  *
  * ── HOW TO RUN (≈1 minute) ───────────────────────────────────────────────────
  *   1. Sign in to the pmafi.web@gmail.com Google account.
@@ -55,22 +62,26 @@
  *      **Correction Requests**. Google names it "Form Responses N", which is
  *      positional and gets reassigned when a form is recreated — the same trap
  *      that once had the membership check pointed at the wrong tab.
- *   7. Put the public link in the content sheet under the key `form.correction`.
- *      The ID page then shows "Request a correction"; leave it blank and the
- *      control is hidden entirely rather than rendered dead.
+ *   7. Put the PREFILL TEMPLATE the log prints into the content sheet under the
+ *      key `form.correction` — not the plain public link, unless the script
+ *      warned it could not build one. The ID page then shows "Request a
+ *      correction"; leave the key blank and the control is hidden entirely
+ *      rather than rendered dead.
  *
- * ── OPTIONAL: PREFILL THE EMAIL ──────────────────────────────────────────────
- * `form.correction` also accepts a PREFILL TEMPLATE, exactly as `form.contact`
- * does — the public link with the email question pre-addressed, carrying the
- * literal text PMAFI_EMAIL_HERE where the address belongs. The ID page swaps in
- * the address the member gave the gate (src/lib/form-prefill.ts), which is
- * worth doing because staff find the row BY EMAIL and that address is the one
- * thing on this form that is certainly right — it is the member's NAME that the
+ * ── THE PREFILL TEMPLATE, WHICH THIS SCRIPT BUILDS FOR YOU ───────────────────
+ * `form.correction` accepts a PREFILL TEMPLATE, exactly as `form.contact` does
+ * — the public link with the email question pre-addressed, carrying the literal
+ * text PMAFI_EMAIL_HERE where the address belongs. The ID page swaps in the
+ * address the member gave the gate (src/lib/form-prefill.ts). That is worth
+ * having because staff find the row BY EMAIL and that address is the one thing
+ * on this form that is certainly right — it is the member's NAME that the
  * record has wrong.
  *
- * To build one: open the form → ⋮ menu → "Get pre-filled link" → type
- * PMAFI_EMAIL_HERE into the email question → "Get link" → copy. The plain link
- * keeps working either way; the site finds no token and leaves it alone.
+ * The execution log prints the template ready to paste; prefer it over the
+ * plain PUBLIC link. Build it by hand only if the script warns that it could
+ * not: open the form → ⋮ menu → "Get pre-filled link" → type PMAFI_EMAIL_HERE
+ * into the email question → "Get link" → copy. The plain link keeps working
+ * either way; the site finds no token and leaves the URL alone.
  *
  * ── WHAT STAFF DO WITH A RESPONSE ────────────────────────────────────────────
  * Find the member by the email on the request — that is the roster's key, and
@@ -89,6 +100,16 @@
 // PMAFI's published address — NOT the pmafi.web@gmail.com account that owns
 // this form.
 var CONTACT_EMAIL = 'PMAFI_PMA@yahoo.com';
+
+// Must match EMAIL_TOKEN in src/lib/form-prefill.ts. If you change one, change
+// both — the site substitutes on this exact string and leaves any other URL
+// alone.
+var EMAIL_TOKEN = 'PMAFI_EMAIL_HERE';
+
+// Seeded into the email question only to find out what Google calls that field
+// in a prefilled URL, then swapped straight back out for the token. It never
+// reaches a member and is never submitted.
+var TEMPLATE_SEED = 'prefill.seed@example.com';
 
 function createPmafiCorrectionForm() {
   var form = FormApp.create('PMAFI — Correct my membership record');
@@ -122,7 +143,9 @@ function createPmafiCorrectionForm() {
       'record no matter how your name is spelled in it.'
     );
 
-  form.addTextItem()
+  // Held in a variable because the prefill template at the foot of this
+  // function is built by pre-addressing THIS question.
+  var emailItem = form.addTextItem()
     .setTitle('Email address on your membership')
     .setHelpText(
       'The address you registered with, or the one PMAFI has on file for you. ' +
@@ -131,20 +154,26 @@ function createPmafiCorrectionForm() {
     .setValidation(emailValidation)
     .setRequired(true);
 
-  // ASKED, NOT REQUIRED — deliberately, and differently from the contact-update
-  // form where the number is the whole point. This form exists because the
-  // Foundation's record of somebody's NAME is wrong, usually through a typo at
-  // our end. Making a member surrender a phone number before we will fix our
-  // own mistake puts the friction on the wrong party, and a member who declines
-  // would be left with a card spelling their name incorrectly. So it is offered
-  // here as a convenience for the reply, and pressed for properly on the
-  // contact-update form, which a member opens by choice.
+  // REQUIRED, by decision on 2026-09-19. It was optional until then, on the
+  // reasoning that this form exists because the Foundation's record of
+  // somebody's NAME is wrong — usually a typo at our end — so demanding a phone
+  // number before we will fix our own mistake puts the friction on the wrong
+  // party. PMAFI chose to require it anyway: a correction needs a conversation
+  // often enough that a request with no way to reach the member stalls, and the
+  // roster's numbers are patchy enough that this is a real chance to get one.
+  //
+  // WHAT THAT COSTS, so nobody re-litigates it blind: a member unwilling to
+  // give a number cannot file a correction at all, and is left holding a card
+  // that spells their name wrong. The confirmation message and the ID page both
+  // give PMAFI's email address, which is the only route left for them.
   form.addTextItem()
     .setTitle('Mobile number')
     .setHelpText(
-      'Optional. The quickest way for us to reach you if we have a question ' +
-      'about the correction. Philippine mobile, e.g. 0917 123 4567.'
-    );
+      'So we can reach you quickly if we have a question about the ' +
+      'correction. Philippine mobile, e.g. 0917 123 4567. If you would rather ' +
+      'not give a number, write to ' + CONTACT_EMAIL + ' instead.'
+    )
+    .setRequired(true);
 
   form.addTextItem()
     .setTitle('Name as it currently appears')
@@ -155,9 +184,18 @@ function createPmafiCorrectionForm() {
     .setRequired(true);
 
   // ---- The correction ----
+  // The help text here used to read "tell us only what needs changing; leave
+  // the rest blank", with a REQUIRED field directly beneath it. Give us the
+  // name either way: it is what the card prints and what staff correct, and a
+  // member who leaves it blank has told us something is wrong without saying
+  // what it should be.
   form.addPageBreakItem()
     .setTitle('What should it say?')
-    .setHelpText('Tell us only what needs changing; leave the rest blank.');
+    .setHelpText(
+      'Give us your full name as it should appear, even if only the class ' +
+      'year is wrong — it is what your card prints. Leave anything that is ' +
+      'already correct blank.'
+    );
 
   form.addTextItem()
     .setTitle('Correct full name')
@@ -174,11 +212,49 @@ function createPmafiCorrectionForm() {
       'digits, e.g. 1988.'
     );
 
+  // CHOICES, NOT FREE TEXT, and worded exactly as the application form words
+  // them — src/lib/members.ts normalizeCategory() matches on the words
+  // "regular", "associate" and "affiliate" appearing in the cell, so a member
+  // typing "Lifetime" or "Full" gives staff something that silently normalises
+  // to Affiliate when it reaches the roster.
+  //
+  // This is here because a miscategorised member is a real case rather than a
+  // hypothetical one: the application form offers "Not sure — please advise",
+  // and that answer contains none of the three words, so it ALSO lands as
+  // Affiliate. Anyone who picked it is on the roster under a category nobody
+  // chose, and until now had only a free-text box to say so.
+  //
+  // No fee consequence to check: the ₱3,000 is flat across all three
+  // categories, so this cannot be used to argue a different amount was owed.
+  form.addMultipleChoiceItem()
+    .setTitle('Correct membership category')
+    .setHelpText(
+      'Optional — only if your category is wrong. Categories go by your ' +
+      'relationship with the Academy, not by what you paid; the fee is the ' +
+      'same for all three.'
+    )
+    .setChoiceValues([
+      'Regular Member — PMA alumnus, faculty, or staff taking an active role ' +
+        "in the Foundation's mission",
+      'Associate Member — PMA alumnus, faculty, or staff supporting the ' +
+        "Foundation's programs and objectives",
+      "Affiliate Member — Individual or organization that shares PMAFI's " +
+        'values and supports its vision and mission'
+    ]);
+
+  // NOTE THERE IS NO "correct my membership STATUS" QUESTION, deliberately.
+  // Standing is Active/Pending/Lapsed and it records whether staff have
+  // VERIFIED A PAYMENT — so a member setting it is not correcting a typo, they
+  // are asserting they paid, and this form carries no receipt because it has no
+  // file upload on purpose. A blank status already means Pending, so a new
+  // applicant who has simply not been reached yet would be the commonest user
+  // of such a field, and it would turn a typo queue into an unevidenced
+  // payments queue. Those go to PMAFI by email, or through the box below.
   form.addParagraphTextItem()
     .setTitle('Anything else we should know')
     .setHelpText(
       'Optional. For example, if your name changed legally rather than being ' +
-      'mistyped, or if your membership category looks wrong.'
+      'mistyped, or if your membership standing looks wrong to you.'
     );
 
   form.setConfirmationMessage(
@@ -190,8 +266,33 @@ function createPmafiCorrectionForm() {
     'For anything else, write to ' + CONTACT_EMAIL + '.'
   );
 
+  // ---- Links ----
+  //
+  // The prefill template is built by pre-addressing the email question with a
+  // seed address and substituting the token into the URL that comes back. Doing
+  // it here rather than through the form's "Get pre-filled link" menu matters
+  // because this file cannot be re-run once the form exists — the UI route
+  // would be the only one left, and it is easy to skip.
+  var seeded = form.createResponse()
+    .withItemResponse(emailItem.createResponse(TEMPLATE_SEED))
+    .toPrefilledUrl();
+  var template = seeded.replace(encodeURIComponent(TEMPLATE_SEED), EMAIL_TOKEN);
+
   Logger.log('EDIT this form:   %s', form.getEditUrl());
   Logger.log('PUBLIC link:      %s', form.getPublishedUrl());
   Logger.log('');
-  Logger.log('Put the PUBLIC link in the content sheet under: form.correction');
+  Logger.log('PREFILL TEMPLATE — this is the one for the content sheet:');
+  Logger.log('%s', template);
+  Logger.log('');
+  Logger.log('Put it in the content sheet under: form.correction');
+  Logger.log('It must still contain the text %s when you paste it.', EMAIL_TOKEN);
+
+  if (template.indexOf(EMAIL_TOKEN) === -1) {
+    // Google changed how the seed is encoded. The plain public link is still
+    // correct and still works — it just opens the form blank.
+    Logger.log('');
+    Logger.log('WARNING: could not build the prefill template (the seed address');
+    Logger.log('was encoded unexpectedly). Use the PUBLIC link above instead —');
+    Logger.log('the site handles a plain link and simply does not prefill.');
+  }
 }
