@@ -2,8 +2,10 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Members staff add by hand live on their own tab, because Google Forms
 // overwrites rows typed into the sheet it owns. These tests cover the union of
-// the two tabs, and the one thing that must differ between them: a manual row
-// may not mint a digital ID card.
+// the two tabs and how a person appearing on both is collapsed: standing
+// decides first, and the manual row wins the tie because it is the curated one.
+// A manual row mints a digital ID card on the same terms as a form row —
+// PMAFI settled that on 2026-08-31.
 
 const readRange = vi.fn();
 vi.mock("@/lib/sheets", () => ({ readRange: (...a: unknown[]) => readRange(...a) }));
@@ -84,6 +86,31 @@ describe("the Manual Members tab", () => {
     serve(
       [FORM[0], ["2026-04-01", "pedro@example.com", "Pedro Ramos", "pedro@example.com", "Affiliate", "1975", ""]],
       MANUAL
+    );
+    const { checkMembership } = await load();
+    expect((await checkMembership("pedro@example.com"))?.standing).toBe("Active");
+  });
+
+  it("prefers the manual row when both tabs agree on standing", async () => {
+    // Both say Active, and the form row is two years NEWER — so the old
+    // newest-wins rule handed it the record. The manual tab is the curated one:
+    // staff typed Affiliate there deliberately, and picking by accident of date
+    // threw that correction away.
+    serve(
+      [FORM[0], ["2026-04-01", "pedro@example.com", "Pedro Ramos", "pedro@example.com", "Regular Member", "1975", "Active"]],
+      MANUAL
+    );
+    const { checkMembership } = await load();
+    expect((await checkMembership("pedro@example.com"))?.category).toBe("Affiliate");
+  });
+
+  it("does not let the manual tab demote a member the form shows as Active", async () => {
+    // THE LIMIT ON THE RULE ABOVE. Source breaks a tie; it never beats
+    // standing. A stale staff-typed Lapsed must not overwrite a live Active,
+    // which is the same demotion re-applying is barred from causing.
+    serve(
+      [FORM[0], ["2026-04-01", "pedro@example.com", "Pedro Ramos", "pedro@example.com", "Regular Member", "1975", "Active"]],
+      [MANUAL[0], ["Pedro Ramos", "pedro@example.com", "Affiliate", "Lapsed", "1975", "2019-05-02"]]
     );
     const { checkMembership } = await load();
     expect((await checkMembership("pedro@example.com"))?.standing).toBe("Active");
