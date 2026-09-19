@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import {
   checkMembershipAction,
-  demoIdByNameAction,
+  idByNameAction,
   type MembershipCheckState,
   type IdCardState,
 } from "@/app/membership/actions";
@@ -47,19 +47,22 @@ const initialIdState: IdCardState = { status: "idle" };
  * carries an address the member gave rather than one invented for them — see
  * the note above checkMembershipAction in actions.ts.
  *
- * `byName` IS A DEMO RELAXATION AND DEFAULTS OFF. When true the visitor may
- * find themselves by name instead of email, which makes the card mintable by
- * anyone who knows a member's name — see lib/demo-flags.ts. The prop only
- * decides what is RENDERED; the action refuses regardless unless the server
- * flag is set, so a visitor who forces this true in devtools gets a form that
- * returns an error.
+ * A MEMBER MAY IDENTIFY THEMSELVES BY NAME OR BY EMAIL, and the name tab is the
+ * one that opens. That was a demo relaxation behind `DEMO_ID_BY_NAME` until
+ * PMAFI settled it on 2026-09-19: most of this roster cannot say which address
+ * the Foundation holds for them, and about half of it was typed in by staff, so
+ * leading with the email locked out exactly the members least able to guess it.
+ * What the decision accepts — a card mintable, and so forgeable, from a public
+ * name — is set out above `idByNameAction` in actions.ts.
+ *
+ * The email tab stays because it is the only lookup that cannot be ambiguous: a
+ * member who knows their address never has to answer the class-year follow-up,
+ * and a member whose class the roster does not hold can only be found this way.
  */
 export default function IdGate({
-  byName = false,
   correctionFormUrl = "",
   contactFormUrl = "",
 }: {
-  byName?: boolean;
   correctionFormUrl?: string;
   contactFormUrl?: string;
 }) {
@@ -68,18 +71,19 @@ export default function IdGate({
     initialState
   );
   const [nameState, nameAction, namePending] = useActionState(
-    demoIdByNameAction,
+    idByNameAction,
     initialIdState
   );
-  const [mode, setMode] = useState<"email" | "name">("email");
+  // Name first: it is the entry most of this roster can actually complete.
+  const [mode, setMode] = useState<"name" | "email">("name");
 
   // Both routes end at the same card. The email path hashes the address the
   // visitor typed; the name path was handed a number the server already
   // derived from the roster's copy of it. Same member, same number, either way.
   let verified: VerifiedMember | null = null;
-  // Only the email path has one. The demo name path deliberately never returns
-  // an address — that is the property that stops a public name being exchanged
-  // for a private email — so the contact form simply opens unprefilled there.
+  // Only the email path has one. The name path deliberately never returns an
+  // address — that is the property that stops a public name being exchanged for
+  // a private email — so the contact form simply opens unprefilled there.
   let knownEmail = "";
   if (state.status === "found") {
     knownEmail = state.email;
@@ -138,38 +142,34 @@ export default function IdGate({
         </p>
         <p className="mt-2 text-sm text-slate-500">
           Your card is built from the Foundation&apos;s own records, so we need
-          to find you in them first.
-          {byName
-            ? " Use the email address associated with your membership, or your full name."
-            : " Enter the email address associated with your membership."}
+          to find you in them first. Enter your full name, or the email address
+          your membership is filed under.
         </p>
 
-        {byName && (
-          <div
-            role="tablist"
-            aria-label="How to find your membership"
-            className="mt-5 inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1"
-          >
-            {(["email", "name"] as const).map((m) => (
-              <button
-                key={m}
-                role="tab"
-                type="button"
-                aria-selected={mode === m}
-                onClick={() => setMode(m)}
-                className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
-                  mode === m
-                    ? "bg-white text-[#1B2A4A] shadow-sm"
-                    : "text-slate-500 hover:text-[#1B2A4A]"
-                }`}
-              >
-                {m === "email" ? "By email" : "By name"}
-              </button>
-            ))}
-          </div>
-        )}
+        <div
+          role="tablist"
+          aria-label="How to find your membership"
+          className="mt-5 inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1"
+        >
+          {(["name", "email"] as const).map((m) => (
+            <button
+              key={m}
+              role="tab"
+              type="button"
+              aria-selected={mode === m}
+              onClick={() => setMode(m)}
+              className={`rounded-md px-4 py-2 text-sm font-semibold transition-colors ${
+                mode === m
+                  ? "bg-white text-[#1B2A4A] shadow-sm"
+                  : "text-slate-500 hover:text-[#1B2A4A]"
+              }`}
+            >
+              {m === "name" ? "By name" : "By email"}
+            </button>
+          ))}
+        </div>
 
-        {(!byName || mode === "email") && (
+        {mode === "email" && (
           <form action={action} className="mt-5 flex flex-col gap-3 sm:flex-row">
             <div className="relative flex-1">
               <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -192,7 +192,7 @@ export default function IdGate({
           </form>
         )}
 
-        {byName && mode === "name" && (
+        {mode === "name" && (
           <form action={nameAction} className="mt-5 flex flex-col gap-3">
             <div className="flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
@@ -254,11 +254,11 @@ export default function IdGate({
             <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
               <UserPlus className="h-5 w-5 text-[#C8A951]" />
               We couldn&apos;t find a membership under that{" "}
-              {mode === "name" && byName ? "name" : "email"}.
+              {mode === "name" ? "name" : "email"}.
             </p>
             <p className="mt-1 text-sm text-slate-600">
               Your records may use a different{" "}
-              {mode === "name" && byName ? "spelling" : "address"}, or you may
+              {mode === "name" ? "spelling" : "address"}, or you may
               not be registered yet. Member IDs are issued only to members on
               the Foundation&apos;s roster.
             </p>

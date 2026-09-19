@@ -224,45 +224,44 @@ function idNameForm(name: string, classYear?: string) {
   return fd;
 }
 
-describe("demoIdByNameAction — the flag", () => {
-  it("refuses when DEMO_ID_BY_NAME is unset", async () => {
+describe("idByNameAction — no longer behind a flag", () => {
+  it("issues a card with no environment variable set at all", async () => {
+    // This ran behind DEMO_ID_BY_NAME and refused unless it was exactly "true".
+    // PMAFI made name-only issuance the intended behaviour on 2026-09-19, so
+    // the flag is gone — and an unconfigured environment must now be the
+    // WORKING case rather than the refusing one. A stale variable left over on
+    // a deployment must not change the answer either way.
     delete process.env.DEMO_ID_BY_NAME;
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
-    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
 
-    expect(state.status).toBe("error");
-    // The roster must not even be consulted — a disabled path does no lookup.
-    expect(findMemberByName).not.toHaveBeenCalled();
+    expect(state.status).toBe("found");
+    expect(findMemberByName).toHaveBeenCalled();
   });
 
-  it("refuses for any value other than exactly \"true\"", async () => {
-    // Fail-closed: a half-configured variable leaves the gate shut rather than
-    // ajar. "TRUE", "1" and "yes" are all the shapes someone types by reflex.
+  it("still refuses a name too short to identify anybody", async () => {
+    // The flag is gone; the input validation that was never part of it is not.
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
-    for (const value of ["TRUE", "1", "yes", "on", "false", ""]) {
-      process.env.DEMO_ID_BY_NAME = value;
-      const { demoIdByNameAction } = await load();
-      const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
-      expect(state.status, `value ${JSON.stringify(value)} must not enable`).toBe("error");
-    }
-    delete process.env.DEMO_ID_BY_NAME;
+    const { idByNameAction } = await load();
+
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Jo"));
+
+    expect(state.status).toBe("error");
+    expect(findMemberByName).not.toHaveBeenCalled();
   });
 });
 
-describe("demoIdByNameAction — enabled", () => {
-  beforeEach(() => {
-    process.env.DEMO_ID_BY_NAME = "true";
-  });
+describe("idByNameAction", () => {
 
   it("mints a card without returning the member's email", async () => {
     // The whole point of deriving the number server-side: the card carries the
     // member's real ID while the address that produced it stays on the server.
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
-    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
 
     expect(state.status).toBe("found");
     expect(JSON.stringify(state)).not.toContain("juan@example.com");
@@ -274,9 +273,9 @@ describe("demoIdByNameAction — enabled", () => {
     // the one they would get by email — same person, same credential.
     const { idFromEmail } = await import("@/lib/member-id");
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
-    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
 
     if (state.status !== "found") throw new Error("expected found");
     expect(state.memberId).toBe(idFromEmail("juan@example.com"));
@@ -284,9 +283,9 @@ describe("demoIdByNameAction — enabled", () => {
 
   it("asks for a class year on an ambiguous name and never lists candidates", async () => {
     findMemberByName.mockResolvedValue({ kind: "ambiguous" });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
-    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
 
     expect(state.status).toBe("ambiguous");
     // Only the visitor's own input comes home; no roster name is echoed.
@@ -295,20 +294,20 @@ describe("demoIdByNameAction — enabled", () => {
 
   it("passes the class year through as a tie-break", async () => {
     findMemberByName.mockResolvedValue({ kind: "found", member: MEMBER });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
-    await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz", "1988"));
+    await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz", "1988"));
 
     expect(findMemberByName).toHaveBeenCalledWith("Juan Dela Cruz", "1988");
   });
 
   it("rate-limits repeated lookups from one connection", async () => {
     findMemberByName.mockResolvedValue({ kind: "none" });
-    const { demoIdByNameAction } = await load();
+    const { idByNameAction } = await load();
 
     let limited = false;
     for (let i = 0; i < 20; i++) {
-      const s = await demoIdByNameAction({ status: "idle" }, idNameForm(`Guess Number ${i}`));
+      const s = await idByNameAction({ status: "idle" }, idNameForm(`Guess Number ${i}`));
       if (s.status === "error") {
         limited = true;
         break;
@@ -320,8 +319,8 @@ describe("demoIdByNameAction — enabled", () => {
   it("does not fall back to a card when the roster read fails", async () => {
     findMemberByName.mockRejectedValue(new Error("sheets down"));
     vi.spyOn(console, "error").mockImplementation(() => {});
-    const { demoIdByNameAction } = await load();
-    const state = await demoIdByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
+    const { idByNameAction } = await load();
+    const state = await idByNameAction({ status: "idle" }, idNameForm("Juan Dela Cruz"));
     expect(state.status).toBe("error");
   });
 });

@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import IdGate from "./IdGate";
 import PageHero from "@/components/ui/PageHero";
-import { idByNameEnabled } from "@/lib/demo-flags";
 import { getContent } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -13,9 +12,6 @@ export const metadata: Metadata = {
 };
 
 export default async function DigitalIdPage() {
-  // Read on the server, passed down for RENDERING only — the action checks the
-  // flag itself, because a prop is not a security boundary. See demo-flags.ts.
-  const byName = idByNameEnabled();
   const { forms } = await getContent();
 
   return (
@@ -35,7 +31,6 @@ export default async function DigitalIdPage() {
       <section className="bg-slate-50 py-16">
         <div className="mx-auto max-w-6xl px-6">
           <IdGate
-            byName={byName}
             correctionFormUrl={forms.correction}
             contactFormUrl={forms.contact}
           />
