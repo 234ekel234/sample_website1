@@ -245,11 +245,29 @@ interface Applicant {
 /** Where a batch of rows came from. See MemberRecord.source. */
 type Source = MemberRecord["source"];
 
-/** Whether `a` should displace `b`: better standing first, then newer row. */
+/**
+ * Whether `a` should displace `b`: better standing, then the manual tab, then
+ * the newer row.
+ *
+ * STANDING STILL COMES FIRST, and that ordering is the whole safety of this
+ * function. A manual row that outranked on source alone would let a stale
+ * staff-typed `Lapsed` overwrite a fresh form `Active` — which is precisely the
+ * demotion that re-applying is documented never to cause. Source only breaks a
+ * tie between two rows that already agree on standing.
+ *
+ * MANUAL BEATS FORM ON THAT TIE because the manual tab is the curated one.
+ * Staff type a row there to fix something: a name the form recorded wrongly, a
+ * category, a class year. The form row is whatever the member submitted and is
+ * never edited afterwards, so when both say (say) Active, the staff-corrected
+ * spelling is the one to show. This displaced a newer-row rule, which picked by
+ * accident of date rather than by which row anyone had checked.
+ */
 function outranks(a: Applicant, b: Applicant): boolean {
   const rankA = STANDING_RANK[a.member.standing];
   const rankB = STANDING_RANK[b.member.standing];
-  return rankA !== rankB ? rankA > rankB : a.when > b.when;
+  if (rankA !== rankB) return rankA > rankB;
+  if (a.source !== b.source) return a.source === "manual";
+  return a.when > b.when;
 }
 
 /**
@@ -476,18 +494,34 @@ export async function checkMembership(
 }
 
 // ---------------------------------------------------------------------------
-// Name lookup — the status check only.
+// Name lookup — the status check AND the digital ID generator.
 //
 // Members forget which address they registered under, and telling someone "no
 // membership found" when they simply used their other email is the worst
 // outcome the check can produce. Name lookup fixes that.
 //
-// IT IS DELIBERATELY NOT AVAILABLE TO THE DIGITAL ID GENERATOR. Names are
-// public — alumni lists, reunion programmes, this site's own board page — so a
-// name is not even the weak secret an email is. Minting a card bearing the
-// Foundation's seal off a public name would make the credential forgeable by
-// anyone who can read; /membership/id keeps calling checkMembership above, and
-// that separation is the whole point of these being two functions.
+// IT NOW SERVES THE ID GENERATOR TOO, and that is a decision rather than a
+// drift. This block used to say the opposite — that a card must never be minted
+// off a public name — and it ran behind DEMO_ID_BY_NAME on a preview deployment
+// while PMAFI decided. They settled it on 2026-09-19: most of the roster cannot
+// say which address the Foundation holds for them, and about half of it was
+// typed in by staff, so leading with the email shut out exactly the members
+// least able to guess it. idByNameAction calls this function.
+//
+// WHAT THAT ACCEPTS, KNOWINGLY. Names are public — alumni lists, reunion
+// programmes, this site's own board page — so a card bearing the Foundation's
+// seal is mintable, and therefore forgeable, by anyone who can read one; and
+// because the card prints them, this path hands out the PMA class and joining
+// year the status check withholds. The card has always stamped `as of <date>`
+// beside the standing, making it a dated assertion rather than a standing
+// credential, and that is the only mitigation there is.
+//
+// THREE GUARDS PREDATE THAT DECISION AND WERE NO PART OF IT. Do not relax them
+// alongside it: an ambiguous name gets the class-year follow-up and NEVER a
+// list of candidates; no lookup here ever returns an email address, so the
+// card's number is derived server-side and only the number travels; and both
+// name paths are rate-limited per client address, which is what bounds working
+// through a list of plausible alumni names.
 // ---------------------------------------------------------------------------
 
 /**

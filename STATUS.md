@@ -64,6 +64,12 @@ that same flow.
   somebody applied; telling them their membership had expired would be wrong.
 - **Re-submissions collapse to one member, best standing wins**, so re-applying
   can never demote someone already Active.
+- **On a standing tie the `Manual Members` row wins, and only then the newer
+  row.** The manual tab is the curated one — staff type a row there to fix a
+  category, a class year or a spelling the form recorded wrongly — and the old
+  newest-wins rule discarded that correction by accident of date. The limit is
+  firm: source breaks a tie, it never beats standing, so a stale hand-typed
+  `Lapsed` cannot overwrite a live `Active`.
 - Two email columns per row is normal and both are matched.
 - Only the mapped columns are read — phone numbers, addresses and receipt links
   stay in the sheet.
