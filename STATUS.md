@@ -14,7 +14,7 @@ this file — see the separate working notes.
 | | State |
 |---|---|
 | **Code** | Complete for everything currently scoped |
-| **Verified end to end** | Membership lookup, digital ID gating, donation lookup, news and chairs read from the content sheet |
+| **Verified end to end** | Membership lookup, digital ID gating, donation lookup, news and chairs read from the content sheet, **the analytics consent gate** |
 | **Blocked on** | Content from PMAFI — the Chairman's and President's messages above all |
 
 **The payment blocker is cleared.** Bank and GCash details and the ₱3,000 fee
@@ -210,6 +210,57 @@ The report itself is in `references/` and **must never be committed** — pages
 
 ---
 
+## Analytics and the cookie notice
+
+**Nothing loads until the visitor says yes.** Google Analytics used to run for
+everybody the moment `NEXT_PUBLIC_GA_ID` was set — which it is on Production —
+so the site set third-party cookies on a first visit with nothing on the page
+saying so. This file listed "analytics event tracking + cookie notice" under
+*Not started* while the analytics half was already live. Closed 2026-09-19.
+
+- A visitor who has not answered gets **no script tag, no `window.gtag`, no
+  request to Google**. The gate is "render nothing", not a flag: Google's own
+  consent mode still fetches the script and pings Google from a page nobody
+  agreed to be measured on.
+- **The notice appears only where there is a tracker to ask about.** A build
+  with no measurement ID — every local one — sets no cookies, and a banner
+  asking about cookies that do not exist would be a false statement.
+- **Both answers are the same size.** A grey Decline beside a bright Accept
+  collects a yes by making the no harder to find, which is not consent.
+- **There is no dismiss.** No close cross, no Escape. Dismissal is not an
+  answer: read as "no" it asks again on every page, read as "yes" it helps
+  itself to a consent nobody gave.
+- **A refusal persists**, so the only way to stop being asked is not to accept.
+  **Cookie settings** in the footer takes either answer back.
+- The answer is stored in `localStorage` (`pmafi:analytics-consent`) and is
+  **versioned**. Anything that is not an intact record at the current version
+  reads as *no answer* and asks again — never as consent. Bump the version when
+  what is being consented to changes, or an old yes to GA quietly becomes a yes
+  to whatever was added beside it.
+- Tabs agree: accepting in one settles it in the others, so a second tab cannot
+  ask a question already answered and overwrite the answer.
+
+**Events carry counts and nothing else** — `member_id_downloaded`,
+`donation_form_opened`, `assistant_question_unanswered`, none with a parameter.
+The ID page knows exactly which member is standing there; the assistant box
+often holds a name the visitor typed; `/donate/status` carries a reference code
+in its query string, which is why page views are sent without one. An event
+that would undo a gate elsewhere on the site is not added because it is easy to
+measure. Route changes are counted explicitly, since the App Router navigates
+without a document load and GA's automatic page view fires once per session.
+
+Verified 2026-09-19 by driving a real Chrome through the whole flow — 21
+checks, covering first visit, decline, persistence across pages, reopening from
+the footer, accept, and a corrupted stored answer. `src/lib/consent.test.ts`
+covers the parsing and store rules (27 assertions).
+
+**There is no `/privacy` page, deliberately.** The notice states what is
+actually set rather than linking to a policy, because writing one means making
+retention, sharing and data-subject commitments on PMAFI's behalf that PMAFI
+has not made. It is on the blocked list below.
+
+---
+
 ## Known open issues, carried deliberately
 
 **The membership check does not verify identity.** Anyone can type any email —
@@ -248,7 +299,7 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `MEMBERS_SHEET_ID` | ✅ | ✅ | membership check + donation lookup (same private spreadsheet) |
 | `CONTENT_SHEET_ID` | ✅ | ✅ | site content, FAQ, fund updates, chairs, and now news |
 | `NEWS_SHEET_ID` | ✅ | ✅ | news feed — since 2026-08-31 the **same spreadsheet as `CONTENT_SHEET_ID`**, on its `News` tab. The old standalone sheet was never shared with the service account, so the feed silently served samples. Set for Production and Preview |
-| `NEXT_PUBLIC_GA_ID` | — | ✅ | Google Analytics |
+| `NEXT_PUBLIC_GA_ID` | — | ✅ | Google Analytics. Also switches the cookie notice on: unset means no tracker and therefore nothing to ask about, which is why the notice never appears in local development. To see it, run with `NEXT_PUBLIC_GA_ID=G-TEST123456 npm run dev` |
 | `MEMBERS_SHEET_RANGE` | — | — | optional; defaults to `Membership Applications!A1:Z` |
 | `MANUAL_MEMBERS_RANGE` | — | — | optional; defaults to `Manual Members!A1:Z`. A missing tab is not an error |
 | `DRIVE_PHOTOS_FOLDER_ID` | — | — | **deliberately unset.** Would let staff type `handover.jpg` instead of pasting a share link, but needs the Drive API enabled and the folder shared with the service account — roughly ten minutes of setup that only pays off past ~40 photographs. PMAFI chose links (2026-08-31). The resolver is built and tested; setting this variable is the only switch, and existing link rows keep working |
@@ -299,7 +350,13 @@ top of this list for months, are **done**.
 6. **BIR donee status** — no page claims tax deductibility until confirmed.
 7. **FAQ sign-off** — 32 assistant answers plus 7 on `/contact`; PMAFI has not
    reviewed the wording of either.
-8. **Two annual-report details, both fixable in the sheet** — whether Dionardo B
+8. **A privacy policy.** The cookie notice now tells a visitor what is set and
+   lets them refuse it, but there is no `/privacy` page for it to link to, and
+   one cannot be written here: it commits PMAFI to retention periods, to who
+   data is shared with, and to a contact for data-subject requests under the
+   Data Privacy Act. Those are the Foundation's undertakings to make. Needed
+   before the site collects anything beyond analytics.
+9. **Two annual-report details, both fixable in the sheet** — whether Dionardo B
    Carlos endowed two chairs or is listed twice (the report's heading says 160,
    its list runs to 161), and the odd spellings reproduced rather than guessed
    at: `Conjuangco`, `Profirio`, `Nichols A Driz`, `PBeg`. Also the class list's
@@ -317,4 +374,3 @@ top of this list for months, are **done**.
 | Full donor portal on a real database | |
 | Online payments + automatic receipts | Would remove the need for the donation form entirely |
 | Automated emails | The flow no longer invoices |
-| Analytics event tracking + cookie notice | |

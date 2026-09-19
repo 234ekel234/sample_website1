@@ -4,6 +4,7 @@ import Link from "next/link";
 import { MessageCircle, X, Phone, Mail, Send } from "lucide-react";
 import type { FaqEntry } from "@/lib/faq";
 import { findAnswer, relatedQuestions } from "@/lib/faq-match";
+import { track } from "@/lib/analytics";
 
 // FAQ assistant (Phase 2, Module B).
 //
@@ -110,6 +111,14 @@ export default function FloatingChat({
             unmatched: true,
           };
 
+      // How often the approved answer set falls short — the one number that
+      // tells PMAFI the FAQ needs another entry. THE QUESTION ITSELF IS NOT
+      // SENT: a visitor types their situation into this box, sometimes with a
+      // name or an address in it, and that is not something to hand to an
+      // analytics property. A rate is enough to act on; the wording is not
+      // ours to forward.
+      if (!entry) track("assistant_question_unanswered");
+
       setMessages((prev) => [...prev, userMsg, botMsg]);
       // On a miss, offer the starters again rather than leaving a dead end.
       setSuggestions(entry ? relatedQuestions(entry, faqs) : starters(faqs));
@@ -118,9 +127,16 @@ export default function FloatingChat({
     [faqs]
   );
 
+  // The widget normally sits at `bottom-5`. While the cookie notice is on
+  // screen it publishes its measured height into `--consent-notice-height`,
+  // and this steps over it so the notice cannot bury the chat button on a
+  // narrow phone. The `0px` fallback is what keeps the two components
+  // independent: with no notice rendered — declined, already answered, or no
+  // analytics configured at all — the variable is unset and this resolves to
+  // exactly `bottom-5`, which is what it was before the notice existed.
   return (
     <div
-      className={`fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3 transition-all duration-500 ${
+      className={`fixed bottom-[calc(1.25rem+var(--consent-notice-height,0px))] right-5 z-40 flex flex-col items-end gap-3 transition-all duration-500 ${
         mounted ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0"
       }`}
     >

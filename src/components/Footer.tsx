@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 import LogoMark from "@/components/LogoMark";
+import CookieSettings from "@/components/CookieSettings";
 import { getContent } from "@/lib/content";
 
 function FacebookIcon({ size = 16 }: { size?: number }) {
@@ -146,9 +147,12 @@ export default async function Footer() {
       <Separator className="bg-white/5" />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-2 px-6 py-4 text-xs text-slate-400 sm:flex-row sm:items-center sm:justify-between">
-        <span>
-          © {new Date().getFullYear()} Philippine Military Academy Foundation,
-          Inc. All rights reserved.
+        <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span>
+            © {new Date().getFullYear()} Philippine Military Academy Foundation,
+            Inc. All rights reserved.
+          </span>
+          <CookieSettings />
         </span>
         <span className="sm:text-right">
           PMAFI is an independent foundation supporting the PMA — not an
