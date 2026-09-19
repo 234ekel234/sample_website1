@@ -65,3 +65,31 @@ describe("rateLimit", () => {
     expect(rateLimit("k", 0, WINDOW).ok).toBe(false);
   });
 });
+
+describe("the demo bypass", () => {
+  afterEach(() => {
+    delete process.env.RATE_LIMIT_DISABLED;
+    __resetRateLimits();
+  });
+
+  it("lets every caller through when RATE_LIMIT_DISABLED=1", () => {
+    process.env.RATE_LIMIT_DISABLED = "1";
+    for (let i = 0; i < 50; i++) {
+      expect(rateLimit("demo", 3, 60_000).ok).toBe(true);
+    }
+  });
+
+  it("is off unless the value is exactly 1, so a stray 'false' cannot open it", () => {
+    process.env.RATE_LIMIT_DISABLED = "false";
+    expect(rateLimit("strict", 1, 60_000).ok).toBe(true);
+    expect(rateLimit("strict", 1, 60_000).ok).toBe(false);
+  });
+
+  it("limits again as soon as the variable is unset", () => {
+    process.env.RATE_LIMIT_DISABLED = "1";
+    expect(rateLimit("back", 1, 60_000).ok).toBe(true);
+    delete process.env.RATE_LIMIT_DISABLED;
+    expect(rateLimit("back", 1, 60_000).ok).toBe(true);
+    expect(rateLimit("back", 1, 60_000).ok).toBe(false);
+  });
+});
