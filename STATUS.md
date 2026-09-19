@@ -256,10 +256,15 @@ holds about them.
   phone nor the email column off the roster — only name, email, category,
   status, PMA class and timestamp are mapped — so this is for the Foundation's
   own correspondence and nothing on the site displays it.
-- **The correction form now asks for a mobile number too, but optionally.**
-  That form exists because PMAFI's record of somebody's *name* is wrong,
-  usually through a typo at our end; requiring a phone number before we will
-  fix our own mistake puts the friction on the wrong party.
+- **The correction form requires a mobile number**, decided 2026-09-19. It was
+  optional until then: that form exists because PMAFI's record of somebody's
+  *name* is wrong, usually through a typo at our end, and requiring a phone
+  number before we will fix our own mistake puts the friction on the wrong
+  party. PMAFI required it anyway — a correction needs a conversation often
+  enough that a request with no way to reach the member stalls. The cost is
+  real and is accepted: a member unwilling to give a number cannot file a
+  correction at all and keeps a card that misspells their name, so the form's
+  help text points them to `PMAFI_PMA@yahoo.com` instead.
 
 **Form links may carry a prefill template.** `form.contact` and
 `form.correction` each accept either a plain form URL or a Google prefill link
@@ -274,9 +279,22 @@ rather than passed through, so nobody is ever shown a form with the literal text
 
 The `.gs` files in `references/` **create** forms; they do not edit them.
 Re-running one mints a second form with a different link and strands the
-responses already collected on the first. The mobile-number question added to
-`correction-form.gs` on 2026-09-19 therefore has to be added to the live form by
-hand — the file says how.
+responses already collected on the first, so a question added to a generator
+after its form was built has to be added to the live form by hand.
+
+**Neither of these two forms has been built yet.** Checked against the content
+sheet on 2026-09-19: it holds `form.donation` and nothing else, so there is no
+`form.correction` and no `form.contact` key — both controls on `/membership/id`
+are hidden, exactly as a blank key is meant to make them. This corrects a note
+that stood here saying the mobile-number question added to
+`correction-form.gs` on 2026-09-19 had to be added to a live form by hand:
+there is no live form to add it to, and running the generator once produces it
+with the question already in place. The hand-editing rule above applies from
+then on, not now.
+
+Running both generators is a ~2 minute job in the `pmafi.web@gmail.com`
+account, and it is the last thing standing between the ID page and its two
+prompts. It is **not** blocked on PMAFI.
 
 ---
 
