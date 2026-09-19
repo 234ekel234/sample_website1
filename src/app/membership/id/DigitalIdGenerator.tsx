@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Upload, Download, IdCard } from "lucide-react";
 import { SITE_HOST } from "@/lib/site";
+import { track } from "@/lib/analytics";
 
 /**
  * Digital member ID generator.
@@ -534,6 +535,12 @@ export default function DigitalIdGenerator({
       // card, so it goes with the line on the card rather than after it.
       a.download = `PMAFI-Member-ID-${fileSlug(displayName)}.png`;
       a.click();
+      // A count of cards issued, and nothing else. No name, no category, no
+      // standing, no member number: this page knows exactly who the visitor
+      // is, which is precisely why nothing identifying may be attached to an
+      // event leaving for Google. `track` is a no-op unless the visitor
+      // accepted analytics — see lib/analytics.ts.
+      track("member_id_downloaded");
       // Revoking in the same task can cancel the download before the browser
       // has finished reading the blob — Firefox in particular. Hold the URL
       // briefly instead; it is one image, and the page drops it either way.

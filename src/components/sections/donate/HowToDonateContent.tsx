@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
 import { Landmark, Smartphone, Mail, ShieldCheck, FileCheck2, ArrowRight } from "lucide-react";
+import { track } from "@/lib/analytics";
 
 // Payment channels come from the staff-editable content sheet. Until PMAFI
 // fills them in, the page says details are being finalized and routes donors to
@@ -117,6 +118,13 @@ export default function HowToDonateContent({
                   href={donationFormUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  // The last thing this site can see before a donor leaves for
+                  // the Google Form — so it is the only place the funnel can be
+                  // measured at all. A count, with no fund, no amount and no
+                  // donor: the reference-code gate on /donate/status exists to
+                  // keep gift details off a page anyone can load, and routing
+                  // them to Google instead would be the same leak by post.
+                  onClick={() => track("donation_form_opened")}
                   className="group inline-flex items-center gap-2 rounded-lg bg-[#C8A951] px-6 py-3 text-sm font-semibold text-[#0a1628] shadow-[0_8px_30px_-8px_rgba(200,169,81,0.6)] transition-all hover:bg-[#8A6A22] hover:text-white"
                 >
                   Tell us about your gift

@@ -8,6 +8,8 @@ import { getContent } from "@/lib/content";
 import { getFaqs } from "@/lib/faq";
 import StructuredData from "@/components/StructuredData";
 import Analytics from "@/components/Analytics";
+import { ConsentProvider } from "@/components/ConsentProvider";
+import CookieNotice from "@/components/CookieNotice";
 import { SITE_URL } from "@/lib/site";
 
 const SITE_NAME = "PMAFI — Philippine Military Academy Foundation, Inc.";
@@ -93,12 +95,26 @@ export default async function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <StructuredData contact={contact} social={social} />
-        <Navbar />
-        {children}
-        <Footer />
-        <FloatingChat email={contact.email} phone={contact.phone} faqs={faqs} />
-        <Analytics />
+        {/* The consent answer is read once here and shared, so the analytics
+            script, the notice and the footer's "Cookie settings" cannot
+            disagree about it. It wraps everything because the footer control
+            needs it as much as the script does. */}
+        <ConsentProvider>
+          <StructuredData contact={contact} social={social} />
+          {/* First in the body, so a keyboard visitor reaches the notice
+              before the whole page rather than after it. It is `fixed`, so
+              its position on screen is unaffected. */}
+          <CookieNotice />
+          <Navbar />
+          {children}
+          <Footer />
+          <FloatingChat
+            email={contact.email}
+            phone={contact.phone}
+            faqs={faqs}
+          />
+          <Analytics />
+        </ConsentProvider>
       </body>
     </html>
   );
