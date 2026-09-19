@@ -104,16 +104,37 @@ describe("the Manual Members tab", () => {
     expect((await checkMembership("pedro@example.com"))?.category).toBe("Affiliate");
   });
 
-  it("does not let the manual tab demote a member the form shows as Active", async () => {
-    // THE LIMIT ON THE RULE ABOVE. Source breaks a tie; it never beats
-    // standing. A stale staff-typed Lapsed must not overwrite a live Active,
-    // which is the same demotion re-applying is barred from causing.
+  it("lets the manual tab win even when the form row has a better standing", async () => {
+    // REVERSED ON 2026-09-19, and this test previously asserted the opposite.
+    // Source used to break a tie only, so that nothing could ever demote a
+    // member. It now beats standing outright: the Manual Members tab holds the
+    // membership roll PMAFI supplied, with the standing PMAFI themselves set,
+    // and when the roll and an application disagree the roll is the Foundation's
+    // own record. The cost is that a manual Lapsed can now pull down a form
+    // Active — unreachable while every row on the roll is Active, and the
+    // intended answer on the day one is not.
     serve(
       [FORM[0], ["2026-04-01", "pedro@example.com", "Pedro Ramos", "pedro@example.com", "Regular Member", "1975", "Active"]],
       [MANUAL[0], ["Pedro Ramos", "pedro@example.com", "Affiliate", "Lapsed", "1975", "2019-05-02"]]
     );
     const { checkMembership } = await load();
-    expect((await checkMembership("pedro@example.com"))?.standing).toBe("Active");
+    expect((await checkMembership("pedro@example.com"))?.standing).toBe("Lapsed");
+  });
+
+  it("still never demotes a member who simply re-applies", async () => {
+    // Within ONE tab the old rule is untouched: better standing wins. This is
+    // the guarantee that matters to a member — re-applying appends a row with a
+    // blank status, and taking it would flip them to Pending.
+    serve(
+      [
+        FORM[0],
+        ["2026-03-01", "juan@gmail.com", "Juan Dela Cruz", "juan@gmail.com", "Regular Member", "1988", "Active"],
+        ["2026-06-01", "juan@gmail.com", "Juan Dela Cruz", "juan@gmail.com", "Regular Member", "1988", ""],
+      ],
+      [MANUAL[0]]
+    );
+    const { checkMembership } = await load();
+    expect((await checkMembership("juan@gmail.com"))?.standing).toBe("Active");
   });
 
   it("promotes a person to form once they apply themselves, even if the manual row wins", async () => {
@@ -134,5 +155,103 @@ describe("the Manual Members tab", () => {
   it("does not let a manual row promote a different person", async () => {
     const { checkMembership } = await load();
     expect((await checkMembership("pedro@example.com"))?.source).toBe("manual");
+  });
+});
+
+describe("a member on both tabs with different addresses", () => {
+  // The roll PMAFI supplied carries placeholder addresses, because it came with
+  // no emails. A member who also applied has a real one on their form row, so
+  // the two rows share nothing and used to stay two people — same name, same
+  // class, therefore `ambiguous` forever, for exactly the members who applied.
+  const FORM_ROW = ["2026-04-01", "irvin@gmail.com", "Irvin Hibaler", "irvin@gmail.com", "Regular Member", "2011", ""];
+  const MANUAL_ROW = ["Irvin Hibaler", "hibaler.2011.r9@members.invalid", "Regular", "Active", "2011", ""];
+
+  it("collapses them into one member, not an ambiguous name", async () => {
+    serve([FORM[0], FORM_ROW], [MANUAL[0], MANUAL_ROW]);
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Irvin Hibaler")).kind).toBe("found");
+  });
+
+  it("shows the standing from the Manual Members row", async () => {
+    serve([FORM[0], FORM_ROW], [MANUAL[0], MANUAL_ROW]);
+    const { checkMembership } = await load();
+    // The form row is blank, therefore Pending; the roll says Active.
+    expect((await checkMembership("irvin@gmail.com"))?.standing).toBe("Active");
+  });
+
+  it("lets the manual row win even when the form row ranks higher", async () => {
+    // Source now beats standing across tabs. This is the case the old
+    // standing-first rule decided the other way.
+    serve(
+      [FORM[0], ["2026-04-01", "irvin@gmail.com", "Irvin Hibaler", "irvin@gmail.com", "Regular Member", "2011", "Active"]],
+      [MANUAL[0], ["Irvin Hibaler", "hibaler.2011.r9@members.invalid", "Regular", "Lapsed", "2011", ""]]
+    );
+    const { checkMembership } = await load();
+    expect((await checkMembership("irvin@gmail.com"))?.standing).toBe("Lapsed");
+  });
+
+  it("resolves from either address, since they are now one person", async () => {
+    serve([FORM[0], FORM_ROW], [MANUAL[0], MANUAL_ROW]);
+    const { checkMembership } = await load();
+    const viaReal = await checkMembership("irvin@gmail.com");
+    const viaPlaceholder = await checkMembership("hibaler.2011.r9@members.invalid");
+    expect(viaReal?.standing).toBe("Active");
+    expect(viaPlaceholder?.standing).toBe("Active");
+  });
+
+  it("merges two manual rows sharing a name and class", async () => {
+    // The roll carries 32 such groups and every one is identical in category
+    // and standing, so both readings — one member listed twice, or two genuine
+    // namesakes — give the enquirer the same answer. Leaving them split only
+    // denied 32 members a standing and a card.
+    serve(
+      [FORM[0]],
+      [
+        MANUAL[0],
+        ["Narciso L Abaya", "abaya.narciso.1971.r4@members.invalid", "Regular", "Active", "1971", ""],
+        ["Narciso L Abaya", "abaya.narciso.1971.r5@members.invalid", "Regular", "Active", "1971", ""],
+      ]
+    );
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Narciso L Abaya")).kind).toBe("found");
+  });
+
+  it("keeps two members of the same name in DIFFERENT classes apart", async () => {
+    // 37 names on the roll recur across classes. This is the line that stops
+    // the rule above collapsing every namesake into one member.
+    serve(
+      [FORM[0]],
+      [
+        MANUAL[0],
+        ["Jose Santos", "santos.jose.1970.r1@members.invalid", "Regular", "Active", "1970", ""],
+        ["Jose Santos", "santos.jose.1995.r2@members.invalid", "Regular", "Active", "1995", ""],
+      ]
+    );
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Jose Santos")).kind).toBe("ambiguous");
+    // ...and the class year still separates them, which is the whole point.
+    const one = await findMemberByName("Jose Santos", "1995");
+    expect(one.kind).toBe("found");
+    if (one.kind === "found") expect(one.member.pmaClass).toBe("1995");
+  });
+
+  it("does not merge when the class years differ", async () => {
+    serve(
+      [FORM[0], ["2026-04-01", "irvin@gmail.com", "Irvin Hibaler", "irvin@gmail.com", "Regular Member", "2011", ""]],
+      [MANUAL[0], ["Irvin Hibaler", "hibaler.r9@members.invalid", "Regular", "Active", "1999", ""]]
+    );
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Irvin Hibaler")).kind).toBe("ambiguous");
+  });
+
+  it("does not merge two members who both have no class on file", async () => {
+    // An empty class must never match another empty one — the same rule
+    // sameClass() applies.
+    serve(
+      [FORM[0], ["2026-04-01", "p@gmail.com", "Pedro Ramos", "p@gmail.com", "Regular Member", "", ""]],
+      [MANUAL[0], ["Pedro Ramos", "ramos.r1@members.invalid", "Regular", "Active", "", ""]]
+    );
+    const { findMemberByName } = await load();
+    expect((await findMemberByName("Pedro Ramos")).kind).toBe("ambiguous");
   });
 });

@@ -64,12 +64,27 @@ that same flow.
   somebody applied; telling them their membership had expired would be wrong.
 - **Re-submissions collapse to one member, best standing wins**, so re-applying
   can never demote someone already Active.
-- **On a standing tie the `Manual Members` row wins, and only then the newer
-  row.** The manual tab is the curated one — staff type a row there to fix a
-  category, a class year or a spelling the form recorded wrongly — and the old
-  newest-wins rule discarded that correction by accident of date. The limit is
-  firm: source breaks a tie, it never beats standing, so a stale hand-typed
-  `Lapsed` cannot overwrite a live `Active`.
+- **The `Manual Members` tab wins outright — source beats standing.** It holds
+  the 7,747-row membership roll PMAFI supplied, with the standings PMAFI set,
+  while the form tab holds applications; when both describe one person the roll
+  is the Foundation's own record. This reversed a tie-break-only rule decided
+  earlier the same day, once the tab stopped meaning "38 hand-typed rows" and
+  started meaning "the roll". The cost is accepted: a manual `Lapsed` can pull
+  down a form `Active`. It cannot fire while every row on the roll is Active,
+  and it is the intended answer the day one is not. **Within one tab nothing
+  changed**, so re-applying still cannot demote anybody.
+- **Rows merge on a shared name + PMA class as well as a shared address.** The
+  roll came with no emails and carries placeholder addresses, so a member who
+  had also applied overlapped with their own application in nothing and
+  answered `ambiguous` permanently — locked out of both the status check and
+  their card, and it hit exactly the people who applied properly. The merge
+  covers both tabs and within a tab: all 32 same-name-same-class groups on the
+  roll carry identical category and standing, so both readings of a group —
+  one member listed twice, or two namesakes — tell the enquirer the same thing.
+  **A different class still means a different person** (37 names recur across
+  classes) and an empty class never matches another empty one. If PMAFI ever
+  marks one of a merged pair `Lapsed` and leaves the other `Active`, re-check
+  this: one real member would then be shown the other's standing.
 - Two email columns per row is normal and both are matched.
 - Only the mapped columns are read — phone numbers, addresses and receipt links
   stay in the sheet.

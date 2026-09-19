@@ -246,27 +246,32 @@ interface Applicant {
 type Source = MemberRecord["source"];
 
 /**
- * Whether `a` should displace `b`: better standing, then the manual tab, then
- * the newer row.
+ * Whether `a` should displace `b`: the manual tab first, then better standing,
+ * then the newer row.
  *
- * STANDING STILL COMES FIRST, and that ordering is the whole safety of this
- * function. A manual row that outranked on source alone would let a stale
- * staff-typed `Lapsed` overwrite a fresh form `Active` — which is precisely the
- * demotion that re-applying is documented never to cause. Source only breaks a
- * tie between two rows that already agree on standing.
+ * THE MANUAL TAB WINS OUTRIGHT, decided 2026-09-19. It holds the membership
+ * roll PMAFI supplied — 7,747 rows, one per member, with the standing PMAFI
+ * themselves set. The form tab holds applications. When both describe the same
+ * person, the roll is the Foundation's own record and the application is a
+ * request to join it, so the roll is what a member should be shown.
  *
- * MANUAL BEATS FORM ON THAT TIE because the manual tab is the curated one.
- * Staff type a row there to fix something: a name the form recorded wrongly, a
- * category, a class year. The form row is whatever the member submitted and is
- * never edited afterwards, so when both say (say) Active, the staff-corrected
- * spelling is the one to show. This displaced a newer-row rule, which picked by
- * accident of date rather than by which row anyone had checked.
+ * WHAT THIS GIVES UP, because it was weighed rather than missed. Standing used
+ * to come first, which guaranteed that no row could ever demote a member: a
+ * fresh application carries a blank status (therefore Pending) and could never
+ * pull an Active member down. Source-first drops that guarantee in one
+ * direction — a manual `Lapsed` now beats a form `Active`. Today that cannot
+ * fire, because every row on the roll is Active; it becomes reachable the day
+ * PMAFI marks somebody lapsed there, and on that day showing their answer is
+ * the intended behaviour rather than a regression.
+ *
+ * Within one tab the old rule is untouched: better standing wins, and a newer
+ * row breaks a tie. So re-applying still cannot demote anybody.
  */
 function outranks(a: Applicant, b: Applicant): boolean {
+  if (a.source !== b.source) return a.source === "manual";
   const rankA = STANDING_RANK[a.member.standing];
   const rankB = STANDING_RANK[b.member.standing];
   if (rankA !== rankB) return rankA > rankB;
-  if (a.source !== b.source) return a.source === "manual";
   return a.when > b.when;
 }
 
@@ -325,6 +330,52 @@ function buildRoster(applicants: Applicant[]): Roster {
       else union(first, i);
     }
   });
+
+  // ACROSS THE TWO TABS, A SHARED NAME AND PMA CLASS IS THE SAME PERSON.
+  //
+  // The address rule above cannot see them. A member on the roll PMAFI supplied
+  // carries a placeholder address — that roll came with no emails at all —
+  // while their own application carries a real one, so the two rows overlap in
+  // nothing and stayed two people. Same name and same class, so the class-year
+  // follow-up could not separate them either: they answered `ambiguous`
+  // permanently, locked out of both the status check and their card. That hit
+  // exactly the members who had also applied properly.
+  //
+  // WITHIN A TAB TOO, decided 2026-09-19 against the roll as delivered. This
+  // briefly joined form rows to manual rows only, one-to-one, on the grounds
+  // that two manual rows sharing a name and a class are either one member
+  // listed twice or two genuine namesakes and nothing here can tell which.
+  //
+  // The roll answered it. All 32 such groups carry IDENTICAL category and
+  // standing — every one Regular/Active — so both readings produce the same
+  // answer for the person asking, and leaving them split bought nothing except
+  // 32 members who could never be told their standing or issued a card. Where
+  // the data cannot distinguish two people, and would say the same thing about
+  // either, refusing to answer is not caution.
+  //
+  // WHAT IT COSTS, which is not nothing: two genuine namesakes in one class are
+  // now one record. If PMAFI ever marks one of a pair Lapsed and leaves the
+  // other Active, the pair will answer with whichever row wins below, and one
+  // real member will be shown the other's standing. Re-check this if the roll
+  // ever stops being uniformly Active.
+  //
+  // A DIFFERENT CLASS STILL MEANS A DIFFERENT PERSON. 37 names on the roll
+  // recur across classes and stay separate, which is what stops this from
+  // collapsing every namesake in the Academy's history into one member.
+  const byNameClass = new Map<string, number[]>();
+  applicants.forEach((app, i) => {
+    const cls = classDigits(app.member.pmaClass);
+    // A member with no class on file cannot be matched to another blank one —
+    // the same rule sameClass() applies, for the same reason.
+    if (!cls) return;
+    const key = `${nameKey(app.member.name)}|${cls}`;
+    const held = byNameClass.get(key);
+    if (held) held.push(i);
+    else byNameClass.set(key, [i]);
+  });
+  for (const idxs of byNameClass.values()) {
+    for (let k = 1; k < idxs.length; k++) union(idxs[0], idxs[k]);
+  }
 
   // The one row that represents each person.
   const best = new Map<number, Applicant>();
