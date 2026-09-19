@@ -102,7 +102,13 @@ const FALLBACK: FaqEntry[] = [
       // a scan yet — that needs persisted cards and a lookup endpoint (Phase 3,
       // Module A). Promising one here sent members looking for a square that
       // isn't on their card.
-      "Yes. Members can generate a digital PMAFI ID card carrying their name, category, standing and photo, then download it as an image. The card is created in your own browser and your photo is never uploaded or stored.",
+      //
+      // "NEVER UPLOADED", NOT "NEVER STORED" — this said the latter, and it was
+      // false. The photo IS stored, in localStorage under `pmafi:id-photo`, so
+      // a returning member need not add it again. Browser-local is a world away
+      // from uploaded, but it is not nowhere, and the generator's own copy has
+      // always said so. Keep the two in agreement.
+      "Yes. Members can generate a digital PMAFI ID card carrying their name, category, standing and photo, then download it as an image. The card is built in your own browser and your photo is never uploaded to the Foundation — it stays on your own device, and the ID page has a “Forget my photo” control that clears it.",
     keywords: ["id", "card", "identification", "digital id", "badge", "photo"],
     linkLabel: "Create your ID",
     linkHref: "/membership/id",
@@ -320,8 +326,23 @@ const FALLBACK: FaqEntry[] = [
   {
     question: "Is my photo uploaded when I create an ID?",
     answer:
-      "No. The card is put together entirely in your browser \u2014 your photo is never uploaded to us and is not stored anywhere.",
-    keywords: ["photo", "upload", "stored", "picture", "image"],
+      // This used to end "and is not stored anywhere", which was simply untrue:
+      // the photo is kept in this browser's localStorage so a returning member
+      // need not add it again. The distinction that matters to somebody asking
+      // is uploaded-to-us versus held-on-your-own-device, and the shared-
+      // computer case is the one where the difference bites \u2014 so it is named
+      // here rather than left for them to discover.
+      "No. The card is put together entirely in your browser and your photo is never uploaded to us. It is remembered on your own device so you need not add it again next time; use \u201cForget my photo\u201d on the ID page to clear it, which is worth doing on a shared computer.",
+    keywords: [
+      "photo",
+      "upload",
+      "stored",
+      "picture",
+      "image",
+      "delete",
+      "forget",
+      "remove",
+    ],
     linkLabel: "Create my ID",
     linkHref: "/membership/id",
   },

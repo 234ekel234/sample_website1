@@ -111,4 +111,20 @@ describe("the built-in answers state what the site actually does", () => {
     expect(joined).toMatch(/donee-institution status/i);
     expect(joined).not.toMatch(/is tax[- ]deductible/i);
   });
+
+  it("never says the ID photo is not stored, because it is", async () => {
+    // Two answers said the photo was "never uploaded or stored" and "not
+    // stored anywhere". Both were false: DigitalIdGenerator caches it in
+    // localStorage under `pmafi:id-photo` so a returning member need not add it
+    // again, and the page itself has always said so.
+    //
+    // Never-uploaded is true and must stay sayable — it is the reassurance
+    // members actually want. What must not come back is the stronger claim,
+    // which matters most to whoever built their card on a shared computer.
+    const { getFaqs } = await load([]);
+    const faqs = await getFaqs();
+    const joined = faqs.map((f) => f.answer).join(" ");
+    expect(joined).not.toMatch(/not stored anywhere|never .{0,20}stored|nor stored/i);
+    expect(joined).toMatch(/never uploaded/i);
+  });
 });
