@@ -38,7 +38,7 @@ since August is resolved.
 | `/about` | ✅ story, mission, vision, values, **Board of Trustees** (`#board`) |
 | `/programs` | ✅ plus **the roll of endowed chairs**, read from the `Chairs` tab |
 | `/membership` | ✅ status check by email **or name**, apply, ₱3,000 published, and the **28 classes at 100% membership** |
-| `/membership/id` | ✅ digital ID generator, gated behind the membership check |
+| `/membership/id` | ✅ digital ID generator, gated behind the membership check, **plus prompts to correct a name or update contact details** |
 | `/donate` | ✅ **can now receive a gift** — Metrobank and GCash details published, plus a photograph of a handover with the amount redacted |
 | `/donate/impact` | ✅ **2025 in counts**, above three published fund updates |
 | `/donate/status` | ✅ email + reference, **verified end to end against a real gift** |
@@ -166,7 +166,7 @@ mistake shows stale content rather than an empty page. Staff guide:
 
 | Tab | Drives | Notes |
 |---|---|---|
-| `Content` | The Chairman's and President's messages, contact details, socials, bank and GCash, dues, finance contact, donation form link | Key/value |
+| `Content` | The Chairman's and President's messages, contact details, socials, bank and GCash, dues, finance contact, and the three form links (`form.donation`, `form.correction`, `form.contact`) | Key/value |
 | `News` | The home page's News & Announcements | Moved here 2026-08-31 from a standalone sheet that had never been shared with the service account, so the feed silently served samples for months |
 | `Fund updates` | `/donate/impact` and the updates shown in a donor's own lookup | |
 | `Chairs` | The roll of endowed chairs on `/programs` | One column. There is deliberately no place to put an amount |
@@ -207,6 +207,55 @@ wording rather than lifted prose:
 
 The report itself is in `references/` and **must never be committed** — pages
 12–42 are the full member roster, several thousand names with class years.
+
+---
+
+## Keeping members' contact details current
+
+**The ID page asks for a current email address and mobile number.** PMAFI's
+contact details for its own members are patchy: roughly half the roster is
+manual rows where there may be no number at all, and a form member's number is
+exactly as old as their application. `/membership/id` is where this is asked
+because it is the one moment the Foundation knows it is looking at a real
+member, doing something they came to do, having just been shown what the roster
+holds about them.
+
+- **It asks; it does not gate.** The card downloads either way and nothing is
+  required. The ID is a benefit the roster already grants, not a trade for
+  personal data — and nothing here can be verified, so a member who would
+  rather not give a number would simply type digits. That collects worse data,
+  not more.
+- **It is a link to a Google Form, not a field on the site.** The service
+  account is `spreadsheets.readonly` and stays that way; a web-facing
+  credential that can edit the roster is a much larger risk than a form. It
+  also keeps the collection PMAFI's rather than the website's, on the same
+  footing as the membership application — which matters while the site has no
+  privacy policy of its own.
+- Responses land on a **`Contact Updates`** tab. The site reads **neither** the
+  phone nor the email column off the roster — only name, email, category,
+  status, PMA class and timestamp are mapped — so this is for the Foundation's
+  own correspondence and nothing on the site displays it.
+- **The correction form now asks for a mobile number too, but optionally.**
+  That form exists because PMAFI's record of somebody's *name* is wrong,
+  usually through a typo at our end; requiring a phone number before we will
+  fix our own mistake puts the friction on the wrong party.
+
+**Form links may carry a prefill template.** `form.contact` and
+`form.correction` each accept either a plain form URL or a Google prefill link
+containing `PMAFI_EMAIL_HERE`, which the ID page replaces with the address the
+member already gave the gate. This is worth the mechanism because **staff match
+a response to a member by email** — it is the roster's key — and an address
+retyped from memory is the one that arrives wrong. A plain link keeps working
+and simply opens the form blank. Where no address is known (the not-found
+branch, and the demo name path, which never learns one) the token is *stripped*
+rather than passed through, so nobody is ever shown a form with the literal text
+`PMAFI_EMAIL_HERE` in its email box. Covered in `form-prefill.test.ts`.
+
+The `.gs` files in `references/` **create** forms; they do not edit them.
+Re-running one mints a second form with a different link and strands the
+responses already collected on the first. The mobile-number question added to
+`correction-form.gs` on 2026-09-19 therefore has to be added to the live form by
+hand — the file says how.
 
 ---
 
