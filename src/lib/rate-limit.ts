@@ -51,6 +51,26 @@ export function rateLimit(
   limit: number,
   windowMs: number
 ): RateLimitResult {
+  // DEMO ESCAPE HATCH. Set RATE_LIMIT_DISABLED=1 and every caller is allowed
+  // through — added 2026-09-19 so a demo can run many lookups in a row without
+  // tripping the name-path limit halfway through.
+  //
+  // It is read HERE rather than at the four call sites so that turning it off
+  // restores all of them at once and none can be left bypassed by accident.
+  //
+  // WHAT IT SWITCHES OFF, so this is not set on Production and forgotten: the
+  // per-IP limit on the two name paths is the ONLY thing bounding somebody
+  // working through a list of plausible alumni names, and the only thing
+  // bounding guesses at the class year that resolves an ambiguous one — the
+  // class year is documented as a narrowing factor rather than a secret
+  // precisely because this limit exists. It also removes the cap on the
+  // emailed giving summary, which is what stops a donor's inbox being filled.
+  //
+  // Unset it when the demo is done.
+  if (process.env.RATE_LIMIT_DISABLED === "1") {
+    return { ok: true, retryAfter: 0 };
+  }
+
   const now = Date.now();
   sweep(now, windowMs);
 
