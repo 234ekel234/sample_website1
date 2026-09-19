@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
+import { presentName } from "@/lib/card-name";
 import {
   lookupMembershipAction,
   type MembershipLookupState,
@@ -107,7 +108,7 @@ export default function MembershipCheck({
           <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600" />
           <div>
             <p className="font-semibold text-emerald-900">
-              You&apos;re an active member, {state.name.split(" ")[0]}.
+              You&apos;re an active member, {presentName(state.name)}.
             </p>
             <p className="mt-1 text-sm text-emerald-800">
               Your record shows an <strong>active {state.category}</strong>{" "}
@@ -122,7 +123,7 @@ export default function MembershipCheck({
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600" />
           <div>
             <p className="font-semibold text-amber-900">
-              Welcome back, {state.name.split(" ")[0]}.
+              Welcome back, {presentName(state.name)}.
             </p>
             <p className="mt-1 text-sm text-amber-800">
               We found your <strong>{state.category}</strong> membership, but it
@@ -138,7 +139,7 @@ export default function MembershipCheck({
           <Clock className="mt-0.5 h-5 w-5 shrink-0 text-sky-600" />
           <div>
             <p className="font-semibold text-sky-900">
-              We&apos;ve received your application, {state.name.split(" ")[0]}.
+              We&apos;ve received your application, {presentName(state.name)}.
             </p>
             {/* Pending now means one thing only: they have paid and we are
                 checking the receipt. The invoice wording that used to live here
@@ -169,18 +170,21 @@ export default function MembershipCheck({
         </div>
       )}
 
-      {/* WHOSE RECORD THIS IS, spelled out, and only on the name path.
-          The panels above greet a member by their first name alone, which was
-          enough while a name had to be typed exactly. It is not enough now that
-          the lookup forgives spelling and missing middle names: the closest
-          member to "Maria Santos" may well be Mario Santos, and "Welcome back,
-          Mario" reads as a typo rather than as the wrong person's standing.
-          Printing the matched name in full lets the member catch it themselves —
-          the check that no amount of care in the matching can do for them. */}
+      {/* THE WAY OUT, for a member who has been shown somebody else's record.
+          The panels above now greet by the FULL matched name, which is what
+          this line used to be for and does better: a member reads their own
+          name in the headline rather than in grey text under it. The reason it
+          must be the full name has not changed — the lookup forgives spelling
+          and missing middle names, so the closest member to "Maria Santos" may
+          well be Mario Santos, and "Welcome back, Maria" would read as a typo
+          rather than as the wrong person's standing. Printing it in full is the
+          check that no amount of care in the matching can do for them.
+
+          What stays here is the escape hatch, and only on the name path: the
+          email lookup cannot match the wrong person, so it needs no way out. */}
       {mode === "name" && state.status === "found" && (
         <p className="mt-2 text-xs text-slate-500">
-          Showing the record for <strong>{state.name}</strong>. Not you? Check
-          using your email address instead.
+          Not you? Check using your email address instead.
         </p>
       )}
 

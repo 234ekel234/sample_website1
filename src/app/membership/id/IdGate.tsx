@@ -11,6 +11,7 @@ import {
 import DigitalIdGenerator, { type VerifiedMember } from "./DigitalIdGenerator";
 import { idFromEmail } from "@/lib/member-id";
 import { applyPrefill } from "@/lib/form-prefill";
+import { presentName } from "@/lib/card-name";
 import { track } from "@/lib/analytics";
 import {
   Search,
@@ -392,7 +393,7 @@ function CorrectionPrompt({
     <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-5">
       <p className="flex items-center gap-2 text-sm font-semibold text-[#1B2A4A]">
         <PencilLine className="h-4 w-4 text-[#C8A951]" />
-        Is <span className="font-bold">{name}</span> how your name should
+        Is <span className="font-bold">{presentName(name)}</span> how your name should
         appear?
       </p>
       <p className="mt-1 text-sm text-slate-600">
