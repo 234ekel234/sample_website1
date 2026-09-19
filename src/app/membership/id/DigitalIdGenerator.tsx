@@ -425,10 +425,16 @@ export default function DigitalIdGenerator({
     // Foundation does not issue. A member quoting it to staff would be quoting
     // a number nobody at PMAFI can look up.
     //
-    // The derivation is still there and still used — `memberId` names the
-    // downloaded file, and the demo name path exists partly to return the right
-    // one — so restoring the line is a fillText away once PMAFI supplies a real
-    // scheme. Do not restore it before then.
+    // The derivation is still there and still correct: both routes compute a
+    // number for the member (the email path by hashing the address, the demo
+    // name path by asking the server to hash the roster's copy of it), the
+    // action still returns it, and the tests still hold the two to agreeing.
+    // That is the property which has to be true before the line can come back,
+    // so it goes on being exercised while nothing prints it.
+    //
+    // It does NOT name the downloaded file — that carries the member's name,
+    // for the reason set out beside `a.download` below. Restoring the line here
+    // is a fillText and a font, once PMAFI supplies a real scheme. Not before.
     ctx.fillStyle = "rgba(255,255,255,0.5)";
     ctx.font = `600 12px ${sans}`;
     // BOTH DATES NOW, not one or the other. The joining year and the day this
