@@ -109,30 +109,20 @@ export default function IdGate({
 
   if (verified) {
     return (
-      // THE CORRECTION PROMPT COMES FIRST, BEFORE THE CARD AND ITS DOWNLOAD
-      // BUTTON. PMAFI asked for this on 2026-09-20 and it is the right order: a
-      // member who meets "is this how your name should appear?" only after
-      // downloading has already printed the wrong card, and the prompt reads as
-      // an afterthought rather than a check. It names the member in full, so it
-      // works without the card being visible yet.
+      // THE CHECK COMES BEFORE THE CARD, and holds it back until the member
+      // confirms. See ConfirmBeforeDownload for why.
       //
-      // The contact-details prompt stays BELOW for the opposite reason — it is
-      // housekeeping that has nothing to do with the card being right, and it
-      // asks rather than gates. Putting it first would make the page open with
-      // two requests before the thing the member actually came for.
-      <div className="space-y-6">
-        {correctionFormUrl && (
-          <CorrectionPrompt
-            url={correctionFormUrl}
-            name={verified.name}
-            email={knownEmail}
-          />
-        )}
-        <DigitalIdGenerator member={verified} />
-        {contactFormUrl && (
-          <ContactDetailsPrompt url={contactFormUrl} email={knownEmail} />
-        )}
-      </div>
+      // KEYED ON THE MEMBER so that looking somebody else up starts the check
+      // again. Without the key, React keeps the component mounted across a new
+      // lookup and carries the previous member's confirmation over to a record
+      // nobody has looked at.
+      <ConfirmBeforeDownload
+        key={verified.memberId}
+        member={verified}
+        correctionFormUrl={correctionFormUrl}
+        contactFormUrl={contactFormUrl}
+        email={knownEmail}
+      />
     );
   }
 
@@ -383,46 +373,139 @@ function ContactDetailsPrompt({ url, email }: { url: string; email: string }) {
   );
 }
 
-function CorrectionPrompt({
-  url,
-  name,
+/**
+ * CHECK BEFORE DOWNLOAD. The member is shown exactly what the card will print
+ * and must say it is right before the card appears at all.
+ *
+ * PMAFI asked for this on 2026-09-20, and it closes a real gap: the page used
+ * to offer a correction link beside a card that could be downloaded regardless,
+ * so "if the details are wrong, request a correction" was a suggestion rather
+ * than a step. Nothing stopped a member printing a card that misspelled their
+ * own name, under the Foundation's seal.
+ *
+ * IT IS A CONFIRMATION, NOT A PROOF. Anyone can click "these are correct" on a
+ * record that is not. That is fine and is the honest limit of what a page can
+ * do — the value is that every member now looks at their details deliberately
+ * before printing something official, and that a member who spots a mistake
+ * meets the form at the moment they notice rather than after the fact.
+ *
+ * IT SHOWS EVERY FIELD THE CARD PRINTS, not just the name. Asking "is this
+ * correct?" beside a name alone invites a yes from somebody whose PMA class is
+ * wrong, and the class is the field the roll most often has missing or wrong.
+ */
+function ConfirmBeforeDownload({
+  member,
+  correctionFormUrl,
+  contactFormUrl,
   email,
 }: {
-  url: string;
-  name: string;
+  member: VerifiedMember;
+  correctionFormUrl: string;
+  contactFormUrl: string;
   email: string;
 }) {
-  // Prefilled on the same reasoning as the contact prompt: this form's first
+  // Prefilled on the same reasoning as the contact prompt: the form's first
   // question asks for the address the record is filed under, staff find the row
-  // by it, and that address is the one thing here that is certainly RIGHT — the
-  // member just used it to get through the gate. It is their NAME the record
-  // has wrong. A plain link carries no token and simply opens blank.
-  const href = applyPrefill(url, email);
-  if (!href) return null;
+  // by it, and where the member came in by email that address is the one thing
+  // here that is certainly RIGHT. A plain link carries no token and opens blank.
+  const href = applyPrefill(correctionFormUrl, email);
+
+  // A BLANK FORM KEY MEANS THERE IS NOWHERE TO SEND ANYONE, so the gate would
+  // be a dead end: a member whose name is wrong would be asked to confirm it or
+  // click a control that does not exist. Start already confirmed, which is
+  // exactly the behaviour before this gate existed. Same rule as every other
+  // control driven by a content key — a blank key hides it rather than
+  // rendering something broken.
+  const [confirmed, setConfirmed] = useState(!href);
+  const [requested, setRequested] = useState(false);
+
+  if (confirmed) {
+    return (
+      <div className="space-y-6">
+        <DigitalIdGenerator member={member} />
+        {contactFormUrl && (
+          <ContactDetailsPrompt url={contactFormUrl} email={email} />
+        )}
+      </div>
+    );
+  }
+
+  const rows: [string, string][] = [
+    ["Name", presentName(member.name)],
+    ["Category", `${member.category} Member`],
+    ...(member.pmaClass ? ([["PMA Class", member.pmaClass]] as [string, string][]) : []),
+    ["Standing", member.standing],
+  ];
 
   return (
-    <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-5">
-      <p className="flex items-center gap-2 text-sm font-semibold text-[#1B2A4A]">
-        <PencilLine className="h-4 w-4 text-[#C8A951]" />
-        Is <span className="font-bold">{presentName(name)}</span> how your name should
-        appear?
+    <div className="mx-auto max-w-xl rounded-2xl border border-slate-200 bg-white p-6">
+      <p className="flex items-center gap-2 font-semibold text-[#1B2A4A]">
+        <PencilLine className="h-4 w-4 shrink-0 text-[#C8A951]" />
+        Check your details before you download
       </p>
-      {/* Worded for its position ABOVE the card: the member is being asked to
-          check before they download, not told to re-download after. */}
       <p className="mt-1 text-sm text-slate-600">
-        The card below prints the spelling on the Foundation&apos;s roster, so
-        it can&apos;t be edited here. If it&apos;s wrong, ask us to correct the
-        record first — the card you download will then be right.
+        Your card prints these exactly as the Foundation&apos;s records hold
+        them, so they can&apos;t be edited here.
       </p>
-      <a
-        href={href}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group mt-4 inline-flex items-center gap-2 rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-semibold text-[#1B2A4A] transition-all hover:border-[#C8A951] hover:bg-slate-50"
-      >
-        Request a correction
-        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-      </a>
+
+      <dl className="mt-4 divide-y divide-slate-200 rounded-lg border border-slate-200 bg-slate-50">
+        {rows.map(([label, value]) => (
+          <div key={label} className="flex items-baseline justify-between gap-4 px-4 py-2.5">
+            <dt className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              {label}
+            </dt>
+            <dd className="text-right text-sm font-semibold text-slate-900">{value}</dd>
+          </div>
+        ))}
+      </dl>
+
+      {requested ? (
+        /* WHAT HAPPENS NEXT, said plainly. A member who has just asked for a
+           correction needs to know that a person reviews it and that the card
+           is worth coming back for — otherwise the form feels like a void. */
+        <div className="mt-5 rounded-lg border border-sky-200 bg-sky-50 p-4">
+          <p className="text-sm font-semibold text-sky-900">
+            Thank you — we have your request.
+          </p>
+          <p className="mt-1 text-sm text-sky-800">
+            A member of the Foundation will check it against our records and put
+            it right. Come back once we have confirmed the change and your card
+            will carry the corrected details. Your member number stays the same.
+          </p>
+          <button
+            type="button"
+            onClick={() => setConfirmed(true)}
+            className="mt-3 text-sm font-semibold text-sky-900 underline underline-offset-4 hover:text-sky-700"
+          >
+            Download the card as it stands anyway
+          </button>
+        </div>
+      ) : (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+          {/* The two answers are deliberately the same size and weight. A
+              faint "something is wrong" beside a bright "correct" collects a
+              yes by making the correction harder to find, which is the whole
+              failure this gate exists to fix. */}
+          <button
+            type="button"
+            onClick={() => setConfirmed(true)}
+            className="inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#C8A951] px-5 py-3 text-sm font-semibold text-[#0a1628] transition-all hover:bg-[#8A6A22] hover:text-white"
+          >
+            <ShieldCheck className="h-4 w-4" />
+            Yes, these are correct
+          </button>
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={() => setRequested(true)}
+            className="group inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-slate-300 px-5 py-3 text-sm font-semibold text-[#1B2A4A] transition-all hover:border-[#C8A951] hover:bg-slate-50"
+          >
+            Something is wrong
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          </a>
+        </div>
+      )}
     </div>
   );
 }
