@@ -72,26 +72,27 @@ things a member can *do*, in the order they meet them.
 
 ---
 
-## Slide 4 — Your digital member ID  ·  ~55 seconds
+## Slide 4 — Your digital member ID  ·  ~60 seconds
 
 **On slide:**
 > **A card, in about ten seconds.**
 
 
-**Narration (126 words):**
-> Once the site has found a member, they can generate their own identification
-> card, bearing the Foundation's seal.
+**Narration (134 words):**
+> Once the site has found a member, it shows them exactly what the card will
+> print — their name, membership category, PMA class and standing — and asks
+> them to confirm it before the card is made.
 >
-> Their name, membership category, PMA class and standing all come from the
-> Foundation's own records and cannot be edited. The only thing the member
-> supplies is their photograph, and that photograph never leaves their own
-> device — it is never sent to us and never stored on a server.
+> If anything is wrong, they say so, and a correction request goes to the
+> Foundation. Staff check it and put the record right by hand. The website
+> cannot write to the roll, so a person always reviews the change.
 >
-> The card states the member's standing as of the day it was generated. That
-> date is printed on purpose, so a card downloaded two years from now does not
-> go on asserting something that may since have changed.
+> If the details are right, the card is generated, bearing the Foundation's
+> seal. The only thing the member supplies is their photograph, and it never
+> leaves their own device — never sent to us, never stored on a server.
 >
-> No visit to the office, and nothing to post.
+> The card states their standing as of the day it was made, so an old card does
+> not go on asserting something that may since have changed.
 
 ---
 

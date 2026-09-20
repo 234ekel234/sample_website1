@@ -278,20 +278,36 @@ export const boardMembers: BoardMember[] = [
     ],
     group: "trustee",
   },
+  // THE SUPERINTENDENT SITS HERE EX OFFICIO, so this entry changes whenever the
+  // Academy's Superintendent changes — it is the one seat on this board tied to
+  // a post rather than to a person. Replaced 2026-09-20: LGen Michael G. Logico,
+  // 86th Superintendent, succeeding Caesar Bernard N. Valencia. The old
+  // portrait is still in public/board/valencia.jpg and is now unused.
+  //
+  // The portrait was cropped square from PMAFI's supplied 1279x1600 original
+  // (references/MICHAEL G. LOGICO.jpeg) and resized to 400px — head and
+  // shoulders, with the face about a third down so it sits correctly inside the
+  // card's circular mask. A whole-frame portrait squeezed into that circle puts
+  // the face near the top and fills the rest with tunic.
+  //
+  // BoardMemberCard falls back to initials when `image` is empty, which is how
+  // this entry rendered between the handover and the photograph arriving. Leave
+  // that path working: this seat is ex officio and turns over with the post, so
+  // the next Superintendent will arrive before their portrait does.
   {
-    id: "valencia",
-    name: "Caesar Bernard N. Valencia",
+    id: "logico",
+    name: "Michael G. Logico",
     role: "Trustee, Ex Officio (PMA Superintendent)",
-    pmaClass: "PMA '90",
-    image: "/board/valencia.jpg",
+    pmaClass: "PMA '93",
+    image: "/board/logico.jpg",
     highlights: [
-      "PMA Superintendent",
-      "Master in Management, University of New South Wales, Canberra, Australia",
-      "Vice Commander, Philippine Navy (2022)",
-      "Chief of Naval Staff (2021)",
-      "Commander, Naval Forces Northern Luzon (2019)",
-      "Director, Naval Intelligence Training Institute",
-      "Dean of Academics, Naval Officer School Center",
+      "86th PMA Superintendent",
+      "Master in Public Management, Ateneo de Manila University",
+      "Master's Degree in National Security Administration, National Defense College of the Philippines",
+      "Commander, Education and Training Command (ETC)",
+      "Deputy Commander, Training Command (TRACOM)",
+      "Director, Joint and Combined Training Center, AFPETDC",
+      "AFP Wargaming Center, AFPCGSC",
     ],
     group: "trustee",
   },

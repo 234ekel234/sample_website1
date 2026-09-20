@@ -1,6 +1,21 @@
 import Image from "next/image";
 import type { BoardMember } from "@/lib/board-data";
 
+/**
+ * First and last initials, for a trustee whose portrait has not arrived.
+ *
+ * Middle initials are skipped — "M.G.L." in a 128px circle is three cramped
+ * glyphs where two read cleanly, and the full name sits directly beneath the
+ * avatar anyway, so this is decoration rather than identification.
+ */
+function initials(name: string): string {
+  const words = name.trim().split(/\s+/).filter((w) => /\p{L}/u.test(w));
+  if (words.length === 0) return "";
+  const first = words[0][0];
+  const last = words.length > 1 ? words[words.length - 1][0] : "";
+  return (first + last).toUpperCase();
+}
+
 export default function BoardMemberCard({
   member,
   featured = false,
@@ -15,17 +30,36 @@ export default function BoardMemberCard({
 
   return (
     <div className="group flex flex-col items-center rounded-xl border border-slate-200 bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#C8A951]/40 hover:shadow-[0_20px_45px_-20px_rgba(27,42,74,0.4)]">
-      {/* Avatar */}
+      {/* Avatar.
+
+          AN EMPTY `image` RENDERS INITIALS, NOT A BROKEN PHOTO. The
+          Superintendent's seat is ex officio, so it changes with the post and a
+          new holder arrives before PMAFI sends a portrait. Pointing `image` at
+          a file that does not exist yet 404s and leaves a broken avatar on the
+          Board page — the same reasoning as a blank content key hiding its
+          control rather than rendering a dead one. Supply the photograph and
+          set the path; nothing else changes. */}
       <div
         className={`relative ${avatar} shrink-0 overflow-hidden rounded-full bg-slate-100 ring-2 ring-[#C8A951]/30 ring-offset-2 ring-offset-white transition-all duration-300 group-hover:ring-[#C8A951]/70`}
       >
-        <Image
-          src={member.image}
-          alt={member.name}
-          fill
-          className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
-          sizes={featured ? "160px" : "128px"}
-        />
+        {member.image ? (
+          <Image
+            src={member.image}
+            alt={member.name}
+            fill
+            className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+            sizes={featured ? "160px" : "128px"}
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className={`flex h-full w-full items-center justify-center bg-[#1B2A4A] font-bold text-[#C8A951] ${
+              featured ? "text-3xl" : "text-2xl"
+            }`}
+          >
+            {initials(member.name)}
+          </span>
+        )}
       </div>
 
       {/* Info */}
