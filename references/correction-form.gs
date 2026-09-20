@@ -189,6 +189,28 @@ function createPmafiCorrectionForm() {
     )
     .setRequired(true);
 
+  // SERIAL NUMBER AS AN OFFICER — asked for on 2026-09-20 at PMAFI's request.
+  //
+  // OPTIONAL, AND THAT MATTERS. Most of the roll are commissioned officers and
+  // a serial number is the one identifier they can state exactly — better than
+  // an email they may not remember and a name the record may have misspelled,
+  // which is the whole reason this form exists. But the roll is not only
+  // officers: the Affiliate category is explicitly "individual or organisation
+  // that shares PMAFI's values", and faculty and staff need not be commissioned
+  // either. Requiring it would shut those members out of correcting their own
+  // record, which is a worse failure than a blank column.
+  //
+  // NOTHING ON THE SITE READS IT. Only name, email, category, status, PMA class
+  // and timestamp are mapped off the roster — this lands on the responses tab
+  // for staff to match by, like the mobile number.
+  form.addTextItem()
+    .setTitle('Serial number as an officer')
+    .setHelpText(
+      'Optional — your serial number as a commissioned officer, not a ' +
+      'membership or reference number. It is the quickest way for us to be ' +
+      'certain we have the right record. Leave it blank if you do not have one.'
+    );
+
   // ---- The correction ----
   // The help text here used to read "tell us only what needs changing; leave
   // the rest blank", with a REQUIRED field directly beneath it. Give us the
