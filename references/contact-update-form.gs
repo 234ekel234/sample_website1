@@ -182,6 +182,26 @@ function createPmafiContactUpdateForm() {
     )
     .setRequired(true);
 
+  // SERIAL NUMBER AS AN OFFICER — asked for on 2026-09-20 at PMAFI's request.
+  //
+  // OPTIONAL, for the same reason as on the correction form: most of the roll
+  // are commissioned officers and a serial number is the one identifier they
+  // can state exactly, but the Affiliate category is explicitly "individual or
+  // organisation that shares PMAFI's values", and faculty and staff need not be
+  // commissioned. Requiring it would turn a voluntary housekeeping form into
+  // one a non-officer cannot submit.
+  //
+  // It sits in this section because it is an IDENTIFIER, not a contact detail —
+  // it helps staff attach the response to the right roster row. Nothing on the
+  // site reads it.
+  form.addTextItem()
+    .setTitle('Serial number as an officer')
+    .setHelpText(
+      'Optional — your serial number as a commissioned officer, not a ' +
+      'membership or reference number. It is the quickest way for us to be ' +
+      'certain we have the right record. Leave it blank if you do not have one.'
+    );
+
   // ---- The details ----
   form.addPageBreakItem()
     .setTitle('Your current details')

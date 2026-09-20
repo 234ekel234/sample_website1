@@ -109,8 +109,18 @@ export default function IdGate({
 
   if (verified) {
     return (
+      // THE CORRECTION PROMPT COMES FIRST, BEFORE THE CARD AND ITS DOWNLOAD
+      // BUTTON. PMAFI asked for this on 2026-09-20 and it is the right order: a
+      // member who meets "is this how your name should appear?" only after
+      // downloading has already printed the wrong card, and the prompt reads as
+      // an afterthought rather than a check. It names the member in full, so it
+      // works without the card being visible yet.
+      //
+      // The contact-details prompt stays BELOW for the opposite reason — it is
+      // housekeeping that has nothing to do with the card being right, and it
+      // asks rather than gates. Putting it first would make the page open with
+      // two requests before the thing the member actually came for.
       <div className="space-y-6">
-        <DigitalIdGenerator member={verified} />
         {correctionFormUrl && (
           <CorrectionPrompt
             url={correctionFormUrl}
@@ -118,6 +128,7 @@ export default function IdGate({
             email={knownEmail}
           />
         )}
+        <DigitalIdGenerator member={verified} />
         {contactFormUrl && (
           <ContactDetailsPrompt url={contactFormUrl} email={knownEmail} />
         )}
@@ -396,10 +407,12 @@ function CorrectionPrompt({
         Is <span className="font-bold">{presentName(name)}</span> how your name should
         appear?
       </p>
+      {/* Worded for its position ABOVE the card: the member is being asked to
+          check before they download, not told to re-download after. */}
       <p className="mt-1 text-sm text-slate-600">
-        The card prints the spelling on the Foundation&apos;s roster, so it
-        can&apos;t be edited here. If it&apos;s wrong, ask us to correct the
-        record — then download your card again.
+        The card below prints the spelling on the Foundation&apos;s roster, so
+        it can&apos;t be edited here. If it&apos;s wrong, ask us to correct the
+        record first — the card you download will then be right.
       </p>
       <a
         href={href}
