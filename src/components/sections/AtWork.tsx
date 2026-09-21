@@ -8,12 +8,26 @@ import { ArrowRight } from "lucide-react";
 /**
  * Six of PMAFI's own photographs, between the numbers and the appeal.
  *
- * SIX, IN TWO ROWS OF THREE, is close to the ceiling this material supports.
- * The client folders hold about thirty files, but most are extra frames of the
- * same handful of occasions — four of the PAF call, four of the Coast Guard
- * visit, several of one cheque handover — and each occasion may appear once.
+ * NINE, IN THREE ROWS OF THREE. This said six until 2026-09-21, and the reason
+ * was the material rather than the design: the folders then held about thirty
+ * files, most of them extra frames of the same handful of occasions — four of
+ * the PAF call, four of the Coast Guard visit, several of one cheque handover —
+ * and each occasion may appear once. A third drop of about a hundred frames
+ * lifted that constraint, so the ceiling moved with it.
+ *
+ * THE ONE-FRAME-PER-OCCASION RULE DID NOT MOVE, and it is what most of the new
+ * drop still fails. Two frames of the cadets' briefing were shot minutes apart
+ * from different angles; only the wider one is here. The corps assembly below
+ * is a DIFFERENT occasion from the briefing — fatigues at the Board's November
+ * 2024 annual visit, against dress grey in another hall — which is the check
+ * worth making before adding a seventh, tenth or thirteenth frame.
+ *
  * A few are disqualified outright rather than merely repetitive; see the note
- * in AGENTS.md about what is in those folders.
+ * in AGENTS.md about what is in those folders. From the third drop that covers
+ * the personal snapshots, the dining photographs, the frames showing documents
+ * on a desk, and every cheque presentation — those last on the amount and MICR
+ * line being legible and the donor company named beside the sum, which is the
+ * same standard /donate's handover photograph is held to.
  *
  * WHY IT SITS HERE AND NOT HIGHER UP. The page alternates backgrounds —
  * dark · white · slate · white · dark · slate · dark — and News is already
@@ -121,6 +135,32 @@ const frames: Frame[] = [
     // May 26, 2026". Month only, to match the format the other cards would
     // use — the day adds nothing a caption needs.
     date: "May 2026",
+  },
+  {
+    src: "/trustees-oath.jpg",
+    alt: "Trustees of the Philippine Military Academy Foundation raising their right hands to take the oath of office, before the official seal of the Senate of the Philippines.",
+    caption: "The Board of Trustees taking their oath of office.",
+    // The caption does not mention the Senate, though its seal is plainly in
+    // frame. Where an oath was administered is not a claim the Foundation
+    // needs to make in a caption, and naming the venue of a swearing-in edges
+    // towards implying an endorsement by it.
+    // Deliberately undated: nothing in the frame carries one.
+  },
+  {
+    src: "/pma-cadets-briefing.jpg",
+    alt: "Cadets of the Philippine Military Academy in dress uniform seated in an assembly hall while a member of the Foundation addresses them.",
+    caption: "Cadets at Fort del Pilar during a visit by the Foundation.",
+    // A DIFFERENT OCCASION from /pma-corps-assembly.jpg above — dress grey in
+    // a modern hall, against fatigues at the November 2024 annual visit. That
+    // was checked against the published frame rather than assumed, because two
+    // assemblies of cadets look alike at card size.
+    // Deliberately undated: nothing in the frame carries one.
+  },
+  {
+    src: "/pma-museum-visit.jpg",
+    alt: "Trustees of the Foundation standing beneath the Philippine Military Academy crest at the entrance to the PMA Museum.",
+    caption: "Trustees at the PMA Museum, Fort del Pilar.",
+    // Deliberately undated: nothing in the frame carries one.
   },
 ];
 
