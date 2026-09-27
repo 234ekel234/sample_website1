@@ -40,6 +40,7 @@
 // empty string, and the components that use them hide rather than invent one.
 
 import { readRange } from "@/lib/sheets";
+import { safeHttpUrl } from "@/lib/safe-url";
 
 /**
  * A signed message on the home page: who is speaking, their office, and what
@@ -311,6 +312,25 @@ function pick(map: Map<string, string>, key: string, fallback: string): string {
  * a blank line, and a body that is blank or whitespace falls back whole rather
  * than rendering an empty message under a real byline.
  */
+/**
+ * Like `pick`, but for a value that becomes an `href` or an iframe `src`.
+ *
+ * EVERY URL FROM THE SHEET GOES THROUGH HERE. React escapes text but does not
+ * sanitise a URL, so `href="javascript:…"` from a poisoned cell would render
+ * and run — see src/lib/safe-url.ts for why that matters on a site whose
+ * spreadsheet and Google account are the same trust boundary.
+ *
+ * Validating at the boundary rather than per-href is deliberate: a page added
+ * later that renders `content.forms.donation` cannot forget the rule, because
+ * the value was already safe before it was handed over.
+ *
+ * A refused URL falls back exactly as a blank cell does, so a poisoned value
+ * hides its control instead of needing an error path of its own.
+ */
+function pickUrl(map: Map<string, string>, key: string, fallback: string): string {
+  return safeHttpUrl(pick(map, key, fallback)) || safeHttpUrl(fallback);
+}
+
 function pickMessage(
   map: Map<string, string>,
   prefix: string,
@@ -496,8 +516,8 @@ export async function getContent(): Promise<SiteContent> {
       address: pick(map, "contact.address", FALLBACK.contact.address),
     },
     social: {
-      facebook: pick(map, "social.facebook", FALLBACK.social.facebook),
-      instagram: pick(map, "social.instagram", FALLBACK.social.instagram),
+      facebook: pickUrl(map, "social.facebook", FALLBACK.social.facebook),
+      instagram: pickUrl(map, "social.instagram", FALLBACK.social.instagram),
     },
     payment: {
       bankName: pick(map, "payment.bank.name", FALLBACK.payment.bankName),
@@ -529,12 +549,12 @@ export async function getContent(): Promise<SiteContent> {
       name: pick(map, "finance.name", FALLBACK.finance.name),
     },
     video: {
-      url: pick(map, "video.url", FALLBACK.video.url),
+      url: pickUrl(map, "video.url", FALLBACK.video.url),
     },
     forms: {
-      donation: pick(map, "form.donation", FALLBACK.forms.donation),
-      correction: pick(map, "form.correction", FALLBACK.forms.correction),
-      contact: pick(map, "form.contact", FALLBACK.forms.contact),
+      donation: pickUrl(map, "form.donation", FALLBACK.forms.donation),
+      correction: pickUrl(map, "form.correction", FALLBACK.forms.correction),
+      contact: pickUrl(map, "form.contact", FALLBACK.forms.contact),
     },
   };
 }
