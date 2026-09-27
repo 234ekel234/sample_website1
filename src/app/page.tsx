@@ -1,4 +1,5 @@
 import Hero from "@/components/sections/Hero";
+import FoundationFilm from "@/components/sections/FoundationFilm";
 import Stats from "@/components/sections/Stats";
 import Services from "@/components/sections/Services";
 import SupportImpact from "@/components/sections/SupportImpact";
@@ -45,6 +46,8 @@ export default function Home() {
   return (
     <main>
       <Hero />
+      {/* Renders nothing until `video.url` is set in the content sheet. */}
+      <FoundationFilm />
       <LeadershipMessages />
       <MissionVision />
       <News />
