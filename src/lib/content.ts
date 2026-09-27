@@ -108,6 +108,22 @@ export interface SiteContent {
     /** e.g. "Ask for the Treasurer". Omitted when blank. */
     name: string;
   };
+  video: {
+    /**
+     * A YouTube link to the Foundation's own film, embedded on /about.
+     *
+     * ANY LINK SHAPE WILL DO — src/lib/video.ts reads the id out of the share
+     * link, the address bar, the embed dialog or a bare id, and discards the
+     * `?si=` tracking the Share button appends. Staff should not have to know
+     * which of YouTube's four URL formats is the right one to paste.
+     *
+     * Blank hides the section outright, which is how it shipped: the code went
+     * live before the film was uploaded, and the section appeared when the
+     * link was pasted, with no deploy. A link that is not YouTube renders
+     * nothing rather than an empty black frame.
+     */
+    url: string;
+  };
   forms: {
     /**
      * Public link to the "Tell us about your donation" Google Form
@@ -270,6 +286,9 @@ const FALLBACK: SiteContent = {
     email: "",
     phone: "",
     name: "",
+  },
+  video: {
+    url: "",
   },
   forms: {
     donation: "",
@@ -508,6 +527,9 @@ export async function getContent(): Promise<SiteContent> {
       email: pick(map, "finance.email", FALLBACK.finance.email),
       phone: pick(map, "finance.phone", FALLBACK.finance.phone),
       name: pick(map, "finance.name", FALLBACK.finance.name),
+    },
+    video: {
+      url: pick(map, "video.url", FALLBACK.video.url),
     },
     forms: {
       donation: pick(map, "form.donation", FALLBACK.forms.donation),
