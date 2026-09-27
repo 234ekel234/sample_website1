@@ -13,17 +13,26 @@ import VideoEmbed from "@/components/ui/VideoEmbed";
  * black frame. The id is parsed here as well as inside VideoEmbed so that the
  * heading and the slate band do not render around a video that will not.
  *
- * ON /about RATHER THAN THE HOME PAGE. An anniversary film is dated by
- * construction — "the 38th" is history the moment the 39th comes round. On a
- * page that tells the Foundation's story that reads as a record; on the home
- * page it would be something somebody has to remember to swap.
+ * ON THE HOME PAGE, DIRECTLY BELOW THE HERO. It shipped on /about first, on
+ * the reasoning that an anniversary film is dated by construction — "the 38th"
+ * is history the moment the 39th comes round — and that the home page would
+ * therefore be something somebody has to remember to swap. PMAFI asked for it
+ * here on 2026-09-27, and the objection was weaker than it sounded: the url is
+ * a content-sheet cell, so swapping next year's film is one cell and no deploy,
+ * which is not a maintenance burden worth spending the strongest page on.
  *
- * Slate-50, between OurStory (white) and AcademyBand (white).
+ * ONE FILM, ONE PLACE. It is not also on /about — the same video twice makes
+ * neither showing of it feel like the main event, and most visitors never reach
+ * /about at all.
+ *
+ * Slate-50, between Hero (#0a1628) and LeadershipMessages (white), which keeps
+ * the page's alternation intact: dark, slate, white, dark, slate, white, slate,
+ * dark, slate, dark.
  *
  * NO NAMES IN THE CAPTION, following /donate and the At Work band. The poster
  * frame is a room full of identifiable members greeting each other.
  */
-export default async function AnniversaryVideo() {
+export default async function FoundationFilm() {
   const content = await getContent();
   if (!youtubeId(content.video.url)) return null;
 
