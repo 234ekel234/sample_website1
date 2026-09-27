@@ -445,7 +445,6 @@ resets on a cold start. It stops realistic abuse, not a determined attacker.
 | `DONATIONS_SHEET_RANGE` | — | — | optional; defaults to `Donations!A2:G`. **The donation log is read by column position, not by header** — unlike the roster — so this must match the tab's actual layout. Changing it is how you cope if a column is ever inserted |
 | `RESEND_API_KEY` | ❌ | ❌ | emailed giving summaries. Unset, so the emailed-summary control is hidden rather than offered and failing |
 | `GIVING_FROM_EMAIL` | — | — | optional; the From address on an emailed giving summary. Falls back to a default in `giving-email.ts`. Only matters once `RESEND_API_KEY` is set |
-| `RATE_LIMIT_DISABLED` | — | — | **demo escape hatch.** Set to exactly `1` and every rate limit lets all callers through — added 2026-09-19 so a demo can run many lookups without tripping the per-IP cap. Ships unset. Do not set it on Production and forget: the per-IP limit is the only thing bounding somebody working through a list of plausible alumni names, and the only thing bounding guesses at the class year that resolves an ambiguous one |
 
 **`DEMO_ID_BY_NAME` is retired** and no longer read by any code. It is still set
 on Vercel **Preview** and should be deleted (`vercel env rm DEMO_ID_BY_NAME
