@@ -254,6 +254,42 @@ export default function ProgramsPage() {
           already done, one name at a time. */}
       <ChairsRoll />
 
+      {/* WHO THE ROLL ABOVE IS FOR. A list of a hundred and sixty-one donor
+          names is the strongest thing on this page and also the most abstract,
+          so it is followed by the people it buys teaching for, and the caption
+          says so explicitly rather than leaving the reader to connect them.
+
+          White, between ChairsRoll (#0a1628) and How You Can Help (slate-50),
+          which is the one seam here where a band touches neither of its own
+          neighbours' colours.
+
+          ONE FIGURE, NOT A GALLERY, AND THAT IS THE MATERIAL RATHER THAN THE
+          DESIGN. A photo band wants three frames of comparable weight; the
+          client drops hold exactly three Academy-facing frames above 1000px and
+          all three are the same occasion, with everything else at 960px or
+          smaller. Three-up here would be one good photograph and two upscaled
+          ones. When PMAFI sends more photography of the Academy itself, this is
+          the section that becomes a band. */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-5xl px-6">
+          <figure className="overflow-hidden rounded-2xl">
+            <div className="relative aspect-[16/8] w-full bg-slate-100">
+              <Image
+                src="/cadet-question.jpg"
+                alt="A cadet of the Philippine Military Academy standing with a microphone to put a question during a visit by the Foundation, with the Corps seated around him."
+                fill
+                className="object-cover object-center"
+                sizes="(max-width: 1024px) 100vw, 1024px"
+              />
+            </div>
+            <figcaption className="mt-3 text-sm text-slate-500">
+              A cadet puts a question to the Foundation, at Fort del Pilar. The
+              chairs named above are endowed for the cadets in this room.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       {/* How You Can Help */}
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-6">
