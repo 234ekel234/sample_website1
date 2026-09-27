@@ -50,11 +50,16 @@ export default async function FoundationFilm() {
           </h2>
         </div>
 
+        {/* NO CAPTION. The heading above already says what the film is, and the
+            rest of what a caption could say here — that it plays on YouTube,
+            that nothing loads from Google until you press play — is the
+            developer explaining the build to somebody who came to watch a
+            video. The behaviour matters; narrating it does not. VideoEmbed
+            still takes an optional caption for a frame that needs one. */}
         <VideoEmbed
           url={content.video.url}
           poster="/anniversary-video-poster.jpg"
           title="PMA Foundation, Inc. — 38th Founding Anniversary"
-          caption="The Foundation's 38th founding anniversary. Plays on YouTube; nothing loads from Google until you press play."
         />
       </div>
     </section>

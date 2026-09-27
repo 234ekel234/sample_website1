@@ -1,0 +1,25 @@
+# What NOT to upload when deploying from the CLI (`vercel --prod`).
+#
+# WHY THIS FILE EXISTS. `.git/info/exclude` keeps the client photo drops and the
+# annual report out of GIT, and that is all it does — Vercel's CLI does not read
+# it. Without the entries below the CLI uploaded the entire working directory:
+# 938MB, and a deploy that failed outright on "File size limit exceeded (100MB)"
+# because one of the drops is a 490MB zip. Nothing in here is read by the build.
+#
+# A push-triggered deploy builds from the repository and was never affected —
+# this only bites the CLI path, which is exactly the one reached for when a
+# push-triggered deploy needs re-running.
+
+# Working documents, Apps Script generators, brochures, client photo drops.
+# Nothing under here is imported by the app; the published crops live in public/.
+references/
+references_2/
+
+# Local build output and caches — Vercel builds its own.
+.next/
+.vercel/
+.preview/
+
+# Local env. Production values live in Vercel's own environment settings.
+.env.local
+.env*.local
