@@ -20,6 +20,7 @@ const EMPTY: SiteContent = {
   },
   dues: { regular: "", associate: "", affiliate: "" },
   finance: { email: "", phone: "", name: "" },
+  video: { url: "" },
   forms: { donation: "", correction: "", contact: "" },
 };
 
