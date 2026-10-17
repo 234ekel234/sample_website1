@@ -490,11 +490,22 @@ top of this list for months, are **done**.
    `pmafi.web@gmail.com`, so the footer, contact page and chat widget all
    publish the Google account that owns the Forms rather than PMAFI's official
    `PMAFI_PMA@yahoo.com`. Somebody changed it in the sheet; one cell either way.
-3. **News items** — one real row is live (the Board's annual visit, 15 November
-   2024, dated from the welcome slide in the photograph). Two drafts wait in the
-   `News` tab: the teaching-excellence awarding needs a date, and the alumni
-   gift needs a decision on whether a headline may name the donor. Leaving no
-   row published brings the fabricated samples back.
+3. **News items** — three real rows are now published (the Board's annual visit,
+   15 November 2024, dated from the welcome slide in the photograph; the
+   teaching-excellence awarding, still undated; and the alumni gift, whose
+   headline names no donor). Leaving no row published brings the fabricated
+   samples back. A fourth is now live too — the Annual Membership Meeting and
+   Election of Trustees of 5 March 2027, taken from `references/announcement.jpeg`.
+   Three things in that notice are deliberately **not** on the site and must
+   not be added: the Zoom join link, meeting ID and passcode (posting them
+   publicly opens a trustee election to anyone who reads the home page), the
+   two staff mobile numbers, and the Corporate Secretary's signature. The item
+   points members at the Foundation for the joining details instead. The scan
+   itself is not published — it is an image of text, which the site's
+   Lighthouse-100 accessibility floor does not survive, and it is kept out of
+   git by `.git/info/exclude` because this repository is public.
+   **Still to do in the sheet:** add a `Featured` header in **H1** and `Yes` in
+   **H5**, so the meeting leads the section instead of the 2024 board visit.
 4. **Fund update photographs** — `/fund-chairs.jpg` and `/fund-endowment.jpg`
    show teaching-excellence certificate presentations attached to the chair and
    endowment funds. If that certificate is not a chair appointment, both belong

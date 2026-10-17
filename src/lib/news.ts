@@ -15,6 +15,7 @@
 // Sheet columns (row 1 = headers, data starts at row 2):
 //   A: Title  B: Excerpt  C: Category  D: Date  E: Link  F: Published (Yes/No)
 //   G: Image URL (optional — a Google Drive share link)
+//   H: Featured (Yes/No, optional — the one row that runs full width on top)
 
 import { readRange } from "@/lib/sheets";
 import { toDisplayImageUrl } from "@/lib/sheet-image";
@@ -27,9 +28,15 @@ export interface NewsItem {
   date: string;
   link: string;
   image: string;
+  /**
+   * Marks the row to run full width above the cards. Optional: a tab with the
+   * column blank, or missing entirely, still renders — the top row leads.
+   * See splitFeatured in NewsCards.tsx for why it is a column and not a sort.
+   */
+  featured: boolean;
 }
 
-const NEWS_RANGE = "News!A2:G";
+const NEWS_RANGE = "News!A2:H";
 
 const FALLBACK: NewsItem[] = [
   {
@@ -39,6 +46,7 @@ const FALLBACK: NewsItem[] = [
     date: "Upcoming",
     link: "",
     image: "",
+    featured: false,
   },
   {
     title: "Professorial Chair & Endowment Awarding",
@@ -47,6 +55,7 @@ const FALLBACK: NewsItem[] = [
     date: "Upcoming",
     link: "",
     image: "",
+    featured: false,
   },
   {
     title: "Class Reunion & Homecoming Support",
@@ -55,6 +64,7 @@ const FALLBACK: NewsItem[] = [
     date: "Upcoming",
     link: "",
     image: "",
+    featured: false,
   },
 ];
 
@@ -84,7 +94,11 @@ export async function getNews(): Promise<NewsItem[]> {
       if (published !== "yes" && published !== "true") continue;
 
       const image = toDisplayImageUrl(String(row[6] ?? ""));
-      items.push({ title, excerpt, category, date, link, image });
+      // Read the same way as Published, so "Yes"/"yes"/"TRUE" all work and a
+      // Sheets checkbox (which arrives as the boolean TRUE) works too.
+      const featuredCell = String(row[7] ?? "").trim().toLowerCase();
+      const featured = featuredCell === "yes" || featuredCell === "true";
+      items.push({ title, excerpt, category, date, link, image, featured });
     }
 
     return items.length > 0 ? items : FALLBACK;
