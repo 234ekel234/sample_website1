@@ -17,28 +17,55 @@
  * rather than as a scan nobody can read on a phone. Rewriting a sentence to
  * read better would quietly make it ours.
  *
- * THREE THINGS FROM THE NOTICE ARE WITHHELD, and `annual-meeting.test.ts`
- * fails if any of them comes back:
+ * THE SIGNED ORIGINAL IS PUBLISHED ALONGSIDE THIS, unredacted — PMAFI's
+ * decision, taken 2026-10-17, and it is PMAFI's document to publish. See
+ * NOTICE_SCAN below. What that puts on a public page, deliberately: the Zoom
+ * join link with its passcode in the URL, the meeting ID and passcode, two
+ * staff mobile numbers, the office landline, and the Corporate Secretary's
+ * signature.
  *
- *   1. The Zoom join link, meeting ID and passcode. This page is public, and
- *      publishing them lets anyone at all sit in on a trustee election. The
- *      notice went to members; the site is read by the world. Members get them
- *      from the Foundation.
- *   2. The two staff mobile numbers and the office landline. These are
- *      individuals' numbers, and the site withholds phone numbers generally
- *      pending PMAFI's confirmation of which number is the published one.
- *   3. The Corporate Secretary's scanned signature. He is named as the issuing
- *      officer, which is what the notice communicates; the signature image
- *      itself is a forgeable artefact and adds nothing on screen.
+ * THE TRANSCRIPTION BELOW STILL OMITS THEM, and `annual-meeting.test.ts`
+ * pins that. The reason is no longer secrecy — the image carries them a few
+ * hundred pixels further down the same page. It is that a joining credential
+ * and a personal mobile number go stale, and a transcription that repeats
+ * them becomes a second place to forget to update. The document of record is
+ * the scan; this is the readable rendering of its substance.
  *
- * Only the official published address, PMAFI_PMA@yahoo.com, is given — which
- * is also the address the notice itself names for ballot submission.
+ * KNOWN GAP, and it is a real one: a screen reader gets the transcription and
+ * cannot read the image, so a blind member cannot obtain the Zoom details
+ * from this page while a sighted one can. Closing it means adding a `joining`
+ * field here and rendering it — a deliberate choice to make the credentials
+ * equally available, not an oversight to fix quietly.
+ *
+ * The only contact detail given in the transcription is the official
+ * published address, PMAFI_PMA@yahoo.com, which is also the address the
+ * notice itself names for ballot submission.
  */
 
 /** PMAFI's official published address. Not pmafi.web@gmail.com, which is the
  *  Google account that owns the Forms — see AGENTS.md. The notice names this
  *  one for ballots, so it is quoted rather than read from the content sheet. */
 export const NOTICE_EMAIL = "PMAFI_PMA@yahoo.com";
+
+/**
+ * The signed original, served from public/ rather than from a Drive share.
+ *
+ * NOT A DRIVE LINK. The sheet briefly pointed the news card at one, and a
+ * Drive-hosted original is governed by that file's sharing setting rather
+ * than by this repository — change the setting and the page breaks, or the
+ * file leaks somewhere nobody is looking. A site asset is served by the site.
+ *
+ * Note this file IS committed, unlike references/announcement.jpeg which is
+ * excluded: publishing it on the site is the decision, and git history is
+ * permanent, so removing it from the page later does not remove it from the
+ * repository. That is understood and accepted.
+ */
+export const NOTICE_SCAN = {
+  src: "/annual-meeting-notice.jpg",
+  width: 642,
+  height: 845,
+  alt: "Scanned notice of the PMAFI Annual Membership Meeting and Election of Trustees, 5 March 2027, signed by the Corporate Secretary. The text of this notice is transcribed in full above.",
+} as const;
 
 export interface ScheduleEntry {
   when: string;
