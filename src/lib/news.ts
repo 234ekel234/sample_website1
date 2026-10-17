@@ -20,6 +20,7 @@
 import { readRange } from "@/lib/sheets";
 import { toDisplayImageUrl } from "@/lib/sheet-image";
 import { formatSheetDate, normalizeSheetDate } from "@/lib/sheet-date";
+import { safeHttpUrl } from "@/lib/safe-url";
 
 export interface NewsItem {
   title: string;
@@ -68,39 +69,56 @@ const FALLBACK: NewsItem[] = [
   },
 ];
 
+/**
+ * Turn sheet rows into news items. Pure, and separate from the fetch so the
+ * rules below are testable without a spreadsheet — the same split
+ * `parseFundUpdates` uses.
+ */
+export function parseNews(rows: unknown[][]): NewsItem[] {
+  const items: NewsItem[] = [];
+  for (const row of rows) {
+    const title = String(row[0] ?? "").trim();
+    const excerpt = String(row[1] ?? "").trim();
+    const category = String(row[2] ?? "").trim();
+    // A DATE CELL IS A NUMBER. `readRange` asks Sheets for UNFORMATTED_VALUE,
+    // so "15 November 2024" typed into a date-formatted cell arrives as the
+    // serial 45611 and the card printed exactly that. Every other sheet the
+    // site reads already went through normalizeSheetDate; news was the one
+    // that never did. Normalise to ISO, then format for the reader — free
+    // text like "Upcoming" passes through both untouched.
+    const date = formatSheetDate(normalizeSheetDate(String(row[3] ?? "")));
+    // SANITISED AT THE BOUNDARY, like every other sheet URL the site
+    // renders. This column becomes an anchor's href, and React does not
+    // sanitise one — `javascript:…` renders and runs. It was unsanitised
+    // here for as long as every Link cell was empty, which is exactly how
+    // long the omission stayed invisible. See src/lib/safe-url.ts: the News
+    // tab lives in the same spreadsheet as the content tab, so it carries
+    // the same "compromised sheet becomes script on pmafi.org" risk.
+    // A refused URL becomes "", which the cards already treat as "no link".
+    const link = safeHttpUrl(String(row[4] ?? ""));
+    const published = String(row[5] ?? "").trim().toLowerCase();
+
+    if (!title || !excerpt) continue;
+    if (published !== "yes" && published !== "true") continue;
+
+    const image = toDisplayImageUrl(String(row[6] ?? ""));
+    // Read the same way as Published, so "Yes"/"yes"/"TRUE" all work and a
+    // Sheets checkbox (which arrives as the boolean TRUE) works too.
+    const featuredCell = String(row[7] ?? "").trim().toLowerCase();
+    const featured = featuredCell === "yes" || featuredCell === "true";
+    items.push({ title, excerpt, category, date, link, image, featured });
+  }
+
+  return items;
+}
+
 export async function getNews(): Promise<NewsItem[]> {
   const sheetId = process.env.NEWS_SHEET_ID;
   if (!sheetId) return FALLBACK;
 
   try {
     const rows = await readRange(sheetId, NEWS_RANGE, { revalidate: 60 });
-
-    const items: NewsItem[] = [];
-    for (const row of rows) {
-      const title = String(row[0] ?? "").trim();
-      const excerpt = String(row[1] ?? "").trim();
-      const category = String(row[2] ?? "").trim();
-      // A DATE CELL IS A NUMBER. `readRange` asks Sheets for UNFORMATTED_VALUE,
-      // so "15 November 2024" typed into a date-formatted cell arrives as the
-      // serial 45611 and the card printed exactly that. Every other sheet the
-      // site reads already went through normalizeSheetDate; news was the one
-      // that never did. Normalise to ISO, then format for the reader — free
-      // text like "Upcoming" passes through both untouched.
-      const date = formatSheetDate(normalizeSheetDate(String(row[3] ?? "")));
-      const link = String(row[4] ?? "").trim();
-      const published = String(row[5] ?? "").trim().toLowerCase();
-
-      if (!title || !excerpt) continue;
-      if (published !== "yes" && published !== "true") continue;
-
-      const image = toDisplayImageUrl(String(row[6] ?? ""));
-      // Read the same way as Published, so "Yes"/"yes"/"TRUE" all work and a
-      // Sheets checkbox (which arrives as the boolean TRUE) works too.
-      const featuredCell = String(row[7] ?? "").trim().toLowerCase();
-      const featured = featuredCell === "yes" || featuredCell === "true";
-      items.push({ title, excerpt, category, date, link, image, featured });
-    }
-
+    const items = parseNews(rows);
     return items.length > 0 ? items : FALLBACK;
   } catch {
     return FALLBACK;

@@ -1,0 +1,221 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { CalendarDays, MapPin, Clock, Mail, Video } from "lucide-react";
+import PageHero from "@/components/ui/PageHero";
+import { ANNUAL_MEETING, NOTICE_EMAIL } from "@/lib/annual-meeting";
+
+/**
+ * The full notice, as text.
+ *
+ * It is a page rather than a section of /membership because it is a document:
+ * it wants its own URL so PMAFI can send members straight to it, its own
+ * title, and it is long enough that bolting it onto an already-long page
+ * would bury both. The home page's featured news item links here.
+ *
+ * Text rather than the scan PMAFI supplied, because the scan is 642x845 of
+ * dense body type — unreadable on a phone, invisible to a screen reader, and
+ * un-searchable. See src/lib/annual-meeting.ts for what it omits and why.
+ */
+
+const m = ANNUAL_MEETING;
+
+export const metadata: Metadata = {
+  title: "Annual Membership Meeting and Election of Trustees | PMAFI",
+  description: `Notice of the PMAFI Annual Membership Meeting and Election of Trustees — ${m.date}, ${m.time}, ${m.venue}.`,
+};
+
+/** The three facts a member checks first, before reading anything. */
+const facts = [
+  { icon: CalendarDays, label: "Date", value: m.date },
+  { icon: Clock, label: "Time", value: m.time },
+  { icon: MapPin, label: "Venue", value: m.venue },
+];
+
+export default function AnnualMeetingPage() {
+  return (
+    <main>
+      <PageHero
+        eyebrow="Notice to Members"
+        title={
+          <>
+            Annual Membership Meeting and{" "}
+            <span className="text-gold-shimmer">Election of Trustees</span>
+          </>
+        }
+        lede={`${m.date} · ${m.time} · ${m.venue}`}
+      />
+
+      {/* At a glance */}
+      <section className="bg-white py-16">
+        <div className="mx-auto max-w-3xl px-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            {facts.map(({ icon: Icon, label, value }) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-5"
+              >
+                <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-gold-ink">
+                  <Icon size={14} />
+                  {label}
+                </p>
+                <p className="mt-2 font-medium leading-snug text-[#1B2A4A]">
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <dl className="mt-8 space-y-3 border-l-2 border-[#C8A951]/40 pl-5 text-sm">
+            <div>
+              <dt className="font-semibold text-[#1B2A4A]">To</dt>
+              <dd className="text-slate-600">{m.addressedTo}</dd>
+            </div>
+            <div>
+              <dt className="font-semibold text-[#1B2A4A]">References</dt>
+              <dd className="text-slate-600">{m.references}</dd>
+            </div>
+          </dl>
+        </div>
+      </section>
+
+      {/* Key dates */}
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-3xl font-bold tracking-tight text-[#1B2A4A]">
+            Key dates
+          </h2>
+          <p className="mt-3 text-slate-500">
+            Every deadline in this notice, in the order it falls. The full
+            wording is below.
+          </p>
+
+          {/* A long table on a narrow screen scrolls inside itself rather than
+              pushing the page sideways. */}
+          <div className="mt-8 overflow-x-auto">
+            <table className="w-full min-w-[34rem] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-slate-300">
+                  <th className="py-3 pr-6 font-semibold uppercase tracking-widest text-xs text-slate-500">
+                    When
+                  </th>
+                  <th className="py-3 font-semibold uppercase tracking-widest text-xs text-slate-500">
+                    What
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {m.schedule.map(({ when, what }) => (
+                  <tr key={when} className="border-b border-slate-200">
+                    <td className="whitespace-nowrap py-4 pr-6 align-top font-semibold text-[#1B2A4A]">
+                      {when}
+                    </td>
+                    <td className="py-4 align-top leading-relaxed text-slate-600">
+                      {what}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      {/* The notice itself */}
+      <section className="bg-white py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-3xl font-bold tracking-tight text-[#1B2A4A]">
+            The notice
+          </h2>
+
+          <p className="mt-6 leading-relaxed text-slate-600">{m.convening}</p>
+
+          <ol className="mt-6 space-y-3">
+            {m.purposes.map((purpose, i) => (
+              <li key={purpose} className="flex gap-4">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#1B2A4A] text-xs font-bold text-[#C8A951]">
+                  {i + 1}
+                </span>
+                <span className="pt-0.5 leading-relaxed text-slate-600">
+                  {purpose}
+                </span>
+              </li>
+            ))}
+          </ol>
+
+          {m.sections.map(({ heading, paragraphs }) => (
+            <div key={heading} className="mt-12">
+              <h3 className="text-xl font-bold text-[#1B2A4A]">{heading}</h3>
+              {paragraphs.map((p) => (
+                <p key={p} className="mt-4 leading-relaxed text-slate-600">
+                  {p}
+                </p>
+              ))}
+            </div>
+          ))}
+
+          <p className="mt-12 leading-relaxed text-slate-600">{m.closing}</p>
+
+          <div className="mt-10 border-t border-slate-200 pt-6">
+            <p className="font-bold uppercase tracking-wide text-[#1B2A4A]">
+              {m.issuedBy.name}
+            </p>
+            <p className="text-sm text-slate-500">{m.issuedBy.role}</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Joining and enquiries.
+          The Zoom credentials are not on this page and must not be added —
+          it is public, and the notice went to members. See the header of
+          src/lib/annual-meeting.ts. */}
+      <section className="relative overflow-hidden bg-[#0a1628] py-20">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
+        <div className="relative mx-auto max-w-3xl px-6">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div>
+              <p className="flex items-center gap-2 font-semibold text-white">
+                <Video className="h-5 w-5 text-[#C8A951]" />
+                Joining by Zoom
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-300/90">
+                The meeting is held in a blended manner. The Zoom link,
+                meeting ID and passcode are sent to members and are not
+                published here — write to the Foundation and they will be
+                given to you.
+              </p>
+            </div>
+            <div>
+              <p className="flex items-center gap-2 font-semibold text-white">
+                <Mail className="h-5 w-5 text-[#C8A951]" />
+                Enquiries
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-slate-300/90">
+                For any question about the meeting, nominations or your
+                ballot, email{" "}
+                <a
+                  href={`mailto:${NOTICE_EMAIL}`}
+                  className="font-medium text-[#C8A951] underline underline-offset-2 transition-colors hover:text-white"
+                >
+                  {NOTICE_EMAIL}
+                </a>
+                .
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-10 rounded-2xl border border-[#C8A951]/30 bg-white/[0.03] p-6 text-center">
+            <p className="text-sm text-slate-300/90">
+              Only regular members in good standing may vote.
+            </p>
+            <Link
+              href="/membership#check"
+              className="mt-2 inline-block font-semibold text-[#C8A951] underline underline-offset-4 transition-colors hover:text-white"
+            >
+              Check your membership status
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
