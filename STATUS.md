@@ -39,6 +39,7 @@ since August is resolved.
 | `/programs` | ✅ plus **the roll of endowed chairs**, read from the `Chairs` tab |
 | `/membership` | ✅ status check by email **or name**, apply, ₱3,000 published, and the **28 classes at 100% membership** |
 | `/membership/id` | ✅ digital ID generator, gated behind the membership check — **by name or by email, name first** — plus prompts to correct a name or update contact details |
+| `/membership/annual-meeting` | ✅ **the 5 March 2027 Notice of Annual Membership Meeting and Election of Trustees**, as text — key-dates table plus the notice verbatim. Omits the Zoom credentials, the staff phone numbers and the signature; `annual-meeting.test.ts` fails if any returns. **Delete the page and the lib after the meeting**, with the news row |
 | `/donate` | ✅ **can now receive a gift** — Metrobank and GCash details published, plus a photograph of a handover with the amount redacted |
 | `/donate/impact` | ✅ **2025 in counts**, above three published fund updates |
 | `/donate/status` | ✅ email + reference, **verified end to end against a real gift** |
@@ -504,8 +505,18 @@ top of this list for months, are **done**.
    itself is not published — it is an image of text, which the site's
    Lighthouse-100 accessibility floor does not survive, and it is kept out of
    git by `.git/info/exclude` because this repository is public.
-   **Still to do in the sheet:** add a `Featured` header in **H1** and `Yes` in
-   **H5**, so the meeting leads the section instead of the 2024 board visit.
+   The notice is published in full as text at `/membership/annual-meeting`,
+   which the news item links to; the scan is readable nowhere on the site, by
+   design.
+   **Still to do in the sheet** (3 cells): `Featured` in **H1** and `Yes` in
+   **H5** so the meeting leads the section, and `/membership/annual-meeting`
+   in **E5** so the card links to the full notice.
+   **G5 held a public Google Drive link to the unredacted scan** — verified
+   byte-identical to `references/announcement.jpeg` and fetchable with an
+   unauthenticated `curl`. The site would have served it at full resolution:
+   the card crop is CSS, and `next/image` requests the whole file. Replaced
+   with `/board-meeting.jpg`. If that Drive file is still link-shared, it is
+   still public regardless of what the sheet says.
 4. **Fund update photographs** — `/fund-chairs.jpg` and `/fund-endowment.jpg`
    show teaching-excellence certificate presentations attached to the chair and
    endowment funds. If that certificate is not a chair appointment, both belong

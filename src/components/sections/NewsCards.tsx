@@ -72,12 +72,24 @@ export function splitFeatured(
   };
 }
 
-/** Shared by both card shapes: a link becomes an <a>, otherwise a plain <div>. */
+/**
+ * Shared by both card shapes: a link becomes an <a>, otherwise a plain <div>.
+ *
+ * ONLY AN OFF-SITE LINK OPENS A NEW TAB. `target="_blank"` is right for the
+ * Drive and news-site URLs staff paste, and wrong for a path like
+ * /membership/annual-meeting — throwing a second tab at someone for moving
+ * within the same site is the kind of thing that makes a back button useless.
+ * safeHttpUrl in news.ts has already refused anything that is not http(s) or
+ * a site-relative path, so "starts with /" is a sound test for internal.
+ */
 function wrapperFor(link: string) {
+  const internal = link.startsWith("/");
   return {
     Wrapper: (link ? "a" : "div") as "a" | "div",
     wrapperProps: link
-      ? { href: link, target: "_blank", rel: "noopener noreferrer" }
+      ? internal
+        ? { href: link }
+        : { href: link, target: "_blank", rel: "noopener noreferrer" }
       : {},
   };
 }
@@ -125,7 +137,9 @@ function FeaturedCard({ item, inView }: { item: NewsItem; inView: boolean }) {
             <h3 className="mt-2 text-2xl font-bold leading-snug text-[#1B2A4A] lg:text-3xl">
               {title}
             </h3>
-            <p className="mt-3 leading-relaxed text-slate-500">{excerpt}</p>
+            <p className="mt-3 whitespace-pre-line leading-relaxed text-slate-500">
+              {excerpt}
+            </p>
             {link && (
               <span className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-gold-ink">
                 Read more
@@ -204,7 +218,7 @@ export default function NewsCards({ items }: { items: NewsItem[] }) {
                     <h3 className="mt-2 text-lg font-bold leading-snug text-[#1B2A4A]">
                       {title}
                     </h3>
-                    <p className="mt-2 flex-1 text-sm leading-relaxed text-slate-500">
+                    <p className="mt-2 flex-1 whitespace-pre-line text-sm leading-relaxed text-slate-500">
                       {excerpt}
                     </p>
                     {link && (
