@@ -2,11 +2,20 @@ import { describe, it, expect } from "vitest";
 import { ANNUAL_MEETING, NOTICE_EMAIL } from "@/lib/annual-meeting";
 
 /**
- * The notice is published as text so members can read it. Three things in the
- * scan it was transcribed from are deliberately absent, and this is what stops
- * them being "restored" later by someone comparing the page to the original
- * and assuming the difference is an oversight. It is not; see the header of
- * annual-meeting.ts.
+ * The notice is published twice on the same page: the signed original as
+ * supplied, and this transcription of it.
+ *
+ * READ THIS BEFORE TRUSTING THE GUARDS BELOW. They assert that the
+ * TRANSCRIPTION carries no Zoom credential and no phone number. That is no
+ * longer a confidentiality boundary — the scan a few hundred pixels down the
+ * page shows all of them, by PMAFI's decision of 2026-10-17. What the guards
+ * are now worth is narrower and still real: a joining credential and a
+ * personal mobile number go stale, and the transcription must not become a
+ * second place to forget to update them. The scan is the document of record.
+ *
+ * So do not cite these tests as evidence the details are private. They are
+ * not. See the header of annual-meeting.ts, including the screen-reader gap
+ * publishing them as an image leaves open.
  */
 
 /** Everything a reader sees, flattened, so a guard cannot be dodged by moving
@@ -31,10 +40,10 @@ function allText(): string {
 }
 
 describe("the published annual meeting notice", () => {
-  it("never carries the Zoom joining details", () => {
-    // THE IMPORTANT ONE. This page is public; the notice went to members.
-    // A join link, an ID or a passcode on it lets anyone sit in on — or
-    // disrupt — an election of trustees.
+  it("keeps the Zoom joining details out of the transcription", () => {
+    // Not secrecy — the scan on the same page shows them. This keeps the
+    // credential in ONE place, so it cannot be updated in the notice and
+    // left stale in the prose.
     const text = allText();
 
     expect(text).not.toMatch(/zoom\.us/i);
@@ -46,7 +55,7 @@ describe("the published annual meeting notice", () => {
     expect(text).not.toMatch(/\b89398110846\b/);
   });
 
-  it("never carries a phone number", () => {
+  it("keeps phone numbers out of the transcription", () => {
     const text = allText();
 
     // The two staff mobiles and the office landline from the notice.
@@ -59,9 +68,10 @@ describe("the published annual meeting notice", () => {
     expect(text).not.toMatch(/\(0?2\)\s*\d{4}[-\s]?\d{4}/);
   });
 
-  it("names the issuing officer without reproducing the signature", () => {
-    // Naming him is what the notice communicates — who issued it. The scanned
-    // signature is a forgeable artefact and is not an image on this page.
+  it("names the issuing officer as structured text, not as an image", () => {
+    // The signature is on the page, inside the scan. What this pins is that
+    // the officer's NAME is readable text, so a screen reader gets who issued
+    // the notice even though it cannot read the image.
     const text = allText();
 
     expect(ANNUAL_MEETING.issuedBy.name).toBe("CAV Gil C. Meneses");

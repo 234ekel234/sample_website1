@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CalendarDays, MapPin, Clock, Mail, Video } from "lucide-react";
+import Image from "next/image";
+import { CalendarDays, MapPin, Clock, Mail, Video, ExternalLink } from "lucide-react";
 import PageHero from "@/components/ui/PageHero";
-import { ANNUAL_MEETING, NOTICE_EMAIL } from "@/lib/annual-meeting";
+import { ANNUAL_MEETING, NOTICE_EMAIL, NOTICE_SCAN } from "@/lib/annual-meeting";
 
 /**
  * The full notice, as text.
@@ -164,10 +165,56 @@ export default function AnnualMeetingPage() {
         </div>
       </section>
 
+      {/* The notice as issued.
+          PMAFI's decision, taken 2026-10-17: the signed original is published
+          as supplied. It is shown here at full width rather than in the news
+          card, where a 642x845 page of body type crops to an illegible strip.
+          The transcription above remains the readable version — this is the
+          document of record, letterhead and signature included. */}
+      <section className="bg-slate-50 py-20">
+        <div className="mx-auto max-w-3xl px-6">
+          <h2 className="text-3xl font-bold tracking-tight text-[#1B2A4A]">
+            The notice as issued
+          </h2>
+          <p className="mt-3 text-slate-500">
+            The signed original, as circulated to members. The text above is a
+            transcription of the same document.
+          </p>
+
+          <figure className="mt-8">
+            <Image
+              src={NOTICE_SCAN.src}
+              alt={NOTICE_SCAN.alt}
+              width={NOTICE_SCAN.width}
+              height={NOTICE_SCAN.height}
+              sizes="(min-width: 768px) 42rem, 100vw"
+              className="h-auto w-full rounded-2xl border border-slate-300 bg-white shadow-sm"
+            />
+            <figcaption className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
+              <span>
+                Issued by {m.issuedBy.name}, {m.issuedBy.role}.
+              </span>
+              <a
+                href={NOTICE_SCAN.src}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 font-medium text-gold-ink underline underline-offset-2 transition-colors hover:text-[#1B2A4A]"
+              >
+                Open the full-size notice
+                <ExternalLink size={14} />
+              </a>
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
       {/* Joining and enquiries.
-          The Zoom credentials are not on this page and must not be added —
-          it is public, and the notice went to members. See the header of
-          src/lib/annual-meeting.ts. */}
+          This panel must keep agreeing with what the page actually shows. It
+          used to say the Zoom details were not published here, which stopped
+          being true the moment the signed original went up above — a page
+          that withholds something in one section and prints it in the next
+          is worse than one that does neither. See annual-meeting.ts for the
+          screen-reader gap this leaves open. */}
       <section className="relative overflow-hidden bg-[#0a1628] py-20">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(125%_125%_at_50%_0%,#16294d_0%,#0a1628_55%)]" />
         <div className="relative mx-auto max-w-3xl px-6">
@@ -179,9 +226,9 @@ export default function AnnualMeetingPage() {
               </p>
               <p className="mt-3 text-sm leading-relaxed text-slate-300/90">
                 The meeting is held in a blended manner. The Zoom link,
-                meeting ID and passcode are sent to members and are not
-                published here — write to the Foundation and they will be
-                given to you.
+                meeting ID and passcode are printed in the notice as issued,
+                above. If you cannot read them there, email the Foundation
+                and they will be sent to you.
               </p>
             </div>
             <div>

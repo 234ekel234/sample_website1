@@ -506,17 +506,28 @@ top of this list for months, are **done**.
    Lighthouse-100 accessibility floor does not survive, and it is kept out of
    git by `.git/info/exclude` because this repository is public.
    The notice is published in full as text at `/membership/annual-meeting`,
-   which the news item links to; the scan is readable nowhere on the site, by
-   design.
-   **Still to do in the sheet** (3 cells): `Featured` in **H1** and `Yes` in
-   **H5** so the meeting leads the section, and `/membership/annual-meeting`
-   in **E5** so the card links to the full notice.
-   **G5 held a public Google Drive link to the unredacted scan** — verified
-   byte-identical to `references/announcement.jpeg` and fetchable with an
-   unauthenticated `curl`. The site would have served it at full resolution:
-   the card crop is CSS, and `next/image` requests the whole file. Replaced
-   with `/board-meeting.jpg`. If that Drive file is still link-shared, it is
-   still public regardless of what the sheet says.
+   which the news item links to. **PMAFI decided on 2026-10-17 to publish the
+   signed original too**, so the scan is on that page at full width as
+   `public/annual-meeting-notice.jpg`, unredacted. That puts the Zoom link and
+   passcode, both staff mobile numbers and the Corporate Secretary's signature
+   on a public page, knowingly — it is PMAFI's document and PMAFI's call. Two
+   consequences are worth holding on to: the file is **committed**, and git
+   history is permanent, so taking it off the page later does not take it out
+   of the repository; and a **screen reader cannot read an image**, so a blind
+   member currently cannot get the Zoom details from the page while a sighted
+   one can. Closing that means adding the joining details to the
+   transcription, which is a decision rather than a tidy-up.
+   **Still to do in the sheet** (2 cells): `/membership/annual-meeting` in
+   **E2** so the card links to the full notice, and `/board-meeting.jpg` in
+   **G2**. The meeting row was moved to the top of the tab, so it already
+   leads the section and the `Featured` column is **not** needed — add it
+   only to lead with a row that is not the top one.
+   **G2 still points at a Google Drive copy of the scan.** It should become
+   `/board-meeting.jpg` — not to withhold anything now, but because the card
+   crops a 642×845 page of body type to an illegible strip, and because a
+   Drive-hosted asset is governed by that file's sharing setting rather than
+   by this repository. The readable copy is the full-width one on the notice
+   page.
 4. **Fund update photographs** — `/fund-chairs.jpg` and `/fund-endowment.jpg`
    show teaching-excellence certificate presentations attached to the chair and
    endowment funds. If that certificate is not a chair appointment, both belong
